@@ -1,0 +1,125 @@
+[
+  {
+    "id": "1",
+    "created_at": "2023-09-10T08:00:00",
+    "updated_at": "2023-12-10T08:00:00",
+    "user": {
+      "userId": "1",
+      "name": "Данила Буянов",
+      "avatar": "https://sun9-27.userapi.com/impg/7Flj3120XYFbHgfyEMxs4RJVP_GRyi-wNrbERQ/NjgIbT0uBjk.jpg?size=960x1280&quality=95&sign=2a36279f407ec6d6eff7967e1a7168a8&type=album"
+    },
+    "description": "",
+    "task_text": "Позвонить клиенту #132492, уточнение данных",
+    "completed": false,
+    "subtasks": []
+  },
+  {
+    "id": "2",
+    "created_at": "2023-09-15T09:30:00",
+    "updated_at": "2023-12-10T08:00:00",
+    "user": {
+      "userId": "1",
+      "name": "Данила Буянов",
+      "avatar": "https://sun9-27.userapi.com/impg/7Flj3120XYFbHgfyEMxs4RJVP_GRyi-wNrbERQ/NjgIbT0uBjk.jpg?size=960x1280&quality=95&sign=2a36279f407ec6d6eff7967e1a7168a8&type=album"
+    },
+    "task_text": "Создать личный кабинет Ольге",
+    "description": "",
+    "completed": true,
+    "subtasks": []
+  },
+  {
+    "id": "3",
+    "created_at": "2023-09-10T08:00:00",
+    "updated_at": "2023-12-10T08:00:00",
+    "user": {
+      "userId": "1",
+      "name": "Данила Буянов",
+      "avatar": "https://sun9-27.userapi.com/impg/7Flj3120XYFbHgfyEMxs4RJVP_GRyi-wNrbERQ/NjgIbT0uBjk.jpg?size=960x1280&quality=95&sign=2a36279f407ec6d6eff7967e1a7168a8&type=album"
+    },
+    "description": "",
+    "task_text": "Подтвердить запись #2671 на 15.06 +79005050525",
+    "completed": false,
+    "subtasks": [
+      {
+        "id": "1",
+        "task_text": "Подтвердить запись #2671 на 15.06 +79005050525",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "4",
+    "created_at": "2023-09-10T08:00:00",
+    "updated_at": "2023-12-10T08:00:00",
+    "user": {
+      "userId": "1",
+      "name": "Данила Буянов",
+      "avatar": "https://sun9-27.userapi.com/impg/7Flj3120XYFbHgfyEMxs4RJVP_GRyi-wNrbERQ/NjgIbT0uBjk.jpg?size=960x1280&quality=95&sign=2a36279f407ec6d6eff7967e1a7168a8&type=album"
+    },
+    "description": "Комментарий: Забыл поставить в работу",
+    "task_text": "Прозвонить базу не принятых вызовов от 15.05.2023",
+    "completed": false,
+    "subtasks": [
+      {
+        "id": "1",
+        "task_text": "Подтвердить запись #2671 на 15.06 +79005050525",
+        "completed": true
+      },
+      {
+        "id": "2",
+        "task_text": "Подтвердить запись #2671 на 15.06 +79005050525",
+        "completed": false
+      },
+      {
+        "id": "3",
+        "task_text": "Подтвердить запись #2671 на 15.06 +79005050525",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "5",
+    "created_at": "2023-09-10T08:00:00",
+    "updated_at": "2023-12-10T08:00:00",
+    "user": {
+      "userId": "1",
+      "name": "Данила Буянов",
+      "avatar": "https://sun9-27.userapi.com/impg/7Flj3120XYFbHgfyEMxs4RJVP_GRyi-wNrbERQ/NjgIbT0uBjk.jpg?size=960x1280&quality=95&sign=2a36279f407ec6d6eff7967e1a7168a8&type=album"
+    },
+    "description": "Комментарий: Забыл поставить в работу",
+    "task_text": " базу не принятых вызовов от 15.05.2023",
+    "completed": false,
+    "subtasks": [
+      {
+        "id": "1",
+        "task_text": "Подтвердить запись #2671 на 15.06 +79005050525",
+        "completed": true
+      },
+      {
+        "id": "2",
+        "task_text": "Подтвердить запись #2671 на 15.06 +79005050525",
+        "completed": false
+      },
+      {
+        "id": "3",
+        "task_text": "Подтвердить запись #2671 на 15.06 +79005050525",
+        "completed": true
+      },
+      {
+        "id": "4",
+        "task_text": "Подтвердить запись #2671 на 15.06 +79005050525",
+        "completed": true
+      },
+      {
+        "id": "5",
+        "task_text": "Подтвердить запись #2671 на 15.06 +79005050525",
+        "completed": false
+      },
+      {
+        "id": "6",
+        "task_text": "Подтвердить запись #2671 на 15.06 +79005050525",
+        "completed": true
+      }
+    ]
+  }
+]

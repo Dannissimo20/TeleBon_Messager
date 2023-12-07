@@ -1,0 +1,239 @@
+import { useEffect } from 'react';
+
+import { useFormik } from 'formik';
+import { inject, observer } from 'mobx-react';
+import { find, path, pipe, propEq } from 'rambda';
+
+import AutocompleteInput from '../../../../fields/autocomplete-input/AutocompleteInput';
+import CommonButton from '../../../../button/CommonButton';
+import CommonDropdown from '../../../../dropdawn/CommonDropdown';
+import CommonInput from '../../../../fields/CommonInput';
+import CommonInputPhone from '../../../../fields/common-input-phone/CommonInputPhone';
+import { EIcons, Icon, PlanningIcon } from '../../../../../icons';
+import { ReactComponent as IconFlag } from '../../../../../icons/flag.svg';
+import { ReactComponent as PenIcon } from '../../../../../icons/pen.svg';
+import { ReactComponent as IconPie } from '../../../../../icons/pie.svg';
+import { ReactComponent as PlusIcon } from '../../../../../icons/plus.svg';
+
+import OneMoreTimeTable from '../../../../../../pages/private/product/OneMoreTimeTable';
+import AppointmentStore from '../../../../../../store/appointmentStore';
+import CabinetsStore, { ICabinet } from '../../../../../../store/cabinetsStore';
+import ClientsStore from '../../../../../../store/clientsStore';
+import FilialStore, { IFilial } from '../../../../../../store/filialStore';
+import LessonsStore from '../../../../../../store/lessonsStore';
+import ModalStore from '../../../../../../store/modalStore';
+import ProductsStore from '../../../../../../store/productsStore';
+import clientTypes from '../../../../../../utils/clientTypes';
+import { PENDING } from '../../../../../../utils/state';
+import { Box, Footer, Form, Main, ProductName, Wrapper } from './NewAppointmentForm.styled';
+
+const productName = (productId: any, arr: any) => pipe(find(propEq(productId, 'id')), path(['name']))(arr);
+
+interface IProps {
+  appointmentStore?: AppointmentStore;
+  filialStore?: FilialStore;
+  cabinetsStore?: CabinetsStore;
+  productsStore?: ProductsStore;
+  clientsStore?: ClientsStore;
+  modalStore?: ModalStore;
+  lessonsStore?: LessonsStore;
+  payload?: any;
+}
+
+const NewAppointmentForm: React.FC<IProps> = observer(
+  ({ appointmentStore, cabinetsStore, filialStore, productsStore, clientsStore, modalStore, payload, lessonsStore }) => {
+    const { newAppointment, createAppointment, state } = appointmentStore!;
+    const { cabinets } = cabinetsStore!;
+    const { filials } = filialStore!;
+    const { products } = productsStore!;
+    const { fetchClients, clients } = clientsStore!;
+    const productTitle: any = productName(payload.productId, products);
+    // const subProductTitle: any = productName(payload.productId, products);
+    const cabinetTitle: any = productName(payload.cabinetId, cabinets);
+    const transformedCabinets = cabinets.map(({ id, name }: ICabinet) => ({
+      value: id,
+      label: name
+    }));
+    const transformedFilials = filials.map(({ id, name }: IFilial) => ({
+      value: id,
+      label: name
+    }));
+    const formik = useFormik({
+      initialValues: {
+        ...newAppointment,
+        ...payload
+      },
+      onSubmit: (values: any) => {}
+    });
+
+    const handleSubmit = async (e: any) => {
+      e.preventDefault();
+      const res = await createAppointment({
+        ...formik.values,
+        time: `${formik.values.time}:00`
+      });
+      if (res) {
+        modalStore!.closeModal();
+        lessonsStore!.fetchScheduleByDay(payload.date, payload.productId);
+      }
+    };
+
+    const openModalClient = () => {
+      modalStore!.openModal({
+        name: 'CREATE_CLIENT',
+        payload: {
+          afterClose: () =>
+            modalStore!.openModal({
+              name: 'APPOINTMENT_MODAL',
+              payload
+            })
+        }
+      });
+    };
+
+    const chooseClient = (client: any) => {
+      formik.setFieldValue('phone', client.phone);
+      formik.setFieldValue('clientId', client.id);
+    };
+
+    useEffect(() => {
+      fetchClients();
+    }, []);
+
+    return (
+      <Wrapper>
+        <Form onSubmit={handleSubmit}>
+          <Main>
+            <AutocompleteInput
+              label={'ФИО'}
+              name='name'
+              value={formik.values.name}
+              onChange={formik.handleChange}
+              onChoose={chooseClient}
+              filterBy={'name'}
+              list={clients}
+              openClientModal={openModalClient}
+              simple
+            >
+              <Icon name={EIcons.clientIcon} />
+            </AutocompleteInput>
+            {/* <CommonInput
+              label={"Телефон"}
+              name="phone"
+              value={formik.values.phone}
+              onChange={formik.handleChange}
+              simple
+            />*/}
+            <CommonInputPhone
+              type={'tel'}
+              label={'Телефон'}
+              name='phone'
+              value={formik.values.phone}
+              onChange={formik.handleChange('phone')}
+              onBlur={formik.handleBlur}
+              simple
+            >
+              <IconFlag />
+            </CommonInputPhone>
+            <CommonInput
+              label={'Время'}
+              name='time'
+              value={formik.values.time}
+              onChange={formik.handleChange}
+              simple
+              disabled
+            >
+              <PlanningIcon />
+            </CommonInput>
+            <CommonDropdown
+              onChange={(option: any) => {
+                formik.setFieldValue('cabinetId', option.value);
+              }}
+              options={transformedCabinets}
+              currentValue={formik.values.cabinetId}
+              placeholder={'Кабинет'}
+              disabled
+            />
+            <CommonDropdown
+              onChange={(option: any) => {
+                formik.setFieldValue('clientType', option.value);
+              }}
+              options={clientTypes}
+              currentValue={formik.values.clientType}
+              placeholder={'Тип клиента'}
+            />
+            <CommonDropdown
+              onChange={(option: any) => {
+                formik.setFieldValue('clientType', option.value);
+              }}
+              options={clientTypes}
+              currentValue={formik.values.clientType}
+              placeholder={'Источник'}
+            />
+            <CommonDropdown
+              onChange={(option: any) => {
+                formik.setFieldValue('filialId', option.value);
+              }}
+              options={transformedFilials}
+              currentValue={formik.values.filialId}
+              placeholder={'Филиал'}
+              disabled
+            />
+            <CommonDropdown
+              onChange={(option: any) => {
+                formik.setFieldValue('clientType', option.value);
+              }}
+              options={clientTypes}
+              currentValue={formik.values.clientType}
+              placeholder={'Форма оплаты'}
+            />
+            <CommonInput
+              label={'Комментарий'}
+              name='comments'
+              value={formik.values.comments}
+              onChange={formik.handleChange}
+              simple
+            >
+              <PenIcon />
+            </CommonInput>
+          </Main>
+          <Box>
+            <ProductName>
+              <IconPie />
+              <span>{productTitle || ''}</span>
+            </ProductName>
+          </Box>
+          <OneMoreTimeTable
+            date={'21.01.1990'}
+            product={productTitle}
+            client={formik.values.name}
+            cabinet={cabinetTitle}
+            duration={'1 час'}
+            price={''}
+          />
+
+          <Footer>
+            <CommonButton
+              colored={true}
+              typeBtn='success'
+              disabled={state === PENDING}
+            >
+              <PlusIcon />
+              <span>Сохранить</span>
+            </CommonButton>
+          </Footer>
+        </Form>
+      </Wrapper>
+    );
+  }
+);
+
+export default inject(
+  'appointmentStore',
+  'filialStore',
+  'cabinetsStore',
+  'productsStore',
+  'clientsStore',
+  'modalStore',
+  'lessonsStore'
+)(NewAppointmentForm);
