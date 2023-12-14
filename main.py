@@ -114,6 +114,7 @@ async def create_meassage(message_model: CreateMessageModel):
     conn.execute(message_insert)
     chat_update = update(chats).where(chats.c.id == message_model.chat.id).values(
         latestMessage=uniq_id,
+        updatedAt=datetime.now()
     )
     conn.execute(chat_update)
     conn.commit()
