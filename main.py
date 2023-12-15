@@ -1,6 +1,7 @@
+import json
 import uuid
 
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket
 from sqlalchemy import *
 from datetime import datetime
 import psycopg2
@@ -75,25 +76,97 @@ async def user(user: UserModel):
     }
 
 
-@app.post("/create_chat")
-async def create_chat(chat: CreateChatModel):
-    uniq_id = uuid.uuid4()
-    chat_insert = insert(chats).values(
-        id=uniq_id,
-        chatName=chat.chatName,
-        isGroupChat=chat.isGroupChat,
-        createdAt=chat.createdAt,
-        updatedAt=chat.updatedAt,
+# @app.post("/create_chat")
+# async def create_chat(chat: CreateChatModel):
+#     uniq_id = uuid.uuid4()
+#     chat_insert = insert(chats).values(
+#         id=uniq_id,
+#         chatName=chat.chatName,
+#         isGroupChat=chat.isGroupChat,
+#         createdAt=chat.createdAt,
+#         updatedAt=chat.updatedAt,
+#     )
+#     conn.execute(chat_insert)
+#     for item in chat.users:
+#         chatUsers_insert = chatUsers.insert().values(
+#             user=item.id,
+#             chat=str(uniq_id)
+#         )
+#         conn.execute(chatUsers_insert)
+#     conn.commit()
+#     return {"code": 200}
+
+@app.websocket("/login")
+async def login(websocket: WebSocket):
+    await websocket.accept()
+    data = await websocket.receive_text()
+    chat = chats.update().where(chats.c.id == data).values(
+        updatedAt=datetime.now()
     )
-    conn.execute(chat_insert)
-    for item in chat.users:
-        chatUsers_insert = chatUsers.insert().values(
-            user=item.id,
-            chat=str(uniq_id)
-        )
-        conn.execute(chatUsers_insert)
+
+    conn.execute(chat)
     conn.commit()
-    return {"code": 200}
+
+    response = {"code": 200, "message": "Всё ок"}
+    await websocket.send_json(response)
+
+@app.websocket("/ws")
+async def create_chat(websocket: WebSocket):
+    await websocket.accept()
+
+    data = await websocket.receive_text()
+
+    data = json.loads(data)
+    if(data["message"] == "create chat"):
+        uniq_id = uuid.uuid4()
+        chat_insert = chats.insert().values(
+            id=uniq_id,
+            chatName=data["chatName"],
+            isGroupChat=data["isGroupChat"],
+            latestMessage=None,
+            groupAdmin=None,
+            createdAt=datetime.now(),
+            updatedAt=datetime.now(),
+        )
+        conn.execute(chat_insert)
+        for item in data["users"]:
+            chatUsers_insert = chatUsers.insert().values(
+                user=item["user"],
+                chat=str(uniq_id)
+            )
+            conn.execute(chatUsers_insert)
+        conn.commit()
+
+        result = chats.select().where(chats.c.id == str(uniq_id))
+        result = conn.execute(result)
+        result = result.fetchone()
+
+        response = {
+            "id": str(result[0]),
+            "chatName": result[1],
+            "isGroupChat": result[2],
+            "users": data["users"],
+            "createdAt": str(result[5]),
+            "updatedAt": str(result[6]),
+        }
+
+        await websocket.send_json(response)
+
+        await websocket.close()
+    elif(data["message"] == "create message"):
+        uniq_id = uuid.uuid4()
+        if (len(data["readBy"]) == 0):
+            readBy = None
+        else:
+            readBy = data["readby"]
+
+
+    else:
+        response = {"code": 400, "message": "Bad request: no type of message"}
+        await websocket.send_json(response)
+        await websocket.close()
+
+
 
 @app.post("/create_meassage")
 async def create_meassage(message_model: CreateMessageModel):
