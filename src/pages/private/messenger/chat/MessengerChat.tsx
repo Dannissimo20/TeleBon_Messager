@@ -1,4 +1,4 @@
-import React, { FC, Fragment, useCallback, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { inject, observer } from 'mobx-react';
@@ -6,14 +6,14 @@ import styled, { keyframes } from 'styled-components';
 
 import { EIcons, Icon as IconInstance } from '../../../../components/icons';
 import { ReactComponent as ArrowBottom } from '../../../../components/icons/arrowBottomInTask.svg';
+import { scaleIn } from '../../../../components/shared/modal/create/service/sidebar/CreateServiceSidebar.styled';
 import ChatStore, { IChat } from '../../../../store/chatStore';
-import MessageStore, { IMessage } from '../../../../store/messageStore';
+import { IMessage } from '../../../../store/messageStore';
 import UserStore from '../../../../store/userStore';
 import { getCookie } from '../../../../utils/cookies';
-import { DateAgo } from '../../../../utils/dateForm';
 import 'react-dropdown/style.css';
-import { scaleIn } from '../../../../components/shared/modal/create/service/sidebar/CreateServiceSidebar.styled';
 
+// Стилизованные компоненты для верстки и анимации
 const TableBody = styled.div`
   border-radius: 8px;
   border: 2px solid ${(props) => props.theme.color.secondaryMedium};
@@ -23,9 +23,9 @@ const TableBody = styled.div`
 `;
 
 const layout = keyframes`
-0%{
-  transorm: translate3d(0,0 , 0)
-}
+  0%{
+    transorm: translate3d(0,0 , 0)
+  }
   100%{
     transorm: translate3d(1,1 , 1)
   }
@@ -71,7 +71,7 @@ const ChatList = styled.div`
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  max-height: 441px;
+  height: 55vh;
   &::-webkit-scrollbar {
     width: 4px;
   }
@@ -172,6 +172,7 @@ const Avatar = styled.img`
   top: 1px;
   left: 1px;
 `;
+
 const AvatarBox = styled.div`
   position: relative;
   border: 2px solid ${(props) => props.theme.color.mainLight};
@@ -275,72 +276,56 @@ const FormWrapper = styled.div`
   }
 `;
 
+// Интерфейс для пропсов
 interface IProps {
   userStore?: UserStore | any;
   chatStore?: ChatStore;
-  messageStore?: MessageStore;
   unreadMessages: any;
   updateUnreadMessages: any;
   isTyping: boolean;
   setIsTyping: (typing: boolean) => void;
+  userChats: IChat[];
+  ws: WebSocket;
 }
 
+// Основной функциональный компонент
 const MessengerChat: FC<IProps> = observer((props) => {
+  // Состояния компонента
   const [sentMessages, setSentMessages] = useState<any[]>([]);
   const { messengerId, roomId } = useParams();
   const [isOpenDropdown, setIsOpenDropdown] = useState(false);
 
-  const { userStore, unreadMessages, updateUnreadMessages, chatStore, messageStore, isTyping, setIsTyping } = props;
+  // Деструктуризация пропсов
+  const { userStore, unreadMessages, updateUnreadMessages, chatStore, isTyping, setIsTyping, ws, userChats } = props;
   const { user } = userStore!;
-  const { chats } = chatStore!;
-  const { messages } = messageStore!;
+  const [messages, setMessages] = useState<IMessage[]>([]);
 
   const [isValue, setIsValue] = useState<string>('');
   const [isUser, setIsUser] = useState<string>('');
   const [selectedRoomText, setSelectedRoomText] = useState<string>('');
   const [filteredMessages, setFilteredMessages] = useState<any[]>([]);
 
-  const sendMessage = async (e: any, chatId: string, roomId: number) => {
-    e.preventDefault();
-    const newMessage = {
-      text: isValue,
-      user: {
-        id: user?.user?.[0]?.id,
-        avatar: user?.photo,
-        name: user?.user?.[0]?.fio
-      },
-      chatId,
-      roomId
-    };
-    setSentMessages([...sentMessages, newMessage]);
-    updateUnreadMessages(chatId, unreadMessages[chatId] ? unreadMessages[chatId] + 1 : 1);
-    setIsValue('');
-    console.log(newMessage);
-  };
-
+  // Функция для получения информации о пользователе
   const fetchUserInfo = async () => {
     const productsList = await userStore?.fetchUserById(getCookie('id'));
-    console.log(productsList?.user);
     if (productsList) {
       setIsUser(productsList?.user?.[0]?.fio);
     }
   };
 
+  // useEffect для получения информации о пользователе при монтировании компонента
   useEffect(() => {
     fetchUserInfo();
   }, []);
-  console.log(userStore);
 
+  // useEffect для обновления выбранной комнаты и сообщений при изменении messengerId и roomId
   useEffect(() => {
-    const selectedChat = chats.find((chat: IChat) => chat.id === parseInt(messengerId ?? '0'));
+    const selectedChat = userChats.find((chat: IChat) => chat.chat_id === messengerId ?? '0');
     if (selectedChat && roomId) {
       const selectedRoom = selectedChat.rooms?.find((room) => room.id === parseInt(roomId));
-      console.log(selectedRoom);
       if (selectedRoom) {
         setSelectedRoomText(selectedRoom.text);
-        const filteredMessages = messages?.filter(
-          (message: IMessage) => message.chatId === selectedChat.id && message.roomId === selectedRoom.id
-        );
+        const filteredMessages = messages?.filter((message: IMessage) => message.chat.chat_id === selectedChat.chat_id);
         setFilteredMessages(filteredMessages || []);
       } else {
         setSelectedRoomText('');
@@ -352,6 +337,7 @@ const MessengerChat: FC<IProps> = observer((props) => {
     }
   }, [messengerId, roomId]);
 
+  // useCallback для обработки изменений ввода
   const handleChange = useCallback((e: any) => {
     setIsValue(e.target.value);
     if (e.target.value) {
@@ -361,49 +347,31 @@ const MessengerChat: FC<IProps> = observer((props) => {
     }
   }, []);
 
-  filteredMessages.sort((a, b) => {
-    const dateA = new Date(a.date);
-    const dateB = new Date(b.date);
-
-    return dateB.getTime() - dateA.getTime();
-  });
-
-  function formatMessageDate(dateString: string) {
-    const date = new Date(dateString);
-
-    if (isNaN(date.getTime())) {
-      return '';
+  ws.onmessage = (event) => {
+    try {
+      const data = JSON.parse(event.data);
+      if (data.type == 'chatMessages') {
+        if (data.data && Array.isArray(data.data)) {
+          const messages = data.data;
+          console.log(messages);
+          setMessages(messages);
+        } else {
+          console.error('Ошибка формата данных. Отсутствует ожидаемый массив chatMessages.');
+        }
+      }
+    } catch (error) {
+      console.error('Ошибка при парсинге JSON:', error);
     }
+  };
 
-    return date.toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  }
-  const groupedMessages: { [key: string]: any[] } = {};
-
-  filteredMessages.concat(sentMessages).forEach((message) => {
-    const date = new Date(message.created_at);
-    const dateString = date.toDateString();
-
-    if (!groupedMessages[dateString]) {
-      groupedMessages[dateString] = [];
-    }
-    console.log(groupedMessages[dateString]);
-
-    groupedMessages[dateString].push(message);
-  });
-
-  const hasMessages = filteredMessages.length > 0;
-
-  const hasMessagesInRoom = hasMessages && filteredMessages.length > 0;
-
+  // Опции для выпадающего списка
   const dropdown = [
     { key: 1, valueTitle: 'Шаблон3' },
     { key: 2, valueTitle: 'Шаблон' },
     { key: 3, valueTitle: 'Шаблон 2' }
   ];
 
+  // Иконки чатов
   const chatIcons = [
     EIcons.clientIcon,
     EIcons.whatsupsocial,
@@ -418,6 +386,7 @@ const MessengerChat: FC<IProps> = observer((props) => {
   let backgroundColor = '#496FFF';
   let borderColor = 'transparent';
 
+  // Настройка цветов для определенных чатов
   if (chatIdNum <= 7) {
     const chatColors = ['#496fff', '#25d366', '#5eb5f7', '#496fff', '#07f', '#7360f2', 'transparent'];
     const chatBorder = ['transparent', 'transparent', 'transparent', 'transparent', 'transparent', 'transparent', '#EAEBEE'];
@@ -426,6 +395,35 @@ const MessengerChat: FC<IProps> = observer((props) => {
     borderColor = chatBorder[chatIdNum - 1];
   }
 
+  const sendMessage = (e: React.FormEvent, chatId: string, roomId: string) => {
+    e.preventDefault();
+
+    // Получение значения сообщения из состояния компонента
+    const messageContent = isValue.trim();
+
+    // Проверка, что сообщение не пусто
+    if (messageContent === '') {
+      return;
+    }
+
+    // Создание объекта сообщения
+    const messageData = {
+      type: 'sendMessage',
+      data: {
+        chat_id: roomId,
+        sender_id: getCookie('id'), // или используйте user?.user?.[0]?.id
+        content: messageContent,
+      },
+    };
+
+    // Отправка сообщения через WebSocket
+    ws.send(JSON.stringify(messageData));
+
+    // Очистка введенного текста после отправки
+    setIsValue('');
+  };
+
+  // Возвращение JSX для компонента
   return (
     <TableBody>
       <HeaderRow>
@@ -440,39 +438,26 @@ const MessengerChat: FC<IProps> = observer((props) => {
         </button>
       </HeaderRow>
       <ChatList>
-        {hasMessagesInRoom ? (
-          Object.keys(groupedMessages).map((dateString) => {
-            const messagesForDay = groupedMessages[dateString];
-
+        {messages.length > 0 ? (
+          messages.map((message, index) => {
+            // Add 'index' here
+            const isUserSentMessage = getCookie('id') === message?.sender;
             return (
-              <Fragment key={dateString}>
-                <div className='dateHead'>
-                  <span></span>
-                  <DateAgo timestamp={dateString} />
-                  <span></span>
+              <div
+                className={isUserSentMessage ? 'me' : ''}
+                key={index}
+              >
+                {/*<AvatarBox>*/}
+                {/*  <Avatar*/}
+                {/*    src={message.user?.avatar}*/}
+                {/*    alt={message.user?.name}*/}
+                {/*  />*/}
+                {/*</AvatarBox>*/}
+                <div>
+                  <p>{message.content}</p>
+                  <span>{message.created_at}</span>
                 </div>
-                {messagesForDay.map((message, index) => {
-                  const isUserSentMessage = parseInt(user?.user?.[0]?.id) === parseInt(message?.user?.userId);
-
-                  return (
-                    <div
-                      className={isUserSentMessage ? 'me' : ''}
-                      key={index}
-                    >
-                      <AvatarBox>
-                        <Avatar
-                          src={message.user?.avatar}
-                          alt={message.user?.name}
-                        />
-                      </AvatarBox>
-                      <div>
-                        <p>{message.text}</p>
-                        <span>{formatMessageDate(message.created_at)}</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </Fragment>
+              </div>
             );
           })
         ) : (
@@ -500,7 +485,6 @@ const MessengerChat: FC<IProps> = observer((props) => {
                     key={item.key}
                     onClick={() => {
                       setIsOpenDropdown(false);
-                      console.log(item.valueTitle);
                     }}
                   >
                     {item.valueTitle}
@@ -513,7 +497,7 @@ const MessengerChat: FC<IProps> = observer((props) => {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            isValue !== '' && sendMessage(e, messengerId ?? '0', parseInt(roomId ?? '0'));
+            isValue !== '' && sendMessage(e, messengerId ?? '0', roomId ?? '0');
           }}
         >
           <input
@@ -531,4 +515,5 @@ const MessengerChat: FC<IProps> = observer((props) => {
   );
 });
 
+// Инжектирование магазинов в компонент и экспорт
 export default inject('userStore', 'chatStore', 'messageStore')(MessengerChat);

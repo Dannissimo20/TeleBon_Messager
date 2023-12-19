@@ -1,19 +1,18 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 
 import { useFormik } from 'formik';
 import { inject, observer } from 'mobx-react';
 
-import CommonButton from '../../button/CommonButton';
-import CommonInput from '../../fields/CommonInput';
-
+import { ModalGrid } from '../../../../pages/private/product/modal/start/FirstForm.styled';
 import CabinetsStore from '../../../../store/cabinetsStore';
+import FilialStore from '../../../../store/filialStore';
 import { apiPost } from '../../../../utils/apiInstance';
 import { FlexWithAlign, Text } from '../../../../utils/styleUtils';
-
-import FilialStore from '../../../../store/filialStore';
-import { ModalGrid } from '../../../../pages/private/product/modal-elements/form-start/FirstForm.styled';
 import { EIcon, IconNew as IconInstance } from '../../../icons/medium-new-icons/icon';
+import CommonButton from '../../button/CommonButton';
+import CommonInput from '../../fields/CommonInput';
 import { Form, Title } from '../create/cabinet/CreateCabinetModal.styled';
 
 interface IProps {
@@ -25,6 +24,7 @@ interface IProps {
 const EditCabinetModal: React.FC<IProps> = observer(({ filialStore, modalPayload, closeModal, cabinetsStore }) => {
   const [pending, setPending] = useState(false);
   const { filials, activeFilial } = filialStore!;
+  const { t } = useTranslation();
   const initialValues = {
     filial: activeFilial?.id,
     name: '',
@@ -62,10 +62,10 @@ const EditCabinetModal: React.FC<IProps> = observer(({ filialStore, modalPayload
     <div>
       <Title>{modalPayload.name}</Title>
       <Form onSubmit={handleSubmit}>
-        <Text>Информация о кабинете</Text>
+        <Text>{t('Информация о кабинете')}</Text>
         <ModalGrid>
           <CommonInput
-            label={'Название'}
+            label={t('Название')}
             value={formik.values.name}
             onChange={formik.handleChange}
             name='name'
@@ -75,7 +75,7 @@ const EditCabinetModal: React.FC<IProps> = observer(({ filialStore, modalPayload
           />
           <FlexWithAlign $alignCenter='center'>
             <CommonInput
-              label={'Вместимость'}
+              label={t('Вместимость')}
               value={formik.values.seatsLimited}
               onChange={formik.handleChange}
               name='seatsLimited'
@@ -112,10 +112,10 @@ const EditCabinetModal: React.FC<IProps> = observer(({ filialStore, modalPayload
             </FlexWithAlign>
           </FlexWithAlign>
         </ModalGrid>
-        <Text>Рабочее время</Text>
+        <Text>{t('Рабочее время')}</Text>
         <ModalGrid>
           <CommonInput
-            label={'Начало'}
+            label={t('Начало')}
             value={formik.values.workHoursStart}
             onChange={formik.handleChange}
             name='workHoursStart'
@@ -125,7 +125,7 @@ const EditCabinetModal: React.FC<IProps> = observer(({ filialStore, modalPayload
             simple
           />
           <CommonInput
-            label={'Окончание'}
+            label={t('Окончание')}
             value={formik.values.workHoursEnd}
             onChange={formik.handleChange}
             name='workHoursEnd'
@@ -144,7 +144,7 @@ const EditCabinetModal: React.FC<IProps> = observer(({ filialStore, modalPayload
             onClick={closeModal}
             typeBtn='ghost'
           >
-            Отменить
+            {t('Отменить')}
           </CommonButton>
           <CommonButton
             colored={true}
@@ -152,7 +152,7 @@ const EditCabinetModal: React.FC<IProps> = observer(({ filialStore, modalPayload
             type='submit'
             disabled={pending}
           >
-            <span>Сохранить</span>
+            <span>{t('Сохранить')}</span>
           </CommonButton>
         </FlexWithAlign>
       </Form>

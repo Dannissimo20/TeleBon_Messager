@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { inject, observer } from 'mobx-react';
 
@@ -15,7 +16,6 @@ import { CommonPageTitle } from '../../../../components/shared/title/CommonPageT
 import FilialStore, { IFilial } from '../../../../store/filialStore';
 import ModalStore from '../../../../store/modalStore';
 import { DividerGrey } from '../../../../utils/styleUtils';
-import { TopBar } from '../../service/categories/ServiceCategories.styled';
 
 const managementMenu = [
   {
@@ -42,6 +42,7 @@ interface IProps {
 }
 
 const ManagementBranch: React.FC<IProps> = observer((props) => {
+  const { t } = useTranslation();
   const { filialStore } = props;
   const { filials } = filialStore!;
   const fetchfilials = () => {
@@ -75,13 +76,8 @@ const ManagementBranch: React.FC<IProps> = observer((props) => {
   return (
     <Wrapper>
       <TopWrapper>
-        <TopBar
-          $gap='45px'
-          $column={true}
-        >
-          <CommonPageTitle title='Управление' />
-          <CommonNavMenu list={managementMenu} />
-        </TopBar>
+        <CommonPageTitle title={t('Управление')} />
+        <CommonNavMenu list={managementMenu} />
       </TopWrapper>
 
       <Grid>

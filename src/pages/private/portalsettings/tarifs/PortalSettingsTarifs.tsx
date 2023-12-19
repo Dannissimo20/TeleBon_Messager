@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { inject, observer } from 'mobx-react';
@@ -16,6 +17,9 @@ const PortalSettingsTarifs: React.FC<IProps> = observer((props) => {
   const { tarifs } = tarifStore!;
 
   const { t } = useTranslation();
+  useEffect(() => {
+    tarifStore!.getTarifs();
+  }, []);
 
   return (
     <Wrapper>

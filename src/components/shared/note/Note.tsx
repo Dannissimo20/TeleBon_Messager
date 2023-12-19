@@ -1,7 +1,14 @@
-import { ReactComponent as IconClose } from '../../icons/close.svg';
+import React from 'react';
+
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+import { CloseBtn, Container, Text, Date as DateText } from './Note.styled';
 
 import { INote } from '../../../store/notesStore';
-import { CloseBtn, Container, Text, Date } from './Note.styled';
+import { ReactComponent as IconClose } from '../../icons/close.svg';
+
+dayjs.extend(utc);
 
 interface IProps {
   note: INote;
@@ -9,13 +16,17 @@ interface IProps {
 }
 
 const Note: React.FC<IProps> = ({ note, handleDelete }) => {
+  const formattedDate: string | undefined = note?.date
+    ? dayjs.utc(new Date(note.date).toUTCString()).format('DD-MM-YYYY HH:mm:ss')
+    : undefined;
+
   return (
     <Container>
       <CloseBtn onClick={() => handleDelete(note)}>
         <IconClose />
       </CloseBtn>
       <Text>{note?.text}</Text>
-      <Date>{note?.date}</Date>
+      <DateText>{formattedDate}</DateText>
     </Container>
   );
 };

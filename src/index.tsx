@@ -1,29 +1,29 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import "./index.css";
+import React from 'react';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 
-import reportWebVitals from "./reportWebVitals";
+import { Provider } from 'mobx-react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
 
-import { ThemeProvider } from "styled-components";
-import theme from "./assets/theme";
-import routes from "./utils/routes";
-import { Provider } from "mobx-react";
-import stores from "./store";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import themeDark from "./assets/themeDark";
+import { ThemeProvider } from 'styled-components';
+
+import theme from './assets/theme';
+import themeDark from './assets/themeDark';
+import reportWebVitals from './reportWebVitals';
+import stores from './store';
+import routes from './utils/routes';
+
+import 'react-toastify/dist/ReactToastify.css';
 import './utils/lang';
 
 const router = createBrowserRouter(routes);
 
-const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
-);
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
 const themes: any = {
   default: theme,
-  dark: themeDark,
+  dark: themeDark
 };
 
 root.render(
@@ -34,11 +34,11 @@ root.render(
       </ThemeProvider>
     </Provider>
     <ToastContainer
-      position="top-right"
+      position='top-right'
       autoClose={5000}
       closeOnClick
       pauseOnHover
-      theme="colored"
+      theme='colored'
     />
   </>
 );

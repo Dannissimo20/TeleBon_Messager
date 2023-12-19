@@ -4,15 +4,12 @@ import { inject } from 'mobx-react';
 import { observer } from 'mobx-react';
 
 import ManagementScheduleCabinet from './cabinet/ManagementScheduleCabinet';
-
-import { ReactComponent as Plus } from '../../../../../components/icons/plus.svg';
-import CommonButton from '../../../../../components/shared/button/CommonButton';
+import { Box, List, Wrapper } from './ManagementScheduleCabinets.styled';
 
 import CabinetsStore, { ICabinet } from '../../../../../store/cabinetsStore';
 import FilialStore from '../../../../../store/filialStore';
 import ModalStore from '../../../../../store/modalStore';
-import { INIT, PENDING } from '../../../../../utils/state';
-import { Box, List, Wrapper } from './ManagementScheduleCabinets.styled';
+import { INIT } from '../../../../../utils/state';
 
 interface IProps {
   cabinetsStore?: CabinetsStore;
@@ -59,20 +56,6 @@ const ManagementScheduleCabinets: React.FC<IProps> = observer(({ cabinetsStore, 
             ))}
           {isAddingCabinet && <></>}
         </List>
-      </Box>
-      <Box className='buttonWrap'>
-        {!isAddingCabinet && (
-          <>
-            <CommonButton
-              color={'mainLight'}
-              onClick={openModal}
-              disabled={filialsState === PENDING || cabinetsState === PENDING}
-            >
-              <Plus />
-              <span>Добавить кабинет</span>
-            </CommonButton>
-          </>
-        )}
       </Box>
     </Wrapper>
   );

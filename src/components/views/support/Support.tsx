@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
+
 import axios from 'axios';
-import SupportContent from '../../../pages/private/support/SupportContent';
+
 import SettingsTopbar from '../../../pages/private/service/topbar/SettingsTopbar';
+import SupportContent from '../../../pages/private/support/SupportContent';
 
 function SupportChat() {
   useEffect(() => {

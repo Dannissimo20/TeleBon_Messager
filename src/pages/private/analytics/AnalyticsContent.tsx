@@ -1,11 +1,15 @@
 import { FC } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { reports } from './analytics.data';
+import { Container, Info, Line, ListA, ListAnalyticsContent, Progress, WrapperAnalyticsContent } from './Analytics.styled';
 
 import { FlexContainer } from '../../../utils/styleUtils';
 import SvgCircleAnimation from '../../../utils/SvgCircleAnimation';
-import { Container, Info, Line, ListA, ListAnalyticsContent, Progress, WrapperAnalyticsContent } from './Analytics.styled';
-import { reports } from './analytics.data';
 
 const AnalyticsContent: FC = () => {
+  const { t } = useTranslation();
+
   return (
     <FlexContainer>
       <WrapperAnalyticsContent>
@@ -16,7 +20,7 @@ const AnalyticsContent: FC = () => {
 
               return (
                 <li key={i}>
-                  <h3 className='subtitle'>{report.name}</h3>
+                  <h3 className='subtitle'>{t(report.name)}</h3>
                   <Container className='progress'>
                     <Line>
                       <Progress
@@ -34,16 +38,16 @@ const AnalyticsContent: FC = () => {
             })}
           </ListAnalyticsContent>
         ) : (
-          <div>Нет ни одного субпродукта</div>
+          <div>{t('Нет ни одного субпродукта')}</div>
         )}
       </WrapperAnalyticsContent>
       <ListA>
         <li>
-          <h3 className='subtitle'>Индекс качества</h3>
+          <h3 className='subtitle'>{t('Индекс качества')}</h3>
           <SvgCircleAnimation number={7.5} />
         </li>
         <li>
-          <h3 className='subtitle'>Результат</h3>
+          <h3 className='subtitle'>{t('Результат')}</h3>
           <SvgCircleAnimation number={9.2} />
         </li>
       </ListA>

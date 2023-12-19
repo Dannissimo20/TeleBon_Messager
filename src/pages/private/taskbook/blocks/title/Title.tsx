@@ -1,14 +1,18 @@
 import { FC, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { inject, observer } from 'mobx-react';
+
+import { TitleWrapper } from './Title.styled';
+
+import { useOutside } from '../../../../../components/hooks/useOutside';
 import { EIcon, IconNew as IconInstance } from '../../../../../components/icons/medium-new-icons/icon';
 import CommonButton from '../../../../../components/shared/button/CommonButton';
-import InputContainer from '../input-container/InputContainer';
-import { TitleWrapper } from './Title.styled';
-import ModalStore from '../../../../../store/modalStore';
-import { inject, observer } from 'mobx-react';
-import { FlexWithAlign } from '../../../../../utils/styleUtils';
-import { apiPost } from '../../../../../utils/apiInstance';
 import KanbanStore from '../../../../../store/kanbanStore';
-import { useTranslation } from 'react-i18next';
+import ModalStore from '../../../../../store/modalStore';
+import { apiPost } from '../../../../../utils/apiInstance';
+import { FlexWithAlign } from '../../../../../utils/styleUtils';
+import InputContainer from '../input-container/InputContainer';
 
 interface IProps {
   listId: string;
@@ -23,8 +27,8 @@ const Title: FC<IProps> = observer((props) => {
   const { columns, fetchColumns } = kanbanStore!;
 
   const { t } = useTranslation();
+  const { ref, setIsShow, isShow } = useOutside(false);
   const [open, setOpen] = useState(false);
-  const [openOptions, setOpenOptions] = useState(false);
   const [newTitle, setNewTitle] = useState(title);
 
   const handleOnBlur = async () => {
@@ -45,7 +49,7 @@ const Title: FC<IProps> = observer((props) => {
   };
 
   return (
-    <TitleWrapper>
+    <TitleWrapper ref={ref}>
       {open ? (
         <div className='editable-title-container'>
           <h2 className='input-title indexNumber'>{index + 1}</h2>
@@ -61,13 +65,14 @@ const Title: FC<IProps> = observer((props) => {
               if (e.key === 'Enter') {
                 handleOnBlur();
               }
+
               return;
             }}
             autoFocus
           />
           <FlexWithAlign
             $alignCenter={'center'}
-            $gap={'14px'}
+            $gap={'24px'}
             className={'disabled'}
           >
             <InputContainer
@@ -77,7 +82,7 @@ const Title: FC<IProps> = observer((props) => {
             />
             <CommonButton
               className='list-button'
-              onClick={() => setOpenOptions(!openOptions)}
+              onClick={() => setIsShow(!isShow)}
             >
               <IconInstance name={EIcon.moreverticaloutline} />
             </CommonButton>
@@ -94,7 +99,7 @@ const Title: FC<IProps> = observer((props) => {
           </h2>
           <FlexWithAlign
             $alignCenter={'center'}
-            $gap={'14px'}
+            $gap={'24px'}
           >
             <InputContainer
               setLocalColumns={setLocalColumns}
@@ -103,16 +108,16 @@ const Title: FC<IProps> = observer((props) => {
             />
             <CommonButton
               className='list-button'
-              onClick={() => setOpenOptions(!openOptions)}
+              onClick={() => setIsShow(!isShow)}
             >
               <IconInstance name={EIcon.moreverticaloutline} />
             </CommonButton>
           </FlexWithAlign>
-          {openOptions && (
+          {isShow && (
             <ul className='menu-card'>
               <li
                 onClick={() => {
-                  setOpenOptions(!openOptions);
+                  setIsShow(!isShow);
                   setOpen(!open);
                 }}
               >
@@ -121,7 +126,7 @@ const Title: FC<IProps> = observer((props) => {
               <li
                 onClick={() => {
                   deleteColumn(listId);
-                  setOpenOptions(!openOptions);
+                  setIsShow(!isShow);
                   setOpen(!open);
                 }}
               >

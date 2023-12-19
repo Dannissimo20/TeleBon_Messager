@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import CommonButton from '../../button/CommonButton';
-import { ReactComponent as IconClose } from '../../../icons/close.svg';
 import { CloseBtn, Container } from './NewNote.styled';
+
+import { ReactComponent as IconClose } from '../../../icons/close.svg';
+import CommonButton from '../../button/CommonButton';
 
 interface IProps {
   createNote: (text: string) => void;
@@ -11,6 +13,7 @@ interface IProps {
 
 const NewNote: React.FC<IProps> = ({ createNote, close }) => {
   const [text, setText] = useState('');
+  const { t } = useTranslation();
 
   return (
     <Container>
@@ -28,7 +31,7 @@ const NewNote: React.FC<IProps> = ({ createNote, close }) => {
         onClick={() => createNote(text)}
         fullWidth
       >
-        Создать
+        {t('Создать')}
       </CommonButton>
     </Container>
   );

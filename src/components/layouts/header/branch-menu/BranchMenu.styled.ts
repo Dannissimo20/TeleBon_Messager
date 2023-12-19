@@ -67,7 +67,7 @@ export const Container = styled.div`
 export const Menu = styled.div`
   position: absolute;
   top: calc(100% + 6px);
-  z-index: 4;
+  z-index: 10;
   animation: ${scaleIn} 0.3s ease;
   border-radius: 8px;
   background: ${(props) => props.theme.color.bg};

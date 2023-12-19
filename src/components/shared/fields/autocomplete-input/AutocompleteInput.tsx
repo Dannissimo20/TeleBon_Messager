@@ -2,10 +2,10 @@ import { ChangeEventHandler, PropsWithChildren, useRef, useState } from 'react';
 
 import { inject, observer } from 'mobx-react';
 
-import CommonInput from '../CommonInput';
+import { Box, Dropdown, DropdownItem, IconAdd, Name, Phone } from './AutocompleteInput.styled';
 
 import ModalStore from '../../../../store/modalStore';
-import { Box, Dropdown, DropdownItem, IconAdd, Name, Phone } from './AutocompleteInput.styled';
+import CommonInput from '../CommonInput';
 
 const filterListBy = (propName: string, value: string, list?: any[]) =>
   list && list.length ? list.filter((obj) => obj[propName].toLowerCase().includes(value)) : [];

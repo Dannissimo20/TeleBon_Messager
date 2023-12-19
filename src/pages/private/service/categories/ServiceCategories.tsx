@@ -1,22 +1,23 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { useTranslation } from 'react-i18next';
 
 import update from 'immutability-helper';
 import { inject, observer } from 'mobx-react';
-import { EIcon, IconNew as IconInstance } from '../../../../components/icons/medium-new-icons/icon';
 
+import ServiceCategoriesItem from './item/ServiceCategoriesItem';
+import { List, Wrapper } from './ServiceCategories.styled';
+
+import { EIcon, IconNew as IconInstance } from '../../../../components/icons/medium-new-icons/icon';
 import CommonButton from '../../../../components/shared/button/CommonButton';
 import CommonNavMenu from '../../../../components/shared/nav/CommonNavMenu';
 import { CommonPageTitle } from '../../../../components/shared/title/CommonPageTitle';
-import ServiceCategoriesItem from './item/ServiceCategoriesItem';
-
 import ModalStore from '../../../../store/modalStore';
 import ProductsStore, { IProduct } from '../../../../store/productsStore';
 import SubproductsStore from '../../../../store/subProductsStore';
 import { apiPost } from '../../../../utils/apiInstance';
-import { List, TopBar, Wrapper } from './ServiceCategories.styled';
-import { FlexWithAlign, Text } from '../../../../utils/styleUtils';
+import { Text } from '../../../../utils/styleUtils';
 
 const managementMenu = [
   {
@@ -42,7 +43,7 @@ interface IProps {
 const ServiceCategories: React.FC<IProps> = observer((props) => {
   const { productsStore, subproductsStore } = props;
   const { products, state } = productsStore!;
-
+  const { t } = useTranslation();
   const [isAddingServiceCategory, setIsAddingServiceCategory] = useState<boolean>(false);
 
   const createCategory = () => {
@@ -112,26 +113,18 @@ const ServiceCategories: React.FC<IProps> = observer((props) => {
 
   return (
     <Wrapper>
-      <TopBar
-        $gap='45px'
-        $column={true}
-      >
-        <FlexWithAlign
-          $alignCenter='center'
-          $justify='between'
+      <CommonPageTitle title={t('Компания')}>
+        <CommonButton
+          gap='16px'
+          onClick={createCategory}
+          typeBtn='ghost'
         >
-          <CommonPageTitle title='Управление' />
-          <CommonButton
-            gap='16px'
-            onClick={createCategory}
-            typeBtn='ghost'
-          >
-            <IconInstance name={EIcon.plussquare} />
-            <span>Добавить категорию услуг</span>
-          </CommonButton>
-        </FlexWithAlign>
-        <CommonNavMenu list={managementMenu} />
-      </TopBar>
+          <IconInstance name={EIcon.plussquare} />
+          <span>{t('Добавить категорию услуг')}</span>
+        </CommonButton>
+      </CommonPageTitle>
+
+      <CommonNavMenu list={managementMenu} />
       {serviceCategories && serviceCategories.length > 0 ? (
         <DndProvider backend={HTML5Backend}>
           <List className='serviceCategories'>
@@ -139,7 +132,7 @@ const ServiceCategories: React.FC<IProps> = observer((props) => {
           </List>
         </DndProvider>
       ) : (
-        <Text>Вы ещё не добавили ни одной услуги</Text>
+        <Text>{t('Вы ещё не добавили ни одной услуги')}</Text>
       )}
     </Wrapper>
   );

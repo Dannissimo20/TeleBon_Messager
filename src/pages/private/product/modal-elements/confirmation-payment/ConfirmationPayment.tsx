@@ -20,7 +20,7 @@ import SubproductsStore from '../../../../../store/subProductsStore';
 import UserStore from '../../../../../store/userStore';
 import { apiPost } from '../../../../../utils/apiInstance';
 import { FlexWithAlign, PageTitle, Text } from '../../../../../utils/styleUtils';
-import { ModalGrid } from '../form-start/FirstForm.styled';
+import { ModalGrid } from '../../modal/start/FirstForm.styled';
 import { PENDING } from '../../../../../utils/state';
 
 interface IProps {
@@ -245,7 +245,7 @@ const ConfirmationPayment: FC<IProps> = observer((props) => {
                   $gap='4px'
                 >
                   <p>{filteredSubproductByTarif && filteredSubproductByTarif.name}</p>
-                  <p>({filteredSubproductByTarif && filteredSubproductByTarif.duration} час)</p>
+                  <p>({filteredSubproductByTarif && filteredSubproductByTarif.duration} мин.)</p>
                 </FlexWithAlign>
                 <FlexWithAlign
                   $alignCenter='center'
@@ -277,7 +277,7 @@ const ConfirmationPayment: FC<IProps> = observer((props) => {
         <CommonButton
           disabled={state === PENDING}
           className={classnames(item?.confirmation === 1 && 'activeConfirmation', activeButton === item?.idclient && 'active')}
-          onClick={() => clientConfirmation(1, item.idclient)}
+          onClick={() => clientConfirmation(1, item?.idclient)}
         >
           <>
             <IconInstance name={EIcon.clock} />
@@ -287,7 +287,7 @@ const ConfirmationPayment: FC<IProps> = observer((props) => {
         <CommonButton
           disabled={state === PENDING}
           className={classnames(item?.confirmation === 2 && 'activeConfirmation', activeButton === item?.idclient && 'active')}
-          onClick={() => clientConfirmation(2, item.idclient)}
+          onClick={() => clientConfirmation(2, item?.idclient)}
         >
           <>
             <IconInstance name={EIcon.succesoutline} />
@@ -297,7 +297,7 @@ const ConfirmationPayment: FC<IProps> = observer((props) => {
         <CommonButton
           disabled={state === PENDING}
           className={classnames(item?.confirmation === 3 && 'activeConfirmation', activeButton === item?.idclient && 'active')}
-          onClick={() => clientConfirmation(3, item.idclient)}
+          onClick={() => clientConfirmation(3, item?.idclient)}
         >
           <IconInstance name={EIcon.thumbsupoutline} />
           <Text>Пришел</Text>
@@ -305,7 +305,7 @@ const ConfirmationPayment: FC<IProps> = observer((props) => {
         <CommonButton
           disabled={state === PENDING}
           className={classnames(item?.confirmation === 4 && 'activeConfirmation', activeButton === item?.idclient && 'active')}
-          onClick={() => clientConfirmation(4, item.idclient)}
+          onClick={() => clientConfirmation(4, item?.idclient)}
         >
           <IconInstance name={EIcon.thumbsdownoutline} />
           <Text>Не пришел</Text>

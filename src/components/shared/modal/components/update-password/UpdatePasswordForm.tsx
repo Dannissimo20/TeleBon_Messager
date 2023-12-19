@@ -7,9 +7,10 @@ import { inject, observer } from 'mobx-react';
 
 import { Form } from './UpdatePasswordForm.styled';
 
+import ModalStore from '../../../../../store/modalStore';
 import UserStore from '../../../../../store/userStore';
 import { apiPost } from '../../../../../utils/apiInstance';
-import { FlexContainer } from '../../../../../utils/styleUtils';
+import { FlexContainer, FlexWithAlign } from '../../../../../utils/styleUtils';
 import { validationPasswordSchema } from '../../../../../utils/validation-input';
 import { ReactComponent as HidePassword } from '../../../../icons/hidepassword.svg';
 import { ReactComponent as ShowPassword } from '../../../../icons/showpassword.svg';
@@ -18,9 +19,10 @@ import CommonInput from '../../../fields/CommonInput';
 
 interface IProps {
   userStore?: UserStore;
+  modalStore?: ModalStore;
 }
 
-const UpdatePasswordForm: React.FC<IProps> = observer(({ userStore }) => {
+const UpdatePasswordForm: React.FC<IProps> = observer(({ userStore, modalStore }) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
 
@@ -42,7 +44,7 @@ const UpdatePasswordForm: React.FC<IProps> = observer(({ userStore }) => {
     const res = await apiPost('/users/changepassword', values);
 
     if (res.status === 200) {
-      toast.success('Пароль обновлен');
+      toast.success(t('Пароль обновлен'));
     } else {
       toast.error(res.data.description);
     }
@@ -50,6 +52,7 @@ const UpdatePasswordForm: React.FC<IProps> = observer(({ userStore }) => {
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
     newPassword(formik.values);
+    modalStore?.closeModal();
   };
 
   return (
@@ -57,9 +60,12 @@ const UpdatePasswordForm: React.FC<IProps> = observer(({ userStore }) => {
       className='password-form'
       onSubmit={handleSubmit}
     >
-      <FlexContainer className='password-form-wrapper'>
+      <FlexContainer
+        $column
+        className='password-form-wrapper'
+      >
         <CommonInput
-          label={'Новый пароль'}
+          label={t('Новый пароль')}
           name={'password'}
           value={formik.values.password}
           onChange={formik.handleChange}
@@ -80,7 +86,7 @@ const UpdatePasswordForm: React.FC<IProps> = observer(({ userStore }) => {
           )}
         </CommonInput>
         <CommonInput
-          label={'Подтверждение пароля'}
+          label={t('Подтверждение пароля')}
           name={'confirmpassword'}
           value={formik.values.confirmpassword}
           onChange={formik.handleChange}
@@ -100,16 +106,26 @@ const UpdatePasswordForm: React.FC<IProps> = observer(({ userStore }) => {
             />
           )}
         </CommonInput>
-        <CommonButton
-          colored={true}
-          typeBtn='success'
-          disabled={!formik.isValid}
-        >
-          <span>{t('Сохранить пароль')}</span>
-        </CommonButton>
+        <FlexWithAlign $alignCenter={'center'}>
+          <CommonButton
+            typeBtn='ghost'
+            onClick={(e) => {
+              e.preventDefault();
+              modalStore?.closeModal();
+            }}
+          >
+            <span>{t('Отменить')}</span>
+          </CommonButton>
+          <CommonButton
+            typeBtn='primary'
+            disabled={!formik.isValid}
+          >
+            <span>{t('Сохранить')}</span>
+          </CommonButton>
+        </FlexWithAlign>
       </FlexContainer>
     </Form>
   );
 });
 
-export default inject('userStore')(UpdatePasswordForm);
+export default inject('userStore', 'modalStore')(UpdatePasswordForm);

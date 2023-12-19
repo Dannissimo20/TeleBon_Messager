@@ -240,7 +240,7 @@ const CreateServiceSidebar: FC<IProps> = observer((props) => {
         </FormItem>
         <FormItem>
           <CommonInput
-            label={'Длительность услуги'}
+            label={'Длительность услуги(мин)'}
             name='duration'
             min='0'
             max='99'

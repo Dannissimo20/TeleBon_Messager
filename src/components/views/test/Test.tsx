@@ -26,10 +26,7 @@ const Test = () => {
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': 'http://localhost:5000',
-        // "Access-Control-Allow-Headers":
-        // "Origin, X-Requested-With, Content-Type, Accept, Z-Key",
         Authorization: `Bearer ${apiKey}`
-        // "Access-Control-Allow-Methods": "GET, HEAD, POST, PUT, DELETE, OPTIONS",
       }
     });
     console.info(res);

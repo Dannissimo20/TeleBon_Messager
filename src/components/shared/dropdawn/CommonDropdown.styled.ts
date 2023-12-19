@@ -94,4 +94,16 @@ export const WrapperDropdown = styled.div`
       }
     }
   }
+&::-webkit-scrollbar {
+  width: 6px;
+  border-radius: 8px;
+}
+&::-webkit-scrollbar-track {
+  background: ${(props) => props.theme.color.secondaryMedium};
+  border-radius: 8px;
+}
+&::-webkit-scrollbar-thumb {
+  background-color: ${(props) => props.theme.color.secondaryDark};
+  border-radius: 20px;
+}
 `;

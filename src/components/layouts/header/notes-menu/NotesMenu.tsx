@@ -1,20 +1,21 @@
 import { FC, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 
+import { LoaderLayout, Menu, Wrapper } from './NotesMenu.styled';
+
 import NotesStore from '../../../../store/notesStore';
 import { PENDING } from '../../../../utils/state';
 import { FlexContainer, Padding } from '../../../../utils/styleUtils';
-import CommonButton from '../../../shared/button/CommonButton';
-import CommonLoader from '../../../shared/loader/CommonLoader';
 import { useOutside } from '../../../hooks/useOutside';
 import { EIcon, IconNew as IconInstance } from '../../../icons/medium-new-icons/icon';
-
+import CommonButton from '../../../shared/button/CommonButton';
+import CommonLoader from '../../../shared/loader/CommonLoader';
 import NewNote from '../../../shared/note/new/NewNote';
 import Note from '../../../shared/note/Note';
-import { LoaderLayout, Menu, Wrapper } from './NotesMenu.styled';
 
 interface IProps {
   notesStore?: NotesStore;
@@ -22,13 +23,14 @@ interface IProps {
 
 const NotesMenu: FC<IProps> = observer(({ notesStore }) => {
   const { fetchNotes, notes, createNote, state, deleteNote } = notesStore!;
+  const { t } = useTranslation();
   const [creation, setCreation] = useState(false);
   const createNew = async (text: string) => {
     const response = await createNote({ text });
     if (response) {
       setCreation(false);
     } else {
-      toast.error('Ошибка');
+      toast.error(t('Ошибка'));
     }
   };
   const handleDelete = (note: any) => {
@@ -73,7 +75,7 @@ const NotesMenu: FC<IProps> = observer(({ notesStore }) => {
               onClick={() => setCreation(true)}
               fullWidth
             >
-              Создать заметку
+              {t('Создать заметку')}
             </CommonButton>
           )}
           <Padding $size='20px' />
@@ -92,7 +94,7 @@ const NotesMenu: FC<IProps> = observer(({ notesStore }) => {
               className='empty'
             >
               <IconInstance name={EIcon.file} />
-              <h4>Нет заметок</h4>
+              <h4>{t('Нет заметок')}</h4>
             </FlexContainer>
           )}
           {state === PENDING && (

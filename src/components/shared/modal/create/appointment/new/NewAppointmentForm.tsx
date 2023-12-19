@@ -1,19 +1,11 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useFormik } from 'formik';
 import { inject, observer } from 'mobx-react';
 import { find, path, pipe, propEq } from 'rambda';
 
-import AutocompleteInput from '../../../../fields/autocomplete-input/AutocompleteInput';
-import CommonButton from '../../../../button/CommonButton';
-import CommonDropdown from '../../../../dropdawn/CommonDropdown';
-import CommonInput from '../../../../fields/CommonInput';
-import CommonInputPhone from '../../../../fields/common-input-phone/CommonInputPhone';
-import { EIcons, Icon, PlanningIcon } from '../../../../../icons';
-import { ReactComponent as IconFlag } from '../../../../../icons/flag.svg';
-import { ReactComponent as PenIcon } from '../../../../../icons/pen.svg';
-import { ReactComponent as IconPie } from '../../../../../icons/pie.svg';
-import { ReactComponent as PlusIcon } from '../../../../../icons/plus.svg';
+import { Box, Footer, Form, Main, ProductName, Wrapper } from './NewAppointmentForm.styled';
 
 import OneMoreTimeTable from '../../../../../../pages/private/product/OneMoreTimeTable';
 import AppointmentStore from '../../../../../../store/appointmentStore';
@@ -25,7 +17,16 @@ import ModalStore from '../../../../../../store/modalStore';
 import ProductsStore from '../../../../../../store/productsStore';
 import clientTypes from '../../../../../../utils/clientTypes';
 import { PENDING } from '../../../../../../utils/state';
-import { Box, Footer, Form, Main, ProductName, Wrapper } from './NewAppointmentForm.styled';
+import { EIcons, Icon, PlanningIcon } from '../../../../../icons';
+import { ReactComponent as IconFlag } from '../../../../../icons/flag.svg';
+import { ReactComponent as PenIcon } from '../../../../../icons/pen.svg';
+import { ReactComponent as IconPie } from '../../../../../icons/pie.svg';
+import { ReactComponent as PlusIcon } from '../../../../../icons/plus.svg';
+import CommonButton from '../../../../button/CommonButton';
+import CommonDropdown from '../../../../dropdawn/CommonDropdown';
+import AutocompleteInput from '../../../../fields/autocomplete-input/AutocompleteInput';
+import CommonInputPhone from '../../../../fields/common-input-phone/CommonInputPhone';
+import CommonInput from '../../../../fields/CommonInput';
 
 const productName = (productId: any, arr: any) => pipe(find(propEq(productId, 'id')), path(['name']))(arr);
 
@@ -43,6 +44,7 @@ interface IProps {
 const NewAppointmentForm: React.FC<IProps> = observer(
   ({ appointmentStore, cabinetsStore, filialStore, productsStore, clientsStore, modalStore, payload, lessonsStore }) => {
     const { newAppointment, createAppointment, state } = appointmentStore!;
+    const { t } = useTranslation();
     const { cabinets } = cabinetsStore!;
     const { filials } = filialStore!;
     const { products } = productsStore!;
@@ -105,7 +107,7 @@ const NewAppointmentForm: React.FC<IProps> = observer(
         <Form onSubmit={handleSubmit}>
           <Main>
             <AutocompleteInput
-              label={'ФИО'}
+              label={t('ФИО')}
               name='name'
               value={formik.values.name}
               onChange={formik.handleChange}
@@ -126,7 +128,7 @@ const NewAppointmentForm: React.FC<IProps> = observer(
             />*/}
             <CommonInputPhone
               type={'tel'}
-              label={'Телефон'}
+              label={t('Телефон')}
               name='phone'
               value={formik.values.phone}
               onChange={formik.handleChange('phone')}
@@ -136,7 +138,7 @@ const NewAppointmentForm: React.FC<IProps> = observer(
               <IconFlag />
             </CommonInputPhone>
             <CommonInput
-              label={'Время'}
+              label={t('Время')}
               name='time'
               value={formik.values.time}
               onChange={formik.handleChange}
@@ -151,7 +153,7 @@ const NewAppointmentForm: React.FC<IProps> = observer(
               }}
               options={transformedCabinets}
               currentValue={formik.values.cabinetId}
-              placeholder={'Кабинет'}
+              placeholder={t('Кабинет')}
               disabled
             />
             <CommonDropdown
@@ -160,7 +162,7 @@ const NewAppointmentForm: React.FC<IProps> = observer(
               }}
               options={clientTypes}
               currentValue={formik.values.clientType}
-              placeholder={'Тип клиента'}
+              placeholder={t('Тип клиента')}
             />
             <CommonDropdown
               onChange={(option: any) => {
@@ -168,7 +170,7 @@ const NewAppointmentForm: React.FC<IProps> = observer(
               }}
               options={clientTypes}
               currentValue={formik.values.clientType}
-              placeholder={'Источник'}
+              placeholder={t('Источник')}
             />
             <CommonDropdown
               onChange={(option: any) => {
@@ -176,7 +178,7 @@ const NewAppointmentForm: React.FC<IProps> = observer(
               }}
               options={transformedFilials}
               currentValue={formik.values.filialId}
-              placeholder={'Филиал'}
+              placeholder={t('Филиал')}
               disabled
             />
             <CommonDropdown
@@ -185,10 +187,10 @@ const NewAppointmentForm: React.FC<IProps> = observer(
               }}
               options={clientTypes}
               currentValue={formik.values.clientType}
-              placeholder={'Форма оплаты'}
+              placeholder={t('Форма оплаты')}
             />
             <CommonInput
-              label={'Комментарий'}
+              label={t('Комментарий')}
               name='comments'
               value={formik.values.comments}
               onChange={formik.handleChange}
@@ -208,7 +210,7 @@ const NewAppointmentForm: React.FC<IProps> = observer(
             product={productTitle}
             client={formik.values.name}
             cabinet={cabinetTitle}
-            duration={'1 час'}
+            duration={`1 ${t('час')}`}
             price={''}
           />
 
@@ -219,7 +221,7 @@ const NewAppointmentForm: React.FC<IProps> = observer(
               disabled={state === PENDING}
             >
               <PlusIcon />
-              <span>Сохранить</span>
+              <span>{t('Сохранить')}</span>
             </CommonButton>
           </Footer>
         </Form>

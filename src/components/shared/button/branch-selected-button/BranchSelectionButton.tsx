@@ -1,11 +1,13 @@
+import { useTranslation } from 'react-i18next';
+
 import { inject, observer } from 'mobx-react';
 
-import CommonButton from '../CommonButton';
-import CommonDropdown from '../../dropdawn/CommonDropdown';
-import { ReactComponent as FilialIcon } from '../../../icons/filial.svg';
+import { ButtonInner, Wrapper } from './BranchSelectedButton.styled';
 
 import FilialStore from '../../../../store/filialStore';
-import { ButtonInner, Wrapper } from './BranchSelectedButton.styled';
+import { ReactComponent as FilialIcon } from '../../../icons/filial.svg';
+import CommonDropdown from '../../dropdawn/CommonDropdown';
+import CommonButton from '../CommonButton';
 
 interface IProps {
   filialStore?: FilialStore;
@@ -14,6 +16,7 @@ interface IProps {
 const BranchSelectionButton: React.FC<IProps> = observer((props) => {
   const { filialStore } = props;
   const { filials } = filialStore!;
+  const { t } = useTranslation();
 
   return (
     <Wrapper>
@@ -31,7 +34,7 @@ const BranchSelectionButton: React.FC<IProps> = observer((props) => {
             <span className={'flex'}>
               <FilialIcon />
             </span>
-            <span>Выбор филиала</span>
+            <span>{t('Выбор филиала')}</span>
           </ButtonInner>
         </CommonButton>
       )}

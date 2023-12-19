@@ -12,6 +12,7 @@ const Wrapper = styled.div`
     margin-bottom: 32px;
   }
 `;
+
 const Box = styled.div`
   display: flex;
   gap: 24px;

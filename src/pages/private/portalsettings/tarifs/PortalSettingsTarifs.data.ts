@@ -11,6 +11,7 @@ export interface ITarif {
   userslimit: string;
   baseprice: string;
   default: boolean;
+  activateDate?: string;
   modules?: ITarifModule[];
 }
 
@@ -21,6 +22,7 @@ export const tarifs: ITarif[] = [
     userslimit: '5',
     baseprice: '0',
     default: true,
+    activateDate: '2023-12-01',
     modules: [
       {
         id: '1',
@@ -49,6 +51,7 @@ export const tarifs: ITarif[] = [
     userslimit: '5',
     baseprice: '400',
     default: false,
+    activateDate: '2023-12-01',
     modules: [
       {
         id: '1',

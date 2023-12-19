@@ -3,7 +3,7 @@ import { styled } from 'styled-components';
 export const List = styled.ul`
   position: relative;
   display: flex;
-  gap: 24px;
+  gap: 20px;
   align-items: center;
   &::after {
     content: '';

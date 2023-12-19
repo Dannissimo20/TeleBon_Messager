@@ -1,21 +1,20 @@
+import { useTranslation } from 'react-i18next';
+
 import { inject, observer } from 'mobx-react';
 import { pathOr } from 'rambda';
 
 import ManagementScheduleCabinets from './cabinets/ManagementScheduleCabinets';
+import { TopWrapper, Wrapper } from './ManagementSchedule.styled';
 
+import { EIcon, IconNew as IconInstance } from '../../../../components/icons/medium-new-icons/icon';
+import CommonButton from '../../../../components/shared/button/CommonButton';
 import CommonNavMenu from '../../../../components/shared/nav/CommonNavMenu';
 import { CommonPageTitle } from '../../../../components/shared/title/CommonPageTitle';
 import CabinetsStore from '../../../../store/cabinetsStore';
-import { EIcon, IconNew as IconInstance } from '../../../../components/icons/medium-new-icons/icon';
-
 import FilialStore from '../../../../store/filialStore';
-import SchedulesStore from '../../../../store/schedulesStore';
-import { TopWrapper, Wrapper } from './ManagementSchedule.styled';
-import { TopBar } from '../../service/categories/ServiceCategories.styled';
-import { PENDING } from '../../../../utils/state';
-import CommonButton from '../../../../components/shared/button/CommonButton';
-import { FlexWithAlign } from '../../../../utils/styleUtils';
 import ModalStore from '../../../../store/modalStore';
+import SchedulesStore from '../../../../store/schedulesStore';
+import { PENDING } from '../../../../utils/state';
 
 const managementMenu = [
   {
@@ -41,6 +40,7 @@ interface IProps {
 
 const ManagementSchedule: React.FC<IProps> = observer(({ modalStore, schedulesStore, filialStore, cabinetsStore }) => {
   const cabinetsLength = pathOr(null, ['cabinets', 'length'], cabinetsStore);
+  const { t } = useTranslation();
   const { filials } = filialStore!;
   const { state } = schedulesStore!;
   const cabinetsState = cabinetsStore!.state;
@@ -57,27 +57,22 @@ const ManagementSchedule: React.FC<IProps> = observer(({ modalStore, schedulesSt
   return (
     <Wrapper>
       <TopWrapper>
-        <TopBar
-          $gap='45px'
-          $column={true}
-        >
-          <FlexWithAlign $alignCenter='center' $justify='between'>
-            <CommonPageTitle title='Управление' />
-            <CommonButton
-              typeBtn='ghost'
-              onClick={openModal}
-              disabled={filialsState === PENDING || cabinetsState === PENDING}
-              gap='16px'
-            >
-              <IconInstance name={EIcon.plussquare} />
-              <span>Добавить кабинет</span>
-            </CommonButton>
-          </FlexWithAlign>
-          <CommonNavMenu list={managementMenu} />
-        </TopBar>
+        <CommonPageTitle title={'Компания'}>
+          <CommonButton
+            typeBtn='ghost'
+            onClick={openModal}
+            disabled={filialsState === PENDING || cabinetsState === PENDING}
+            gap='16px'
+          >
+            <IconInstance name={EIcon.plussquare} />
+            <span>{t('Добавить кабинет')}</span>
+          </CommonButton>
+        </CommonPageTitle>
+
+        <CommonNavMenu list={managementMenu} />
       </TopWrapper>
 
-      {cabinetsLength === 0 ? 'Кабинетов нет' : ''}
+      {cabinetsLength === 0 ? t('Кабинетов нет') : ''}
 
       <ManagementScheduleCabinets onFetchSchedule={fetchSchedule} />
     </Wrapper>

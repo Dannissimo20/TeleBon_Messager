@@ -1,20 +1,21 @@
 import { FC, useEffect, useState } from 'react';
-import SubproductsStore from '../../../../store/subProductsStore';
-import ClientsStore from '../../../../store/clientsStore';
-import UserStore from '../../../../store/userStore';
-import ProductsStore from '../../../../store/productsStore';
-import ClassificatorsStore from '../../../../store/classificatorsStore';
-import PaymentsStore from '../../../../store/paymentsStore';
-import { inject, observer } from 'mobx-react';
-import { EIcon, IconNew as IconInstance } from '../../../../components/icons/medium-new-icons/icon';
-
-import { apiPut } from '../../../../utils/apiInstance';
 import { toast } from 'react-toastify';
-import { FlexContainer, FlexWithAlign } from '../../../../utils/styleUtils';
-import CommonInput from '../../../../components/shared/fields/CommonInput';
-import CommonButton from '../../../../components/shared/button/CommonButton';
+
+import { inject, observer } from 'mobx-react';
+
 import { Wrapper } from './Payments.styled';
-import { SubTitle } from '../classificators/Classificators.styled';
+
+import { EIcon, IconNew as IconInstance } from '../../../../components/icons/medium-new-icons/icon';
+import CommonButton from '../../../../components/shared/button/CommonButton';
+import CommonInput from '../../../../components/shared/fields/CommonInput';
+import ClassificatorsStore from '../../../../store/classificatorsStore';
+import ClientsStore from '../../../../store/clientsStore';
+import PaymentsStore from '../../../../store/paymentsStore';
+import ProductsStore from '../../../../store/productsStore';
+import SubproductsStore from '../../../../store/subProductsStore';
+import UserStore from '../../../../store/userStore';
+import { apiPut } from '../../../../utils/apiInstance';
+import { FlexContainer, FlexWithAlign, PageSubtitle } from '../../../../utils/styleUtils';
 
 interface IProps {
   subproductsStore?: SubproductsStore;
@@ -57,6 +58,7 @@ const Payments: FC<IProps> = observer((props) => {
 
     if (!isPaymentUnique(isPayment)) {
       toast.error('Такой способ оплаты уже существует');
+
       return;
     }
     try {
@@ -77,9 +79,9 @@ const Payments: FC<IProps> = observer((props) => {
       <FlexContainer
         className='heading'
         $column
-        $gap='0'
+        $gap='20px'
       >
-        <SubTitle>Добавить способ оплаты</SubTitle>
+        <PageSubtitle>Добавить способ оплаты</PageSubtitle>
         <FlexWithAlign>
           <CommonInput
             label='Укажите способ оплаты'
@@ -100,9 +102,9 @@ const Payments: FC<IProps> = observer((props) => {
       </FlexContainer>
       <FlexContainer
         $column
-        $gap='0'
+        $gap='20px'
       >
-        <SubTitle>Способ оплаты</SubTitle>
+        <PageSubtitle>Способ оплаты</PageSubtitle>
         <FlexWithAlign
           $alignCenter='center'
           className='content'

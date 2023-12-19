@@ -1,7 +1,10 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { inject, observer } from 'mobx-react';
+
+import { Card, CardComment, DeleteBtn, Grid, IconWrap, TitleWrap } from './ManagementProductsList.styled';
 
 import { ReactComponent as NextIcon } from '../../../../../components/icons/arrownext.svg';
 import { ReactComponent as DeleteIcon } from '../../../../../components/icons/delete.svg';
@@ -10,7 +13,6 @@ import { CommonEmptyContent } from '../../../../../components/shared/empty-conte
 import ModalStore from '../../../../../store/modalStore';
 import ProductsStore, { IProduct } from '../../../../../store/productsStore';
 import { DividerGrey } from '../../../../../utils/styleUtils';
-import { Card, CardComment, DeleteBtn, Grid, IconWrap, TitleWrap } from './ManagementProductsList.styled';
 
 interface IProps {
   productsStore?: ProductsStore;
@@ -18,6 +20,7 @@ interface IProps {
 }
 
 const ManagementProductsList: React.FC<IProps> = observer((props) => {
+  const { t } = useTranslation();
   const { productsStore, modalStore } = props;
   const { products, state } = productsStore!;
 
@@ -59,7 +62,7 @@ const ManagementProductsList: React.FC<IProps> = observer((props) => {
                 to={`/management/product/${product.id}/subproducts`}
                 className='subproductsLink flex'
               >
-                <span>Все субпродукты</span>
+                <span>{t('Все субпродукты')}</span>
                 <NextIcon />
               </Link>
             </div>
@@ -77,7 +80,7 @@ const ManagementProductsList: React.FC<IProps> = observer((props) => {
       {products.length === 0 && (
         <CommonEmptyContent
           to={'/management/product/add'}
-          title={'Создать продукт'}
+          title={t('Создать продукт')}
         />
       )}
     </Grid>

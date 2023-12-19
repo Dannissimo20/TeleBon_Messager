@@ -12,4 +12,9 @@ export const Form = styled.form`
   .password-form-wrapper > div {
     min-width: 280px;
   }
+  > div {
+    > div {
+      justify-content: flex-end;
+    }
+  }
 `;

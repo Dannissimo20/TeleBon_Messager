@@ -1,13 +1,10 @@
 import { useState } from 'react';
 
-
-import CallDialogInfo from '../info/CallDialogInfo';
-import CallDialogRecordList from '../record-list/CallDialogRecordList';
-
-import { IRecordCall } from '../../../../../store/callRecordsStore';
 import { Wrapper } from './CallDialogInIdleTime.styled';
 
-
+import { IRecordCall } from '../../../../../store/callRecordsStore';
+import CallDialogInfo from '../info/CallDialogInfo';
+import CallDialogRecordList from '../record-list/CallDialogRecordList';
 
 const CallDialogInIdleTime = () => {
   const [callRecord, setCallRecord] = useState<IRecordCall | undefined>(undefined);

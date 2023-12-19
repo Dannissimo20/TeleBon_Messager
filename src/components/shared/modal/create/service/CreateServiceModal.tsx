@@ -9,7 +9,7 @@ import { inject, observer } from 'mobx-react';
 import { FormItem, Wrapper } from './CreateServiceModal.styled';
 import { InputGroup } from './sidebar/CreateServiceSidebar.styled';
 
-import { ModalGrid } from '../../../../../pages/private/product/modal-elements/form-start/FirstForm.styled';
+import { ModalGrid } from '../../../../../pages/private/product/modal/start/FirstForm.styled';
 import { Calculate } from '../../../../../pages/private/product/styles/form-styles';
 import ProductsStore, { IProduct } from '../../../../../store/productsStore';
 import SubproductsStore from '../../../../../store/subProductsStore';
@@ -281,10 +281,10 @@ const CreateServiceModal: React.FC<IProps> = observer((props) => {
         <ModalGrid>
           <FormItem>
             <CommonInput
-              label={t('Длительность услуги')}
+              label={t('Длительность услуги(мин)')}
               name='duration'
               min='0'
-              max='99'
+              max='1440'
               type='number'
               value={formik.values.duration}
               onChange={formik.handleChange}

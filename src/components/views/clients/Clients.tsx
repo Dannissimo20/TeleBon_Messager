@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { inject, observer } from 'mobx-react';
 
@@ -8,9 +9,10 @@ import { EIcon, IconNew as IconInstance } from '../../../components/icons/medium
 import ClientsList from '../../../pages/private/client/client-list/ClientsList';
 import ClientsStore, { IClient } from '../../../store/clientsStore';
 import ModalStore from '../../../store/modalStore';
-import { FlexContainer, PageTitle } from '../../../utils/styleUtils';
+import { FlexWithAlign } from '../../../utils/styleUtils';
 import CommonButton from '../../shared/button/CommonButton';
 import CommonNavMenu from '../../shared/nav/CommonNavMenu';
+import { CommonPageTitle } from '../../shared/title/CommonPageTitle';
 
 interface IProps {
   clientsStore?: ClientsStore;
@@ -24,6 +26,7 @@ const clientsMenu = [
   }
 ];
 const Clients: React.FC<IProps> = observer((props) => {
+  const { t } = useTranslation();
   const [client, setCLient] = useState<IClient | undefined>(undefined);
   const createClient = () => {
     props.modalStore!.openModal({ name: 'CREATE_CLIENT' });
@@ -32,21 +35,22 @@ const Clients: React.FC<IProps> = observer((props) => {
   return (
     <Wrapper>
       <PageHeader>
-        <PageTitle>Клиенты</PageTitle>
-        <Box>
-          <CommonButton
-            typeBtn='ghost'
-            onClick={createClient}
-          >
-            <FlexContainer
-              $gap='16px'
-              $alignCenter='center'
+        <CommonPageTitle title={'Клиенты'}>
+          <Box>
+            <CommonButton
+              typeBtn='ghost'
+              onClick={createClient}
             >
-              <IconInstance name={EIcon.plussquare} />
-              <span>Добавить клиента</span>
-            </FlexContainer>
-          </CommonButton>
-        </Box>
+              <FlexWithAlign
+                $gap='16px'
+                $alignCenter='center'
+              >
+                <IconInstance name={EIcon.plussquare} />
+                <span>{t('Добавить клиента')}</span>
+              </FlexWithAlign>
+            </CommonButton>
+          </Box>
+        </CommonPageTitle>
       </PageHeader>
       <NavMenuWrapper>
         <CommonNavMenu list={clientsMenu} />

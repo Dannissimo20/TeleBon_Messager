@@ -6,14 +6,25 @@ import { useFormik } from 'formik';
 import { inject, observer } from 'mobx-react';
 import { read, utils } from 'xlsx';
 
-import { Form, TableWrapper, Title, Wrapper } from './CreateExportModal.styled';
+import {
+  ExportFileWrapper,
+  ExportSelect,
+  ExportText,
+  ExportTextarea,
+  Form,
+  TableWrapper,
+  Title,
+  Wrapper
+} from './CreateExportModal.styled';
 
+import { EIcon, IconNew as IconInstance } from '../../../../components/icons/medium-new-icons/icon';
 import CommonButton from '../../../../components/shared/button/CommonButton';
+import CommonDropdown from '../../../../components/shared/dropdawn/CommonDropdown';
 import { IColumnType, Table } from '../../../../components/shared/table/Table';
 import ClientsStore from '../../../../store/clientsStore';
 import FilialStore from '../../../../store/filialStore';
 import { apiPut } from '../../../../utils/apiInstance';
-import { FlexContainer, FlexWithAlign, Text } from '../../../../utils/styleUtils';
+import { FlexContainer, FlexWithAlign } from '../../../../utils/styleUtils';
 import { validationClientAddSchema } from '../../../../utils/validation-input';
 
 interface IData {
@@ -42,12 +53,13 @@ const CreateExportModal: React.FC<IProps> = observer((props) => {
 
   const tableHeaderOptions = useMemo(
     () => [
-      { title: 'Имя', value: 'name' },
-      { title: 'Телефон', value: 'phone' },
-      { title: 'Почта', value: 'email' },
-      { title: 'Дата рождения', value: 'birthday' },
-      { title: 'Дополнительный телефон', value: 'dopphone' },
-      { title: 'Пол', value: 'sex' }
+      { value: 'name', title: 'Имя* (обязательно)' },
+      { value: 'phone', title: 'Телефон* (обязательно)' },
+      { value: 'email', title: 'Почта (необязательно)' },
+      { value: 'birthday', title: 'Дата рождения (необязательно)' },
+      { value: 'dopphone', title: 'Дополнительный телефон (необязательно)' },
+      { value: 'sex', title: 'Пол (необязательно)' },
+      { value: 'filial', title: 'Филиал (необязательно)' }
     ],
     []
   );
@@ -69,11 +81,10 @@ const CreateExportModal: React.FC<IProps> = observer((props) => {
       const file = files?.[0];
       const reader = new FileReader();
       reader.onload = (event) => {
-        const wb = read(event?.target?.result);
+        const wb = read(event?.target?.result, { cellDates: true, dateNF: 'dd"."mm"."yyyy' });
         const sheets = wb.SheetNames;
-
         if (sheets.length) {
-          const xlsRows = utils.sheet_to_json(wb.Sheets[sheets[0]]);
+          const xlsRows = utils.sheet_to_json(wb.Sheets[sheets[0]], { raw: false });
           const rows = xlsRows.map((rowObj: unknown) => {
             // @ts-ignore
             const vals = Object.values(rowObj);
@@ -87,7 +98,6 @@ const CreateExportModal: React.FC<IProps> = observer((props) => {
               col6: vals?.[5]?.toString() ?? ''
             };
           });
-
           setTableData(rows as IData[]);
           fillColumns(rows as IData[]);
           handleSubmit();
@@ -102,19 +112,18 @@ const CreateExportModal: React.FC<IProps> = observer((props) => {
       .filter((el) => el)
       .map((el, i) => ({
         key: `col${i + 1}`,
-        width: 200,
+        width: 320,
         title: (
-          <select onChange={(e) => e.target.value && setColumnSelects((prev) => [...prev, { i, val: e.target.value }])}>
-            <option value={''}>{''}</option>
-            {tableHeaderOptions?.map((tag, tagIndex: number) => (
-              <option
-                key={`tag-${tagIndex}`}
-                value={tag.value}
-              >
-                {tag.title}
-              </option>
-            ))}
-          </select>
+          <ExportSelect>
+            <CommonDropdown
+              currentValue={columnSelects}
+              options={tableHeaderOptions}
+              onChange={(selectedOption) => {
+                setColumnSelects((prev) => [...prev, { i, val: selectedOption.additional.value }]);
+              }}
+              placeholder={'Выбрать заголовок'}
+            />
+          </ExportSelect>
         )
       }));
     setColumns(cols);
@@ -143,7 +152,7 @@ const CreateExportModal: React.FC<IProps> = observer((props) => {
       }
     } else {
       if (columnSelects.length < columns.length) {
-        alert('Пожалуйста, заполните все поля');
+        toast.error('Пожалуйста, заполните все поля');
 
         return;
       }
@@ -151,19 +160,18 @@ const CreateExportModal: React.FC<IProps> = observer((props) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const clients: any = [];
       const strRows = formik.values.exportMethod === 'textarea' ? formik.values.textarea.split('\n') : tableData;
-
       strRows.map((row) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const newClient: any = {
           filial: filialStore?.activeFilial?.id,
-          status: '',
           telegram: false,
           viber: false,
           whatsapp: false,
           comstart: 0,
-          comfinish: null,
+          comfinish: 0,
           comment: '',
-          comminterval: ''
+          sex: '',
+          birthday: ''
         };
         // @ts-ignore
         const rowToSend = formik.values.exportMethod === 'textarea' ? row.split('\t') : Object.values(row);
@@ -171,23 +179,22 @@ const CreateExportModal: React.FC<IProps> = observer((props) => {
           const { i, val } = col;
           newClient[val] = rowToSend[i];
         });
-        if (newClient?.birthday) newClient.birthday = newClient.birthday.replaceAll('.', '-');
-        if (newClient?.sex)
-          newClient.sex =
-            newClient.sex === 'M' || newClient.sex === 'М' || newClient.sex === 'муж' || newClient.sex === 'Муж' ? true : false;
+
+        if (newClient.phone && newClient.phone.indexOf('7') === 0) newClient.phone = '+'.concat('', newClient.phone);
+        if (newClient.dopphone && newClient.dopphone.indexOf('7') === 0) newClient.dopphone = '+'.concat('', newClient.dopphone);
+
         clients.push(newClient);
 
         return rowToSend;
       });
 
-      Promise.all(clients.map((client: unknown) => apiPut('/client', client)))
+      Promise.all(clients.map((client: unknown) => apiPut('/importclient', client)))
         .then(async () => {
           toast.success('Клиенты успешно добавлены');
           await clientsStore?.fetchClients();
           closeModal?.();
         })
         .catch((e) => {
-          console.log(e);
           toast.error(e);
         });
     }
@@ -195,7 +202,8 @@ const CreateExportModal: React.FC<IProps> = observer((props) => {
 
   return (
     <Wrapper>
-      <Title>{t('Загрузка клиентов')}</Title>
+      <Title>{t('Импорт клиентской базы')}</Title>
+      {tableMode && <ExportText>{t('Сопоставьте ваши данные с заголовками таблицы')}</ExportText>}
       <Form onSubmit={handleSubmit}>
         {!tableMode ? (
           <FlexContainer
@@ -203,24 +211,12 @@ const CreateExportModal: React.FC<IProps> = observer((props) => {
             $gap='20px'
           >
             <FlexContainer $gap='22px'>
-              <Text>{t('Загрузка из Excel')}</Text>
               <div>
                 <div
                   className='flex sex-input-wrap'
                   role='group'
                   aria-labelledby='my-radio-group'
                 >
-                  <label onClick={() => formik.setFieldValue('exportMethod', 'file')}>
-                    <input
-                      onBlur={formik.handleBlur}
-                      value={formik.values.exportMethod === 'file' ? 'true' : 'false'}
-                      onChange={() => formik.setFieldValue('exportMethod', 'file')}
-                      name='exportMethod'
-                      type='radio'
-                      defaultChecked={formik.values.exportMethod === 'file'}
-                    />
-                    <span>{t('Загрузить файл')}</span>
-                  </label>
                   <label onClick={() => formik.setFieldValue('exportMethod', 'textarea')}>
                     <input
                       onBlur={formik.handleBlur}
@@ -230,7 +226,18 @@ const CreateExportModal: React.FC<IProps> = observer((props) => {
                       type='radio'
                       defaultChecked={formik.values.exportMethod === 'textarea'}
                     />
-                    <span>{t('Скопировать и вставить')}</span>
+                    <span>{t('Скопировать/вставить данные')}</span>
+                  </label>
+                  <label onClick={() => formik.setFieldValue('exportMethod', 'file')}>
+                    <input
+                      onBlur={formik.handleBlur}
+                      value={formik.values.exportMethod === 'file' ? 'true' : 'false'}
+                      onChange={() => formik.setFieldValue('exportMethod', 'file')}
+                      name='exportMethod'
+                      type='radio'
+                      defaultChecked={formik.values.exportMethod === 'file'}
+                    />
+                    <span>{t('Загрузить документ')}</span>
                   </label>
                 </div>
               </div>
@@ -238,10 +245,9 @@ const CreateExportModal: React.FC<IProps> = observer((props) => {
 
             {formik.values.exportMethod === 'textarea' ? (
               <>
-                <Text>{t('Скопируйте и вставьте данные из Excel таблицы')}</Text>
-
-                <textarea
+                <ExportTextarea
                   onBlur={formik.handleBlur}
+                  placeholder={t('Вставить данные из табилцы')}
                   value={formik.values.textarea}
                   onChange={formik.handleChange}
                   rows={10}
@@ -249,15 +255,21 @@ const CreateExportModal: React.FC<IProps> = observer((props) => {
                 />
               </>
             ) : (
-              <input
-                type='file'
-                name='file'
-                className='custom-file-input'
-                id='inputGroupFile'
-                required
-                onChange={handleImportExcel}
-                accept='.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel'
-              />
+              <ExportFileWrapper>
+                <input
+                  type='file'
+                  name='file'
+                  className='custom-file-input'
+                  id='inputGroupFile'
+                  required
+                  onChange={handleImportExcel}
+                  accept='.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel'
+                />
+                <label htmlFor='inputGroupFile'>
+                  <IconInstance name={EIcon.downloadoutline} />
+                  <p>Перетащите в эту область или загрузите документ до 500 строк таблицы</p>
+                </label>
+              </ExportFileWrapper>
             )}
           </FlexContainer>
         ) : (
@@ -281,6 +293,7 @@ const CreateExportModal: React.FC<IProps> = observer((props) => {
           <CommonButton
             colored={true}
             typeBtn='ghost'
+            type='button'
             onClick={() => closeModal?.()}
           >
             {t('Отмена')}
@@ -289,9 +302,8 @@ const CreateExportModal: React.FC<IProps> = observer((props) => {
             colored={true}
             typeBtn='primary'
             type='submit'
-            // disabled={!formik.isValid}
           >
-            {t('Сохранить')}
+            {t('Загрузить')}
           </CommonButton>
         </FlexWithAlign>
       </Form>

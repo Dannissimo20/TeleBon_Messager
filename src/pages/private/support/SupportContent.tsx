@@ -29,7 +29,6 @@ const SupportContent: FC = () => {
     axios
       .request(options)
       .then(function (response) {
-        console.log(response.data);
         const supportReqData = response.data;
         setSupportReq(supportReqData);
       })
@@ -63,7 +62,6 @@ const SupportContent: FC = () => {
     axios
       .request(options)
       .then(function (response) {
-        console.log(response.data);
         const supportReqData = response.data;
         setSupportReq(supportReqData);
       })

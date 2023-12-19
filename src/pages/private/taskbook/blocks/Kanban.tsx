@@ -1,11 +1,14 @@
 import { FC, useEffect } from 'react';
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
-import ListItem from './list/ListItem';
-import { NewWrapper } from './Kanban.styled';
+
 import { inject } from 'mobx-react';
+
+import { NewWrapper } from './Kanban.styled';
+import ListItem from './list/ListItem';
+
 import KanbanStore, { IColumn } from '../../../../store/kanbanStore';
-import { apiPost } from '../../../../utils/apiInstance';
 import UserStore from '../../../../store/userStore';
+import { apiPost } from '../../../../utils/apiInstance';
 
 interface IProps {
   kanbanStore?: KanbanStore;
@@ -69,6 +72,7 @@ const Kanban: FC<IProps> = ({ kanbanStore, userStore, localColumns, setLocalColu
                 } else if (task.order < source.index + 1 && task.order >= destination.index + 1) {
                   return { ...task, order: task.order + 1 };
                 }
+
                 return task;
               })
             : undefined;
@@ -88,6 +92,7 @@ const Kanban: FC<IProps> = ({ kanbanStore, userStore, localColumns, setLocalColu
             if (task.order >= destination.index + 1) {
               return { ...task, order: task.order + 1 };
             }
+
             return task;
           });
       }

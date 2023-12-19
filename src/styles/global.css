@@ -86,8 +86,9 @@ p {
   opacity: 0;
 }
 .ReactModal__Content {
-  max-width: 800px;
-  width: 100%;
+  min-width: 800px;
+
+  width: auto;
   position: absolute;
   padding: 40px 60px !important;
   border: 2px solid #eaebee !important;
@@ -139,7 +140,8 @@ p {
 }
 @media (max-width: 1500px) {
   .ReactModal__Content {
-    inset: 15% 10% auto 10% !important;
+    max-height: 95%;
+    overflow-y: auto;
   }
 }
 
@@ -240,7 +242,6 @@ p {
   font-weight: 600;
   color: rgba(73, 111, 255, 1) !important;
 }
-
 .custom-select-container > div {
   outline: none !important;
   box-shadow: none !important;

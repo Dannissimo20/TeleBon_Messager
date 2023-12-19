@@ -1,7 +1,10 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 
 import { inject, observer } from 'mobx-react';
+
+import { CardItem, DeleteBtn, Grid, Head, ItemInfo } from './ManagementSubproductsList.styled';
 
 import { ReactComponent as AddIcon } from '../../../../../../components/icons/addplus.svg';
 import { ReactComponent as DeleteIcon } from '../../../../../../components/icons/delete.svg';
@@ -11,7 +14,6 @@ import { CommonEmptyContent } from '../../../../../../components/shared/empty-co
 import ModalStore from '../../../../../../store/modalStore';
 import SubproductsStore, { ISubproduct } from '../../../../../../store/subProductsStore';
 import { DividerGrey } from '../../../../../../utils/styleUtils';
-import { CardItem, DeleteBtn, Grid, Head, ItemInfo } from './ManagementSubproductsList.styled';
 
 interface IProps {
   subproductsStore?: SubproductsStore;
@@ -22,6 +24,7 @@ const ManagementSubproductsList: React.FC<IProps> = observer((props) => {
   const { productId } = useParams();
   const { subproductsStore, modalStore } = props;
   const { subproducts, state } = subproductsStore!;
+  const { t } = useTranslation();
 
   const fetchSubproducts = (id: string) => {
     subproductsStore?.fetchSubproducts(id);
@@ -63,11 +66,15 @@ const ManagementSubproductsList: React.FC<IProps> = observer((props) => {
             <DividerGrey $margin='0px' />
             <ItemInfo className='flex'>
               <TimeIcon />
-              <span>Длительность: {subproduct.duration}</span>
+              <span>
+                {t('Длительность')}: {subproduct.duration}
+              </span>
             </ItemInfo>
             <ItemInfo className='flex'>
               <TimeIcon />
-              <span>Цена: {subproduct.tarif}</span>
+              <span>
+                {t('Цена')}: {subproduct.tarif}
+              </span>
             </ItemInfo>
             <ItemInfo className='flex delete'>
               <DeleteBtn
@@ -95,7 +102,7 @@ const ManagementSubproductsList: React.FC<IProps> = observer((props) => {
       {subproducts.length === 0 && (
         <CommonEmptyContent
           to={`/management/product/${productId}/subproducts/add`}
-          title={'Создать субпродукт'}
+          title={t('Создать субпродукт')}
         />
       )}
     </Grid>

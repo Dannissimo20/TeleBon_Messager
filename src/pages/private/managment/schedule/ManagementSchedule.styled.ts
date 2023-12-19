@@ -13,21 +13,18 @@ export const Wrapper = styled.div`
 export const TopWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 20px;
   @media (max-width: 1500px) {
-    gap: 32px;
+    gap: 20px;
   }
   @media (max-width: 1280px) {
-    gap: 24px;
+    gap: 20px;
   }
 `;
-export const Topbar = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
+
 
 export const Title = styled.div`
-  gap: 24px;
+  gap: 20px;
 `;
 
 export const NavMenuWrapper = styled.div`

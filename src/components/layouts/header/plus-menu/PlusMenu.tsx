@@ -1,16 +1,19 @@
 import React, { FC, Fragment } from 'react';
-import { ReactComponent as PlusIcon } from '../../../icons/logged-menu/hplus.svg';
-import { inject, observer } from 'mobx-react';
-import FilialStore from '../../../../store/filialStore';
-import UserStore from '../../../../store/userStore';
-import ClientsStore from '../../../../store/clientsStore';
-import { EIcons, Icon as IconInstance } from '../../../icons';
-import { useOutside } from '../../../hooks/useOutside';
+import { useTranslation } from 'react-i18next';
+
 import classNames from 'classnames';
+import { inject, observer } from 'mobx-react';
+
+import { Container, Icon, Item, ItemLink, Line, Menu, Wrapper } from './PlusMenu.styled';
+
+import FirstForm from '../../../../pages/private/product/modal/start/FirstForm';
+import ClientsStore from '../../../../store/clientsStore';
+import FilialStore from '../../../../store/filialStore';
 import SidebarStore from '../../../../store/modalStore';
 import RecordingStore from '../../../../store/recordingStore';
-import FirstForm from '../../../../pages/private/product/modal-elements/form-start/FirstForm';
-import { Container, Icon, Item, ItemLink, Line, Menu, Wrapper } from './PlusMenu.styled';
+import UserStore from '../../../../store/userStore';
+import { useOutside } from '../../../hooks/useOutside';
+import { EIcon, IconNew as IconInstance } from '../../../icons/medium-new-icons/icon';
 
 interface IProps {
   filialStore?: FilialStore;
@@ -22,6 +25,7 @@ interface IProps {
 const PlusMenu: FC<IProps> = observer((props) => {
   const { ref, isShow, setIsShow } = useOutside(false);
   const { recordingStore } = props;
+  const { t } = useTranslation();
   const createEmployeer = () => {
     props.modalStore!.openModal({ name: 'CREATE_EMPLOYEE' });
   };
@@ -32,13 +36,13 @@ const PlusMenu: FC<IProps> = observer((props) => {
 
   const menu = [
     {
-      title: 'Создать запись',
-      icon: <IconInstance name={EIcons.entry} />,
+      title: t('Создать запись'),
+      icon: <IconInstance name={EIcon.recording} />,
       action: () => recordingStore?.setIsShow(true)
     },
     {
-      title: 'Новый клиент',
-      icon: <IconInstance name={EIcons.clientIcon} />,
+      title: t('Новый клиент'),
+      icon: <IconInstance name={EIcon.user} />,
       action: createClient,
       endTab: true
     },
@@ -47,13 +51,13 @@ const PlusMenu: FC<IProps> = observer((props) => {
     //     icon: <IconInstance name={EIcons.calendar} />,
     // },
     {
-      title: 'Добавить услугу',
-      icon: <IconInstance name={EIcons.productIcon} />,
+      title: t('Добавить услугу'),
+      icon: <IconInstance name={EIcon.filial} />,
       to: '/management/service-categories'
     },
     {
-      title: 'Добавить сотрудника',
-      icon: <IconInstance name={EIcons.loggeduser} />,
+      title: t('Добавить сотрудника'),
+      icon: <IconInstance name={EIcon.users} />,
       action: createEmployeer
     }
   ];
@@ -64,7 +68,7 @@ const PlusMenu: FC<IProps> = observer((props) => {
         className={classNames(isShow && 'active')}
         onClick={() => setIsShow(!isShow)}
       >
-        <PlusIcon />
+        <IconInstance name={EIcon.plussquare} />
       </button>
       {isShow && (
         <Menu>
@@ -94,4 +98,4 @@ const PlusMenu: FC<IProps> = observer((props) => {
   );
 });
 
-export default inject('modalStore',  'clientsStore', 'recordingStore')(PlusMenu);
+export default inject('modalStore', 'clientsStore', 'recordingStore')(PlusMenu);

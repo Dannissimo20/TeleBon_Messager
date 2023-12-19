@@ -9,6 +9,7 @@ import CreateCabinetModal from './create/cabinet/CreateCabinetModal';
 import CreateClientModal from './create/client/CreateClientModal';
 import CreateEmployeersModal from './create/employeers/CreateEmployeersModal';
 import CreateFilialModal from './create/filial/CreateFilialModal';
+import CreateKanbanTaskModal from './create/kanban/CreateKanbanTaskModal';
 import CreateServiceCategoryModal from './create/service/category/CreateServiceCategoryModal';
 import CreateServiceModal from './create/service/CreateServiceModal';
 import TicketModal from './create/ticket/TicketModal';
@@ -21,7 +22,6 @@ import ChangeTarifModal from './update/tarif/ChangeTarifModal';
 import CreateExportModal from '../../../pages/private/client/client-export-csv/CreateExportModal';
 import ModalStore from '../../../store/modalStore';
 import { EIcon, IconNew as IconInstance } from '../../icons/medium-new-icons/icon';
-import CreateKanbanTaskModal from './create/kanban/CreateKanbanTaskModal';
 
 interface IProps extends PropsWithChildren {
   modalStore?: ModalStore;
@@ -45,7 +45,12 @@ const CommonModal: React.FC<IProps> = observer((props) => {
         modalPayload={modalPayload}
       />
     ),
-    CREATE_KANBAN_TASK: <CreateKanbanTaskModal closeModal={closeModal} modalPayload={modalPayload} />,
+    CREATE_KANBAN_TASK: (
+      <CreateKanbanTaskModal
+        closeModal={closeModal}
+        modalPayload={modalPayload}
+      />
+    ),
     EXPORT_CSV_CLIENT: <CreateExportModal closeModal={closeModal} />,
     EDIT_CLIENT: (
       <CreateClientModal

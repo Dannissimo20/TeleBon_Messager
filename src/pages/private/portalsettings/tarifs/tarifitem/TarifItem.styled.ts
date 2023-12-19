@@ -12,7 +12,6 @@ export const Item = styled.li`
     background-color: ${(props) => props.theme.color.secondaryBlue};
   }
   .tarif-title {
-    margin-bottom: 30px;
     font-weight: 600;
   }
   .change-btn {
@@ -24,6 +23,12 @@ export const Item = styled.li`
 
 export const TarifItemTop = styled.div`
   justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 30px;
+
+  .tarif-title {
+    margin-bottom: 0;
+  }
 `;
 
 export const TarifNameAndDateWrap = styled.div`

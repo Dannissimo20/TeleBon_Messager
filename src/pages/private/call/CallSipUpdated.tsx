@@ -1,11 +1,13 @@
 import { ChangeEventHandler, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import JsSIP from 'jssip';
 import { pathOr } from 'rambda';
 
+import { CallSipWrapper } from './Call.styled';
+
 import CommonButton from '../../../components/shared/button/CommonButton';
 import CommonInput from '../../../components/shared/fields/CommonInput';
-import { CallSipWrapper } from './Call.styled';
 
 interface ICallSip {
   socket: string;
@@ -17,6 +19,7 @@ interface ICallSip {
 
 const CallSip: React.FC<ICallSip> = (props) => {
   const { socket: socketname, server, stun, login, password } = props;
+  const { t } = useTranslation();
   const [value, setValue] = useState('999');
   const [stream, setStream] = useState<MediaStream | any>();
   const [phone, setPhone] = useState({});
@@ -97,11 +100,15 @@ const CallSip: React.FC<ICallSip> = (props) => {
 
   return (
     <CallSipWrapper>
-      {!isRegister && <CommonButton onClick={onRegister}>Войти как оператор {login}</CommonButton>}
+      {!isRegister && (
+        <CommonButton onClick={onRegister}>
+          {t('Войти как оператор')} {login}
+        </CommonButton>
+      )}
       {isRegister && (
         <>
           <CommonInput
-            label='Номер телефона'
+            label={t('Номер телефона')}
             type='text'
             value={value}
             onChange={handlePhoneChange}
@@ -111,13 +118,13 @@ const CallSip: React.FC<ICallSip> = (props) => {
             type='button'
             typeBtn='success'
           >
-            Позвонить
+            {t('Позвонить')}
           </CommonButton>
           <CommonButton
             onClick={() => endCall(phone)}
             type='button'
           >
-            Отбой
+            {t('Отбой')}
           </CommonButton>
           <video
             ref={myAudio}

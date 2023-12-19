@@ -1,7 +1,9 @@
-import { EIcons, Icon } from '../../../../icons';
+import { useTranslation } from 'react-i18next';
+
+import { Box, ContentTable, IconWrap, Notifications, TableRow, TimeWrap, Title } from './TicketModal.styled';
 
 import { DividerVertical, FlexContainer } from '../../../../../utils/styleUtils';
-import { Box, ContentTable, IconWrap, Notifications, TableRow, TimeWrap, Title } from './TicketModal.styled';
+import { EIcons, Icon } from '../../../../icons';
 
 interface IProps {
   closeModal?: () => void;
@@ -11,6 +13,7 @@ interface IProps {
 const TicketModal: React.FC<IProps> = (props) => {
   // eslint-disable-next-line react/prop-types
   const { modalPayload } = props;
+  const { t } = useTranslation();
 
   const headList = ['Тип', 'Наименование', 'Комментарий', 'Дата'];
 
@@ -28,19 +31,19 @@ const TicketModal: React.FC<IProps> = (props) => {
               {modalPayload?.length}
             </Notifications>
           </IconWrap>
-          <Title className='title'>Тикет</Title>
+          <Title className='title'>{t('Тикет')}</Title>
         </FlexContainer>
         <DividerVertical $margin='0px' />
         <TimeWrap className='flex'>
           <span className='text'>
-            Среднее время реагирования
+            {t('Среднее время реагирования')}
             <span className='time'>5:00</span>
           </span>
         </TimeWrap>
       </FlexContainer>
       <Box>
         <ContentTable>
-          <TableRow className='head'>{headList && headList.map((head, i) => <div key={i}>{head}</div>)}</TableRow>
+          <TableRow className='head'>{headList && headList.map((head, i) => <div key={i}>{t(head)}</div>)}</TableRow>
           {modalPayload &&
             // eslint-disable-next-line react/prop-types
             modalPayload?.map((item: any, i: number) => (

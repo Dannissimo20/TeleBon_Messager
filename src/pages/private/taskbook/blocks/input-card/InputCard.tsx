@@ -1,4 +1,5 @@
 import { FC, useState } from 'react';
+
 import { InputCardWrapper } from './InputCard.styled';
 
 const InputCard: FC = () => {

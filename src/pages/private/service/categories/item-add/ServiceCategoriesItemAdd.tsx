@@ -1,13 +1,17 @@
-import { useFormik } from 'formik';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
+
+import { useFormik } from 'formik';
+import { inject, observer } from 'mobx-react';
+
+import { ItemForm, SubmitBtn } from './ServiceCategoriesItemAdd.styled';
+
+import { ReactComponent as Plus } from '../../../../../components/icons/plus.svg';
 import CommonButton from '../../../../../components/shared/button/CommonButton';
 import CommonItemAdd from '../../../../../components/shared/modal/create/common-item-add/CommonItemAdd';
-import { ReactComponent as Plus } from '../../../../../components/icons/plus.svg';
-import { apiPut } from '../../../../../utils/apiInstance';
 import ProductsStore from '../../../../../store/productsStore';
-import { inject, observer } from 'mobx-react';
-import { toast } from 'react-toastify';
-import { ItemForm, SubmitBtn } from './ServiceCategoriesItemAdd.styled';
+import { apiPut } from '../../../../../utils/apiInstance';
 
 interface Props {
   productsStore?: ProductsStore;
@@ -18,7 +22,7 @@ const ServiceCategoriesItemAdd: React.FC<Props> = observer((props) => {
   const { setIsAddingServiceCategory, productsStore } = props;
   const [formValid, setFormValid] = useState(false);
   const [pending, setPending] = useState(false);
-
+  const { t } = useTranslation();
   const addServiceCategory = async (values: any) => {
     setPending(true);
     const res = await apiPut('/product', {
@@ -59,6 +63,7 @@ const ServiceCategoriesItemAdd: React.FC<Props> = observer((props) => {
       setFormValid(false);
     }
   }, [formik.values]);
+
   return (
     <CommonItemAdd>
       <ItemForm onSubmit={handleSubmit}>
@@ -70,7 +75,7 @@ const ServiceCategoriesItemAdd: React.FC<Props> = observer((props) => {
             value={formik.values.name}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            placeholder='Введите название...'
+            placeholder={`${t('Введите название')}...`}
           ></input>
         </div>
         <SubmitBtn className='flex'>
@@ -79,7 +84,7 @@ const ServiceCategoriesItemAdd: React.FC<Props> = observer((props) => {
             disabled={!formValid}
           >
             <Plus />
-            <span>Сохранить</span>
+            <span>{t('Сохранить')}</span>
           </CommonButton>
           <button
             type='button'

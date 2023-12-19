@@ -1,4 +1,5 @@
 import { SyntheticEvent, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 
 import { useFormik } from 'formik';
@@ -6,7 +7,7 @@ import { inject, observer } from 'mobx-react';
 
 import { Form, Title, Wrapper } from './CreateClientModal.styled';
 
-import { ModalGrid } from '../../../../../pages/private/product/modal-elements/form-start/FirstForm.styled';
+import { ModalGrid } from '../../../../../pages/private/product/modal/start/FirstForm.styled';
 import ClientsStore from '../../../../../store/clientsStore';
 import FilialStore from '../../../../../store/filialStore';
 import { apiPost, apiPut } from '../../../../../utils/apiInstance';
@@ -45,6 +46,7 @@ const communicationIntervals = [
 const CreateClientModal: React.FC<IProps> = observer((props) => {
   const { closeModal, edit, modalPayload, filialStore, clientsStore } = props;
   const { filials } = filialStore!;
+  const { t } = useTranslation();
   const [pending, setPending] = useState(false);
   const [formValid, setFormValid] = useState(false);
   const [isWhatsApp, setIsWhatsApp] = useState(false);
@@ -73,6 +75,8 @@ const CreateClientModal: React.FC<IProps> = observer((props) => {
     initialValues: modalPayload
       ? {
           ...modalPayload,
+          phone: modalPayload.phone.indexOf('+') === 0 ? modalPayload.phone : '+'.concat('', modalPayload.phone),
+          dopphone: modalPayload?.dopphone?.indexOf('+') === 0 ? modalPayload.dopphone : '+7'.concat('', modalPayload.dopphone),
           comminterval:
             communicationIntervals.find(
               (item) => item.value.includes(String(modalPayload.comstart)) && item.value.includes(String(modalPayload.comfinish))
@@ -102,7 +106,7 @@ const CreateClientModal: React.FC<IProps> = observer((props) => {
     if (res?.status === 200) {
       setPending(false);
       closeModal!();
-      toast.success('Клиент успешно добавлен');
+      toast.success(t('Клиент успешно добавлен'));
       await clientsStore?.fetchClients();
     } else {
       setPending(false);
@@ -129,7 +133,7 @@ const CreateClientModal: React.FC<IProps> = observer((props) => {
       setPending(false);
       closeModal!();
       clientsStore?.fetchClients();
-      toast.success('Данные о клиенте успешно обновлены');
+      toast.success(t('Данные о клиенте успешно обновлены'));
     } else {
       setPending(false);
       toast.error(res.data.description);
@@ -154,14 +158,14 @@ const CreateClientModal: React.FC<IProps> = observer((props) => {
 
   return (
     <Wrapper>
-      <Title>{modalPayload ? 'Редактировать контакт' : 'Добавить клиента'}</Title>
+      <Title>{modalPayload ? t('Редактировать контакт') : t('Добавить клиента')}</Title>
       <Form onSubmit={handleSubmit}>
         <FlexContainer
           $column
           $gap='40px'
         >
           <FlexContainer $gap='22px'>
-            <Text>Данные клиента</Text>
+            <Text>{t('Данные клиента')}</Text>
             <div>
               <div
                 className='flex sex-input-wrap'
@@ -188,7 +192,7 @@ const CreateClientModal: React.FC<IProps> = observer((props) => {
                     type='radio'
                     defaultChecked={formik.values.sex === true}
                   />
-                  <span>Жен</span>
+                  <span>{t('Жен')}</span>
                 </label>
               </div>
             </div>
@@ -199,7 +203,7 @@ const CreateClientModal: React.FC<IProps> = observer((props) => {
           >
             <ModalGrid>
               <CommonInput
-                label={'Укажите ФИО клиента'}
+                label={t('Укажите ФИО клиента')}
                 value={formik.values.name}
                 onChange={formik.handleChange}
                 name='name'
@@ -212,7 +216,7 @@ const CreateClientModal: React.FC<IProps> = observer((props) => {
                 {ageClient !== '' && <div className='age'>{ageClient}</div>}
               </CommonInput>
               <CommonInput
-                label={'Укажите дату рождения'}
+                label={t('Укажите дату рождения')}
                 value={formik.values.birthday}
                 onChange={formik.handleChange}
                 formik={formik}
@@ -226,7 +230,7 @@ const CreateClientModal: React.FC<IProps> = observer((props) => {
             </ModalGrid>
             <ModalGrid>
               <CommonInputPhone
-                label={'Укажите телефон клиента'}
+                label={t('Укажите телефон клиента')}
                 name='phone'
                 value={formik.values.phone}
                 onChange={formik.handleChange('phone')}
@@ -238,7 +242,7 @@ const CreateClientModal: React.FC<IProps> = observer((props) => {
                 <IconInstance name={EIcon.phone} />
               </CommonInputPhone>
               <CommonInputPhone
-                label={'Дополнительный телефон'}
+                label={t('Дополнительный телефон')}
                 name='dopphone'
                 simple
                 value={formik.values.dopphone}
@@ -270,7 +274,7 @@ const CreateClientModal: React.FC<IProps> = observer((props) => {
             $gap='20px'
           >
             <div>
-              <Text>Связь с клиентом</Text>
+              <Text>{t('Связь с клиентом')}</Text>
             </div>
             <ModalGrid>
               <CommonDropdown
@@ -279,7 +283,7 @@ const CreateClientModal: React.FC<IProps> = observer((props) => {
                 }}
                 options={communicationMethods}
                 currentValue={communicationMethods.find((item) => item.label === formik.values.commethod)?.label || formik.values.commethod}
-                placeholder='Способ связи'
+                placeholder={t('Способ связи')}
               />
               <CommonDropdown
                 onChange={(option: any) => {
@@ -289,7 +293,7 @@ const CreateClientModal: React.FC<IProps> = observer((props) => {
                 currentValue={
                   communicationIntervals.find((item) => item.label === formik.values.comminterval)?.label || formik.values.comminterval
                 }
-                placeholder='Время для связи с клиентом'
+                placeholder={t('Время для связи с клиентом')}
               />
             </ModalGrid>
           </FlexContainer>
@@ -342,10 +346,10 @@ const CreateClientModal: React.FC<IProps> = observer((props) => {
             </label>
           </div>
 
-          <Text>Комментарий</Text>
+          <Text>{t('Комментарий')}</Text>
 
           <CommonInput
-            label={'Комментарий'}
+            label={t('Комментарий')}
             simple
             onBlur={formik.handleBlur}
             value={formik.values.comment}
@@ -367,7 +371,7 @@ const CreateClientModal: React.FC<IProps> = observer((props) => {
               closeModal!();
             }}
           >
-            Отмена
+            {t('Отмена')}
           </CommonButton>
           <CommonButton
             colored={true}
@@ -375,7 +379,7 @@ const CreateClientModal: React.FC<IProps> = observer((props) => {
             type='submit'
             disabled={!formValid || !formik.isValid}
           >
-            {modalPayload ? 'Сохранить' : 'Добавить'}
+            {modalPayload ? t('Сохранить') : t('Добавить')}
           </CommonButton>
         </FlexWithAlign>
       </Form>

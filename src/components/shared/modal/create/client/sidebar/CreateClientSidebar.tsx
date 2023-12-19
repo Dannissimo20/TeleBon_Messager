@@ -4,6 +4,8 @@ import { toast } from 'react-toastify';
 import { useFormik } from 'formik';
 import { inject, observer } from 'mobx-react';
 
+import { Box, ButtonInner, Form, Title, Wrapper } from './CreateClientSidebar.styled';
+
 import ClientsStore from '../../../../../../store/clientsStore';
 import FilialStore from '../../../../../../store/filialStore';
 import { apiPost, apiPut } from '../../../../../../utils/apiInstance';
@@ -15,9 +17,8 @@ import { ReactComponent as Cancel } from '../../../../../icons/cancel.svg';
 import { ReactComponent as Plus } from '../../../../../icons/plus.svg';
 import CommonButton from '../../../../button/CommonButton';
 import CommonDropdown from '../../../../dropdawn/CommonDropdown';
-import CommonInput from '../../../../fields/CommonInput';
 import CommonInputPhone from '../../../../fields/common-input-phone/CommonInputPhone';
-import { Box, ButtonInner, Form, Title, Wrapper } from './CreateClientSidebar.styled';
+import CommonInput from '../../../../fields/CommonInput';
 
 interface IProps {
   clientsStore?: ClientsStore;

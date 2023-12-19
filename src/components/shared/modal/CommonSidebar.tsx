@@ -2,13 +2,13 @@ import { PropsWithChildren, useRef } from 'react';
 
 import { inject, observer } from 'mobx-react';
 
+import { Close, SidebarContent, Wrapper } from './CommonSidebar.styled';
 import CreateClientSidebar from './create/client/sidebar/CreateClientSidebar';
 import CreateEmployeerSidebar from './create/employeers/sidebar/CreateEmployeerSidebar';
 import CreateServiceSidebar from './create/service/sidebar/CreateServiceSidebar';
-import { ReactComponent as CloseIcon } from '../../icons/close.svg';
 
 import SidebarStore from '../../../store/sidebarStore';
-import { Close, SidebarContent, Wrapper } from './CommonSidebar.styled';
+import { ReactComponent as CloseIcon } from '../../icons/close.svg';
 
 interface IProps extends PropsWithChildren {
   sidebarStore?: SidebarStore;

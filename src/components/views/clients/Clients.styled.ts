@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
   @media (max-width: 1500px) {
     gap: 0;
   }
@@ -34,7 +34,6 @@ export const PageHeader = styled.div`
 `;
 
 export const NavMenuWrapper = styled.div`
-  margin-top: 16px;
   position: relative;
   &::after {
     content: '';

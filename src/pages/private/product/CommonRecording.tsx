@@ -9,16 +9,20 @@ import resourceDayGridPlugin from '@fullcalendar/resource-daygrid';
 import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid';
 import scrollgridPlugin from '@fullcalendar/scrollgrid';
 import dayjs from 'dayjs';
-import { inject, observer } from 'mobx-react';
+import { inject, observer, Provider } from 'mobx-react';
+import { createRoot } from 'react-dom/client';
 
-import FirstForm from './modal-elements/form-start/FirstForm';
+import DisabledForm from './modal/block/DisabledForm';
+import FirstForm from './modal/start/FirstForm';
 import ProductsContent from './recorging-topbar/ProductsContent';
 import RecordingEvent from './RevordingEvent';
 import { LoadingAbsoluteWrapper } from './styles/Recording.styled';
-import RecordingHeader from './table-elements/RecordingHeader';
-import RenderDayCell from './table-elements/RenderDayCell';
+import RenderDayCell from './table-elements/day-cell/RenderDayCell';
+import RecordingHeader from './table-elements/header/RecordingHeader';
+import ResourceHeaderItem from './table-elements/resource-header/ResourceHeaderItem';
 
 import CommonLoader from '../../../components/shared/loader/CommonLoader';
+import stores from '../../../store';
 import CabinetsStore from '../../../store/cabinetsStore';
 import CalendarStore from '../../../store/calendarStore';
 import ClientsStore from '../../../store/clientsStore';
@@ -131,7 +135,6 @@ const CommonRecording: FC<IProps> = observer(
     }, [activeDate, myEvents]);
 
     const handleClick = (info: any) => {
-      console.log(info);
       const event = info.event;
       const start = new Date(event.start);
       const end = new Date(event.end);
@@ -141,7 +144,7 @@ const CommonRecording: FC<IProps> = observer(
       recordingStore?.setInputEnd(end);
       recordingStore?.setIsCabinetId(resourceId);
       recordingStore?.setIsId(id);
-      recordingStore?.setIsShow(true);
+      event._def.extendedProps.ClientId !== null ? recordingStore?.setIsShow(true) : recordingStore?.setIsShowBlock(true);
     };
 
     const handleEventResize = async (info: any) => {
@@ -191,6 +194,32 @@ const CommonRecording: FC<IProps> = observer(
     );
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
+    useEffect(() => {
+      const targetThList = document.querySelectorAll('th[data-resource-id]');
+
+      targetThList.forEach((targetTh) => {
+        const innerDiv = targetTh.querySelector('.fc-scrollgrid-sync-inner');
+
+        if (innerDiv) {
+          const myComponentContainer = document.createElement('div');
+
+          const root = createRoot(myComponentContainer);
+          root.render(
+            <Provider {...stores}>
+              <ResourceHeaderItem
+                renamedResource={renamedResources}
+                resourceId={targetTh.getAttribute('data-resource-id')}
+                currentDate={targetTh.getAttribute('data-date')}
+                currentView={currentView}
+              />{' '}
+            </Provider>
+          );
+
+          innerDiv.appendChild(myComponentContainer);
+        }
+      });
+    }, [myEvents, refCalendar, currentView]);
+
     return (
       <>
         <ProductsContent />
@@ -207,6 +236,7 @@ const CommonRecording: FC<IProps> = observer(
           setIsToggleEventType={setIsToggleEventType}
         />
         {recordingStore?.isShow && <FirstForm refCalendar={refCalendar} />}
+        {recordingStore?.isShowBlock && <DisabledForm refCalendar={refCalendar} />}
         {state === PENDING && (
           <LoadingAbsoluteWrapper>
             <CommonLoader />
@@ -245,12 +275,10 @@ const CommonRecording: FC<IProps> = observer(
             />
           )}
           navLinkDayClick={'resourceTimeGridDay'}
-          resources={renamedResources}
-          eventAllow={(dropInfo, draggedEvent) => {
-            const isDisabled = draggedEvent?.extendedProps?.ClientId === null;
-
-            return !isDisabled;
-          }}
+          resources={renamedResources?.map((item: any) => ({
+            id: item.id,
+            title: item.name || item.fio
+          }))}
           ref={refCalendar}
           eventClassNames={(arg) => {
             const isSingleEvent = arg.event._def.extendedProps?.ClientId?.length === 1;

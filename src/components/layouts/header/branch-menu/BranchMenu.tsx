@@ -2,13 +2,14 @@ import { FC } from 'react';
 
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
+import {useTranslation} from 'react-i18next';
+import { Container, Line, Menu, Wrapper } from './BranchMenu.styled';
 
 import FilialStore from '../../../../store/filialStore';
 import ModalStore from '../../../../store/modalStore';
 import { FlexContainer } from '../../../../utils/styleUtils';
 import { useOutside } from '../../../hooks/useOutside';
 import { EIcon, IconNew as IconInstance } from '../../../icons/medium-new-icons/icon';
-import { Container, Line, Menu, Wrapper } from './BranchMenu.styled';
 import CommonButton from '../../../shared/button/CommonButton';
 
 interface IProps {
@@ -18,7 +19,7 @@ interface IProps {
 const BranchMenu: FC<IProps> = observer((props) => {
   const { filialStore } = props;
   const { filials, fetch, activeFilial, state, setActiveFilial } = filialStore!;
-
+  const {t} = useTranslation()
   const { ref, isShow, setIsShow } = useOutside(false);
   const fetchfilials = () => {
     fetch();
@@ -78,7 +79,7 @@ const BranchMenu: FC<IProps> = observer((props) => {
                 () => {}
               }
             >
-              <IconInstance name={EIcon.filial} /> <h4>Добавить филиал</h4>
+              <IconInstance name={EIcon.filial} /> <h4>{t('Добавить филиал')}</h4>
             </CommonButton>
           </Container>
         </Menu>

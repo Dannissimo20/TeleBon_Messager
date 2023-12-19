@@ -1,16 +1,8 @@
 import { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { inject, observer } from 'mobx-react';
 
-import { EIcon, IconNew as IconInstance } from '../../../../../components/icons/medium-new-icons/icon';
-
-import { ReactComponent as SearchIcon } from '../../../../../components/icons/search.svg';
-import CommonLoader from '../../../../../components/shared/loader/CommonLoader';
-import FilialStore from '../../../../../store/filialStore';
-import ModalStore from '../../../../../store/modalStore';
-import SidebarStore from '../../../../../store/sidebarStore';
-import UserStore, { IUser } from '../../../../../store/userStore';
-import { PENDING } from '../../../../../utils/state';
 import {
   ButtonDrugAndDrop,
   CardInfoItem,
@@ -28,6 +20,15 @@ import {
   Wrapper
 } from './MenagmentEmployeersTable.styled';
 
+import { EIcon, IconNew as IconInstance } from '../../../../../components/icons/medium-new-icons/icon';
+import { ReactComponent as SearchIcon } from '../../../../../components/icons/search.svg';
+import CommonLoader from '../../../../../components/shared/loader/CommonLoader';
+import FilialStore from '../../../../../store/filialStore';
+import ModalStore from '../../../../../store/modalStore';
+import SidebarStore from '../../../../../store/sidebarStore';
+import UserStore, { IUser } from '../../../../../store/userStore';
+import { PENDING } from '../../../../../utils/state';
+
 const headers = ['ФИО сотрудника', 'Номер телефона', 'Филиал', 'Позиция', 'ЛК', 'График работы', 'Последний вход'];
 
 interface MenagmentEmployeersTableProps {
@@ -40,6 +41,7 @@ interface MenagmentEmployeersTableProps {
 const MenagmentEmployeersTable: FC<MenagmentEmployeersTableProps> = observer((props) => {
   const { userStore, modalStore, sidebarStore, filialStore } = props;
   const { filials } = filialStore!;
+  const { t } = useTranslation();
   const { user, state } = userStore!;
   const [value, setValue] = useState<string>('');
   const [isSearch, setIsSearch] = useState<boolean>(false);
@@ -138,7 +140,7 @@ const MenagmentEmployeersTable: FC<MenagmentEmployeersTableProps> = observer((pr
               name='search'
               className='input-search'
               type='text'
-              placeholder='Поиск по имени и телефону'
+              placeholder={t('Поиск по имени и телефону')}
               value={value}
               onChange={handleChange}
               onFocus={handleFocus}
@@ -183,7 +185,7 @@ const MenagmentEmployeersTable: FC<MenagmentEmployeersTableProps> = observer((pr
                   <p>{item.position}</p>
                 </TableCol>
                 <TableCol>
-                  <p>Нет</p>
+                  <p>{t('Нет')}</p>
                 </TableCol>
                 <TableCol>
                   <p>-</p>
@@ -218,7 +220,7 @@ const MenagmentEmployeersTable: FC<MenagmentEmployeersTableProps> = observer((pr
       ) : state === PENDING ? (
         <CommonLoader />
       ) : (
-        <EmptyEmployee>Сотрудников нет</EmptyEmployee>
+        <EmptyEmployee>{t('Сотрудников нет')}</EmptyEmployee>
       )}
     </Wrapper>
   );

@@ -1,8 +1,7 @@
 import { Link } from 'react-router-dom';
 
-import { ReactComponent as Plus } from '../../icons/plus.svg';
-
 import { EmptyContent } from '../../../utils/styleUtils';
+import { ReactComponent as Plus } from '../../icons/plus.svg';
 
 interface IProps {
   title: string;

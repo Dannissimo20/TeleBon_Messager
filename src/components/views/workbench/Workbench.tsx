@@ -11,7 +11,8 @@ import ConfirmSettings from '../../../pages/private/workbench/confirm-settings/C
 import Tasks from '../../../pages/private/workbench/tasks/Tasks';
 import FilialStore from '../../../store/filialStore';
 import UserStore from '../../../store/userStore';
-import { FlexContainer, PageSubtitle, PageTitle } from '../../../utils/styleUtils';
+import { FlexContainer } from '../../../utils/styleUtils';
+import { CommonPageTitle } from '../../shared/title/CommonPageTitle';
 
 interface IProps {
   filialStore?: FilialStore;
@@ -35,15 +36,10 @@ const Workbench: FC<IProps> = observer((props) => {
 
   return (
     <Wrapper>
-      <FlexContainer
-        $column
-        $gap={'17px'}
-      >
-        <PageTitle>{activeFilial?.name}</PageTitle>
-        <PageSubtitle>
-          {t('Добрый день')}, {user && user[0].fio}!
-        </PageSubtitle>
-      </FlexContainer>
+      <CommonPageTitle
+        title={activeFilial?.name}
+        subtitle={`${t('Добрый день')}, ${user && user[0].fio}!`}
+      />
       <FlexContainer $gap={'40px'}>
         <FlexContainer
           className={'left'}

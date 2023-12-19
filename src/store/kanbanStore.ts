@@ -35,9 +35,7 @@ class KanbanStore {
     try {
       const response = await apiGet('/tasker/columns');
       if (response.data) {
-        console.log(response.data)
         this.columns = response.data.taskcolomns;
-        console.log(this.columns)
         this.state = FULFILLED;
       }
     } catch (e) {

@@ -1,8 +1,10 @@
 import { ChangeEventHandler, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { CallSipWrapper } from './Call.styled';
 
 import CommonButton from '../../../components/shared/button/CommonButton';
 import CommonInput from '../../../components/shared/fields/CommonInput';
-import { CallSipWrapper } from './Call.styled';
 
 interface IProps {
   callActive: boolean;
@@ -13,7 +15,7 @@ interface IProps {
 const CallSipForm: React.FC<IProps> = (props) => {
   const { callActive, makeCall, endCall } = props;
   const [value, setValue] = useState('');
-
+  const { t } = useTranslation();
   const myAudio = useRef<HTMLAudioElement>(null);
   const handlePhoneChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     setValue(e.target.value);
@@ -22,7 +24,7 @@ const CallSipForm: React.FC<IProps> = (props) => {
   return (
     <CallSipWrapper>
       <CommonInput
-        label='Номер телефона'
+        label={t('Номер телефона')}
         type='text'
         value={value}
         onChange={handlePhoneChange}
@@ -34,13 +36,13 @@ const CallSipForm: React.FC<IProps> = (props) => {
         typeBtn='success'
         disabled={callActive}
       >
-        Позвонить
+        {t('Позвонить')}
       </CommonButton>
       <CommonButton
         onClick={endCall}
         type='button'
       >
-        Отбой
+        {t('Отбой')}
       </CommonButton>
       <audio
         ref={myAudio}

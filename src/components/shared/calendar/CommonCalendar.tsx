@@ -1,13 +1,14 @@
 import Calendar from 'react-calendar';
+import { useTranslation } from 'react-i18next';
 
 import { inject, observer } from 'mobx-react';
 
-import { ReactComponent as NextIcon } from '../../icons/arrownext.svg';
-import { ReactComponent as PrevIcon } from '../../icons/arrowprev.svg';
+import { WrapperCalendar } from './CommonCalendar.tsyled';
 
 import CalendarStore from '../../../store/calendarStore';
-import { WrapperCalendar } from './CommonCalendar.tsyled';
 import { addDateBy } from '../../../utils/date-events';
+import { ReactComponent as NextIcon } from '../../icons/arrownext.svg';
+import { ReactComponent as PrevIcon } from '../../icons/arrowprev.svg';
 
 interface IProps {
   calendarStore?: CalendarStore;
@@ -15,6 +16,7 @@ interface IProps {
 }
 const CommonCalendar: React.FC<IProps> = observer(({ calendarStore, currentView }) => {
   const { activeDate, getMonday, setActiveDate } = calendarStore!;
+  const { t } = useTranslation();
   const isDate = (date: any): date is Date => date instanceof Date;
   const generateDateArray = (startDate: Date, endDate: Date) => {
     const dates = [];
@@ -44,6 +46,7 @@ const CommonCalendar: React.FC<IProps> = observer(({ calendarStore, currentView 
     } else if (currentView === 'resourceDayGridMonth') {
       return month.some((selectedDate) => {
         const selectedDateObj = new Date(selectedDate);
+
         return (
           date.getFullYear() === selectedDateObj.getFullYear() &&
           date.getMonth() === selectedDateObj.getMonth() &&
@@ -62,16 +65,18 @@ const CommonCalendar: React.FC<IProps> = observer(({ calendarStore, currentView 
     } else if (currentView === 'resourceDayGridMonth') {
       return null;
     }
+
     return undefined;
   };
+
   return (
     <WrapperCalendar>
       <Calendar
         nextLabel={<NextIcon />}
         prevLabel={<PrevIcon />}
         maxDetail={currentView === 'resourceDayGridMonth' ? 'year' : 'month'}
-        prevAriaLabel={'Предыдущий месяц'}
-        nextAriaLabel={'Следующий месяц'}
+        prevAriaLabel={t('Предыдущий месяц')}
+        nextAriaLabel={t('Следующий месяц')}
         onClickMonth={(val) => changeDate(val)}
         defaultView={currentView === 'resourceDayGridMonth' ? 'year' : 'month'}
         tileClassName={tileClassNameFunction}

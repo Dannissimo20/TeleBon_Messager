@@ -1,12 +1,13 @@
 import { FC, useState } from 'react';
-import { EIcon, IconNew as IconInstance } from '../../../../../components/icons/medium-new-icons/icon';
+
+import { inject, observer } from 'mobx-react';
 
 import { InputContainerWrapper } from './InputContainer.styled';
 
-import InputCard from '../input-card/InputCard';
-import { inject, observer } from 'mobx-react';
-import ModalStore from '../../../../../store/modalStore';
+import { EIcon, IconNew as IconInstance } from '../../../../../components/icons/medium-new-icons/icon';
 import KanbanStore from '../../../../../store/kanbanStore';
+import ModalStore from '../../../../../store/modalStore';
+import InputCard from '../input-card/InputCard';
 
 interface IProps {
   listId?: string;
@@ -35,7 +36,7 @@ const InputContainer: FC<IProps> = observer((props) => {
         <div>
           <div className='input-content'>
             <button onClick={createCategory}>
-              <IconInstance name={EIcon.plusoutline} />
+              <IconInstance name={EIcon.plussquare} />
             </button>
           </div>
         </div>

@@ -1,20 +1,22 @@
 import React, { FC } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import classNames from 'classnames';
 
+import { Menu, Wrapper } from './NoticesMenu.styled';
+
 import { FlexContainer } from '../../../../utils/styleUtils';
 import { useOutside } from '../../../hooks/useOutside';
-import { EIcon, IconNew as IconInstance } from '../../../icons/medium-new-icons/icon';
 import { ReactComponent as CheckedIcon } from '../../../icons/checked.svg';
+import { EIcon, IconNew as IconInstance } from '../../../icons/medium-new-icons/icon';
 import { ReactComponent as SettingsIcon } from '../../../icons/settings.svg';
-import { Menu, Wrapper } from './NoticesMenu.styled';
 
 const NoticesMenu: FC = () => {
   const { ref, isShow, setIsShow } = useOutside(false);
+  const { t } = useTranslation();
 
   return (
     <Wrapper ref={ref}>
-      {/*<button className={classNames(isShow && 'active')} onClick={() => setIsShow(!isShow)}>*/}
       <button
         className={classNames(isShow && 'active')}
         onClick={() => {}}
@@ -30,7 +32,7 @@ const NoticesMenu: FC = () => {
           >
             <IconInstance name={EIcon.plus} />
           </button>
-          <h1>Уведомления</h1>
+          <h1>{t('Уведомления')}</h1>
           <FlexContainer>
             <button>
               <CheckedIcon />
@@ -47,7 +49,7 @@ const NoticesMenu: FC = () => {
             className='empty'
           >
             <IconInstance name={EIcon.ticket} />
-            <h4>Список уведомлений пуст</h4>
+            <h4>{t('Список уведомлений пуст')}</h4>
           </FlexContainer>
         </div>
       </Menu>

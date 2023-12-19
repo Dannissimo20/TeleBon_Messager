@@ -10,6 +10,7 @@ interface Props<T> {
 
 const TableRowItem = styled.tr`
   cursor: auto;
+  height: 48px;
   &:nth-child(odd): {
     background-color: #f9f9f9;
   }
@@ -45,8 +46,13 @@ interface PropsRowCell<T> {
 
 const TableCell = styled.td`
   padding: 12px;
-  font-size: 14px;
-  color: 'grey';
+  width: 320px;
+  max-width: 320px;
+  font-size: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  border-bottom: 2px solid ${(props) => props.theme.color.secondaryMedium};
 `;
 
 export function TableRowCell<T>({ item, column }: PropsRowCell<T>): JSX.Element {

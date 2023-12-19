@@ -1,16 +1,20 @@
 import { FC, useState } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
-import TextareaAutosize from 'react-textarea-autosize';
-import { CardContent } from './Card.styled';
-import { IColumn, ITask } from '../../../../../store/kanbanStore';
-import { inject, observer } from 'mobx-react';
-import ModalStore from '../../../../../store/modalStore';
-import { FlexWithAlign } from '../../../../../utils/styleUtils';
-import UserStore from '../../../../../store/userStore';
-import Cookies from 'js-cookie';
-import classnames from 'classnames';
-import { EIcon, IconNew as IconInstance } from '../../../../../components/icons/medium-new-icons/icon';
 import { useTranslation } from 'react-i18next';
+
+import classnames from 'classnames';
+import Cookies from 'js-cookie';
+import { inject, observer } from 'mobx-react';
+
+import { CardContent } from './Card.styled';
+
+import { useOutside } from '../../../../../components/hooks/useOutside';
+import { EIcon, IconNew as IconInstance } from '../../../../../components/icons/medium-new-icons/icon';
+import { IColumn, ITask } from '../../../../../store/kanbanStore';
+import ModalStore from '../../../../../store/modalStore';
+import UserStore from '../../../../../store/userStore';
+import { FlexWithAlign } from '../../../../../utils/styleUtils';
+
 interface IProps {
   card: ITask;
   listId: string;
@@ -26,15 +30,10 @@ const Card: FC<IProps> = observer((props) => {
   const { user } = userStore!;
 
   const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
+  const { ref, isShow, setIsShow } = useOutside(false);
   const [openOptions, setOpenOptions] = useState(false);
-  const [newTitle, setNewTitle] = useState(card.content);
 
-  const filteredEmployee = user && user?.find(item => item.id === card.employeetaskid)
-
-  const handleOnBlur = (cardId: any) => {
-    setOpen(!open);
-  };
+  const filteredEmployee = user && user?.find((item) => item.id === card.employeetaskid);
 
   const deleteTask = (info: string) => {
     modalStore?.openModal({
@@ -60,10 +59,11 @@ const Card: FC<IProps> = observer((props) => {
         setLocalColumns: setLocalColumns
       }
     });
+    setIsShow(false);
   };
 
   return (
-    <>
+    <div ref={ref}>
       {card ? (
         <Draggable
           draggableId={card.id || ''}
@@ -76,83 +76,65 @@ const Card: FC<IProps> = observer((props) => {
               {...provided.draggableProps}
             >
               <CardContent>
-                {open ? (
-                  <TextareaAutosize
-                    className='input-card-title'
-                    value={newTitle}
-                    onChange={(e) => setNewTitle(e.target.value)}
-                    onBlur={handleOnBlur}
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter') {
-                        handleOnBlur(card.id);
-                      }
-                      return;
-                    }}
-                    autoFocus
-                  />
-                ) : (
-                  <div
-                    onClick={createCategory}
-                    className='card-title-container'
-                  >
-                    <FlexWithAlign $justify={'between'}>
-                      <div className={'content'}>
-                        <p>{card.content}</p>
-                      </div>
-                      <button
-                        className={'options'}
-                        onClick={(e: any) => {
-                          e.stopPropagation();
-                          setOpenOptions(!openOptions);
-                        }}
-                      >
-                        <IconInstance name={EIcon.moreverticaloutline} />
-                      </button>
-                      {openOptions && (
-                        <ul className='menu-card'>
-                          <li
-                            onClick={(e: any) => {
-                              e.stopPropagation();
-                              setOpenOptions(!openOptions);
-                              setOpen(!open);
-                            }}
-                          >
-                            {t('Архивировать')}
-                          </li>
-                          <li
-                            onClick={(e: any) => {
-                              e.stopPropagation();
-                              deleteTask(card.id || '');
-                              setOpenOptions(!openOptions);
-                              setOpen(!open);
-                            }}
-                          >
-                            {t('Удалить')}
-                          </li>
-                        </ul>
-                      )}
-                    </FlexWithAlign>
-
-                    <div className={'tag'}>
-                      {user
-                        ?.filter((item) => item.id === Cookies.get('id'))
-                        .map((filteredUser) => (
-                          <span
-                            className={classnames(filteredUser.id === card.employeetaskid ? 'blue' : 'purple')}
-                            key={filteredUser.id}
-                          >
-                            {filteredUser.id === card.employeetaskid ? 'Мой' : filteredEmployee?.fio}
-                          </span>
-                        ))}
+                <div
+                  onClick={createCategory}
+                  className='card-title-container'
+                >
+                  <FlexWithAlign $justify={'between'}>
+                    <div className={'content'}>
+                      <p>{card.content}</p>
                     </div>
+                    <button
+                      className={'options'}
+                      onClick={(e: any) => {
+                        e.stopPropagation();
+                        setIsShow(!isShow);
+                      }}
+                    >
+                      <IconInstance name={EIcon.moreverticaloutline} />
+                    </button>
+                    {isShow && (
+                      <ul className='menu-card'>
+                        <li
+                          onClick={(e: any) => {
+                            e.stopPropagation();
+                            setIsShow(!isShow);
+                          }}
+                        >
+                          {t('Архивировать')}
+                        </li>
+                        <li
+                          onClick={(e: any) => {
+                            e.stopPropagation();
+                            deleteTask(card.id || '');
+                            setIsShow(!isShow);
+                          }}
+                        >
+                          {t('Удалить')}
+                        </li>
+                      </ul>
+                    )}
+                  </FlexWithAlign>
+
+                  <div className={'tag'}>
+                    {user
+                      ?.filter((item) => item.id === Cookies.get('id'))
+                      .map((filteredUser) => (
+                        <span
+                          className={classnames(filteredUser.id === card.employeetaskid ? 'blue' : 'purple')}
+                          key={filteredUser.id}
+                        >
+                          {filteredUser.id === card.employeetaskid ? 'Мой' : filteredEmployee?.fio}
+                        </span>
+                      ))}
                   </div>
-                )}
+                </div>
               </CardContent>
             </div>
           )}
         </Draggable>
       ) : null}
-    </>
+    </div>
   );
 });
 

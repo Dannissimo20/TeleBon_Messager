@@ -1,12 +1,10 @@
 import React, { FC } from 'react';
+import { useTranslation } from 'react-i18next';
 import { NavLink, useParams } from 'react-router-dom';
 
-
-import { EIcons, Icon as IconInstance } from '../../../../components/icons';
 import { List, NavMenuItem, NavMenuWrapper, PageHeader, Title, Wrapper } from './AdminTopbar.styled';
 
-
-
+import { EIcons, Icon as IconInstance } from '../../../../components/icons';
 
 const headData = [
   {
@@ -25,6 +23,8 @@ const headData = [
 
 const AdminTopbar: FC = () => {
   const { analyticsId } = useParams();
+  const { t } = useTranslation();
+
   return (
     <>
       <>
@@ -32,7 +32,7 @@ const AdminTopbar: FC = () => {
           <PageHeader>
             <Title>
               <IconInstance name={EIcons.admin} />
-              Администрирование
+              {t('Администрирование')}
             </Title>
           </PageHeader>
         </Wrapper>
@@ -43,7 +43,7 @@ const AdminTopbar: FC = () => {
                 key={item.to}
                 className={analyticsId === item.to ? 'active' : ''}
               >
-                <NavLink to={`/admin/${item.to}`}>{item.name}</NavLink>
+                <NavLink to={`/admin/${item.to}`}>{t(item.name)}</NavLink>
               </NavMenuItem>
             ))}
           </List>

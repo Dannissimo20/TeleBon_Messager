@@ -13,7 +13,7 @@ import { CallIcon, UserRegistrationIcon } from '../../../components/icons';
 import { ReactComponent as Email } from '../../../components/icons/email.svg';
 import { ReactComponent as Lock } from '../../../components/icons/lock.svg';
 import UserStore from '../../../store/userStore';
-import { apiPost, apiPut } from '../../../utils/apiInstance';
+import { apiGet, apiPost, apiPut } from '../../../utils/apiInstance';
 import { setCookie } from '../../../utils/cookies';
 import { Padding } from '../../../utils/styleUtils';
 import { validationSchema } from '../../../utils/validation-input';
@@ -48,7 +48,6 @@ const RegistrationContainer: React.FC<{ userStore?: UserStore }> = (props) => {
     onSubmit: (values: any) => {},
     validateOnBlur: true
   });
-
   useEffect(() => {
     if (
       formik.values.phone.trim() !== '' &&
@@ -121,6 +120,7 @@ const RegistrationContainer: React.FC<{ userStore?: UserStore }> = (props) => {
       setCookie('id', res.data.id);
       const productId = await createService('Категория услуг');
       await createSubservice('Ваша услуга', productId);
+      await apiGet('/tarif/promo')
       await createKanbanColumn();
 
       goTo('/products/cabinets');

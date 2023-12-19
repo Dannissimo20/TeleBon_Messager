@@ -31,13 +31,7 @@ export const WorkbenchSubTitle = styled.h3`
   }
 `;
 
-export const WorkbenchContainer = styled.div`
-  border: 1px solid ${(props) => props.theme.color.secondaryLight};
-  border-radius: 20px;
-  box-shadow: 0 3.2px 9px 0 rgba(0, 0, 0, 0.16), 0 0.6px 1.8px 0 rgba(0, 0, 0, 0.1), 0px -1.5px 6px 0px rgba(0, 0, 0, 0.06);
-  padding: 20px;
-  animation: ${scaleIn} 0.3s ease;
-`;
+
 export const WorkbenchText = styled.h4`
   font-size: 14px;
   font-weight: 600;

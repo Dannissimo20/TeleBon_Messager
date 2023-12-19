@@ -1,10 +1,12 @@
+import { useTranslation } from 'react-i18next';
+
 import { inject, observer } from 'mobx-react';
 
-import Breadcrumbs from '../../../breadcrumbs/Breadcrumbs';
+import { Title, Wrapper } from './AppointmentModal.styled';
 import NewAppointmentForm from './new/NewAppointmentForm';
 
 import { Padding } from '../../../../../utils/styleUtils';
-import { Title, Wrapper } from './AppointmentModal.styled';
+import Breadcrumbs from '../../../breadcrumbs/Breadcrumbs';
 
 interface IProps {
   closeModal?: () => void;
@@ -12,11 +14,12 @@ interface IProps {
 }
 
 const AppointmentModal: React.FC<IProps> = observer(({ modalPayload }) => {
+  const { t } = useTranslation();
   const crumbs = ['Первичное', 'Запись'];
 
   return (
     <Wrapper>
-      <Title>Новая запись</Title>
+      <Title>{t('Новая запись')}</Title>
       <Padding $size='12px' />
       <Breadcrumbs crumbs={crumbs} />
       <NewAppointmentForm payload={modalPayload} />

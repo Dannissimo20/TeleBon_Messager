@@ -1,19 +1,26 @@
 import React, { FC } from 'react';
-import { EIcon, IconNew as IconInstance } from '../../../../components/icons/medium-new-icons/icon';
+
 import classnames from 'classnames';
-import { ReactComponent as FilterIcon } from '../../../../components/icons/filter.svg';
 import dayjs from 'dayjs';
+
+import { CalendarWrapper, DateManipulation, Header, HeaderWrapper, Menu } from './RecordingHeader.styled';
+
+import { useOutside } from '../../../../../components/hooks/useOutside';
+import { ReactComponent as FilterIcon } from '../../../../../components/icons/filter.svg';
+import { EIcon, IconNew as IconInstance } from '../../../../../components/icons/medium-new-icons/icon';
+
 import 'dayjs/locale/ru';
 import { inject, observer } from 'mobx-react';
-import CalendarStore from '../../../../store/calendarStore';
-import CommonButton from '../../../../components/shared/button/CommonButton';
-import { FlexWithAlign, Partition } from '../../../../utils/styleUtils';
-import { CalendarWrapper, DateManipulation, Header, HeaderWrapper, Menu } from './RecordingHeader.styled';
-import ProductsCalendar from '../ProductsCalendar';
-import { useOutside } from '../../../../components/hooks/useOutside';
-import CommonDropdown from '../../../../components/shared/dropdawn/CommonDropdown';
-import SidebarStore from '../../../../store/sidebarStore';
-import { addDateBy } from '../../../../utils/date-events';
+
+import CommonButton from '../../../../../components/shared/button/CommonButton';
+import CommonDropdown from '../../../../../components/shared/dropdawn/CommonDropdown';
+import CalendarStore from '../../../../../store/calendarStore';
+import SidebarStore from '../../../../../store/sidebarStore';
+import { addDateBy } from '../../../../../utils/date-events';
+import { FlexWithAlign, Partition } from '../../../../../utils/styleUtils';
+import ProductsCalendar from '../../ProductsCalendar';
+
+import { useTranslation } from 'react-i18next';
 
 interface IProps {
   calendarStore?: CalendarStore;
@@ -39,8 +46,6 @@ const RecordingHeader: FC<IProps> = observer(
     isToggleEventType,
     setIsToggleEventType,
     setIsActiveResource,
-    setIsOpen,
-    isOpen,
     sidebarStore,
     renamedResources,
     isActiveResource
@@ -48,7 +53,8 @@ const RecordingHeader: FC<IProps> = observer(
     const { activeDate, getMonday } = calendarStore!;
 
     const { ref, setIsShow, isShow } = useOutside(false);
-
+    const { ref: ref1, setIsShow: setIsShow1, isShow: isShow1 } = useOutside(false);
+    const { t } = useTranslation();
     const dayJsStartWeek = dayjs(getMonday());
     const dayJsEndWeek = dayjs(addDateBy(getMonday(), 6));
     const dayJsDate = dayjs(activeDate);
@@ -78,15 +84,15 @@ const RecordingHeader: FC<IProps> = observer(
     const options = [
       {
         value: '0',
-        label: 'Все записи'
+        label: t('Все записи')
       },
       {
         value: '1',
-        label: 'Только групповые'
+        label: t('Только групповые')
       },
       {
         value: '2',
-        label: 'Только индивидуальные'
+        label: t('Только индивидуальные')
       }
     ];
     const createEmployeer = () => {
@@ -95,46 +101,48 @@ const RecordingHeader: FC<IProps> = observer(
     const handleGroup = (selected: any) => {
       setIsToggleEventType(parseInt(selected.value));
     };
+
     return (
       <HeaderWrapper>
         <Header className='main'>
-          <h2>Указание интервала записи</h2>
+          <h2>{t('Указание интервала записи')}</h2>
           <DateManipulation>
             <button
               className={classnames(currentView === 'resourceTimeGridDay' && 'active')}
               onClick={switchToDayView}
             >
-              День
+              {t('День')}
             </button>
             <button
               className={classnames(currentView === 'resourceTimeGridWeek' && 'active')}
               onClick={switchToWeekView}
             >
-              Неделя
+              {t('Неделя')}
             </button>
             <button
               className={classnames(currentView === 'resourceDayGridMonth' && 'active')}
               onClick={switchToMonthView}
             >
-              Месяц
+              {t('Месяц')}
             </button>
           </DateManipulation>
           {currentView !== 'resourceTimeGridDay' && (
             <Header
               className='menu'
-              onClick={() => setIsOpen(!isOpen)}
+              onClick={() => setIsShow1(!isShow1)}
+              ref={ref1}
             >
-              <button className={classnames('button', isOpen && 'active')}>
+              <button className={classnames('button', isShow1 && 'active')}>
                 <p>{isActiveResource?.name || isActiveResource?.fio}</p>
                 <IconInstance name={EIcon.arrowleft} />
               </button>
-              {isOpen && (
+              {isShow1 && (
                 <div>
                   {renamedResources.map((item: any) => (
                     <div
                       onClick={() => {
                         setIsActiveResource(item);
-                        setIsOpen(false);
+                        setIsShow1(false);
                       }}
                       key={item?.id}
                     >
@@ -189,7 +197,7 @@ const RecordingHeader: FC<IProps> = observer(
               $alignCenter='center'
               $gap='16px'
             >
-              <FilterIcon /> Фильтр
+              <FilterIcon /> {t('Фильтр')}
               <Menu></Menu>
             </FlexWithAlign>
           </CommonButton>

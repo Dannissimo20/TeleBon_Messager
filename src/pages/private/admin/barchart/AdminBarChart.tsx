@@ -1,9 +1,8 @@
 import React, { FC, useEffect, useRef } from 'react';
 
 import Chart from 'chart.js/auto';
+
 import { Wrapper } from './AdminBarChart.styled';
-
-
 
 interface AdminBarChartProps {
   data: { labels: string[]; values: number[] };

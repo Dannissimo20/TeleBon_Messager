@@ -1,22 +1,23 @@
 import React, { FC, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 
 import { useFormik } from 'formik';
 import { inject, observer } from 'mobx-react';
+
+import { Box, ButtonInner, Wrapper } from './CreateEmployeersModal.styled';
+
 import { EIcon, IconNew as IconInstance } from '../../../../../components/icons/medium-new-icons/icon';
-
-import CommonButton from '../../../button/CommonButton';
-import CommonInput from '../../../fields/CommonInput';
-import CommonInputPhone from '../../../fields/common-input-phone/CommonInputPhone';
-
+import { ModalGrid } from '../../../../../pages/private/product/modal/start/FirstForm.styled';
+import FilialStore, { IFilial } from '../../../../../store/filialStore';
+import UserStore from '../../../../../store/userStore';
 import { apiPost, apiPut } from '../../../../../utils/apiInstance';
 import { FlexWithAlign, FormStyle, PageTitle, Text } from '../../../../../utils/styleUtils';
 import { validationEmployeeSchema } from '../../../../../utils/validation-input';
-import { Box, ButtonInner, Wrapper } from './CreateEmployeersModal.styled';
-import FilialStore, { IFilial } from '../../../../../store/filialStore';
-import UserStore from '../../../../../store/userStore';
+import CommonButton from '../../../button/CommonButton';
 import CommonDropdown from '../../../dropdawn/CommonDropdown';
-import { ModalGrid } from '../../../../../pages/private/product/modal-elements/form-start/FirstForm.styled';
+import CommonInputPhone from '../../../fields/common-input-phone/CommonInputPhone';
+import CommonInput from '../../../fields/CommonInput';
 
 interface IProps {
   userStore?: UserStore;
@@ -26,8 +27,14 @@ interface IProps {
   modalPayload?: any;
 }
 
+const roleArray = [
+  { label: 'Администратор', value: 'administrator' },
+  { label: 'Менеджер', value: 'manager' }
+];
+
 const CreateEmployeersModal: FC<IProps> = observer((props) => {
   const { closeModal, edit, modalPayload, filialStore, userStore } = props;
+  const { t } = useTranslation();
   const { user } = userStore!;
   const { filials } = filialStore!;
   const [pending, setPending] = useState(false);
@@ -65,7 +72,7 @@ const CreateEmployeersModal: FC<IProps> = observer((props) => {
   });
 
   useEffect(() => {
-    if (formik.values.fio && formik.values.email && formik.values.phone && formik.values.idfilial) {
+    if (formik.values.fio && formik.values.email && formik.values.phone && formik.values.idfilial && formik.values.role) {
       setFormValid(true);
     } else {
       setFormValid(false);
@@ -113,13 +120,13 @@ const CreateEmployeersModal: FC<IProps> = observer((props) => {
 
   return (
     <Wrapper>
-      <PageTitle>{!edit ? 'Новый сотрудник' : 'Редактировать данные сотрудника'}</PageTitle>
+      <PageTitle>{!edit ? t('Новый сотрудник') : t('Редактировать данные сотрудника')}</PageTitle>
       <Text>Информация о сотруднике</Text>
       <FormStyle onSubmit={handleSubmit}>
         <Box className='form'>
           <CommonInput
             simple
-            label={'ФИО сотрудника'}
+            label={t('ФИО сотрудника')}
             value={formik.values.fio}
             onChange={formik.handleChange}
             name='fio'
@@ -133,7 +140,7 @@ const CreateEmployeersModal: FC<IProps> = observer((props) => {
           <ModalGrid>
             <CommonInputPhone
               simple
-              label={'Телефон'}
+              label={t('Телефон')}
               name='phone'
               value={formik.values.phone}
               onChange={formik.handleChange('phone')}
@@ -147,7 +154,7 @@ const CreateEmployeersModal: FC<IProps> = observer((props) => {
 
             <CommonInput
               simple
-              label={'Должность'}
+              label={t('Должность')}
               name='position'
               value={formik.values.position}
               onChange={formik.handleChange}
@@ -166,20 +173,19 @@ const CreateEmployeersModal: FC<IProps> = observer((props) => {
               }}
               options={transformedFilials}
               currentValue={formik.values.idfilial}
-              placeholder={'Филиал'}
+              placeholder={t('Филиал')}
             />
-            <CommonInput
-              simple
-              label={'Роль в системе'}
-              name='role'
-              value={formik.values.role}
-              onChange={formik.handleChange}
-              type={'text'}
+            <CommonDropdown
+              onChange={(option: any) => {
+                formik.setFieldValue('role', option.value);
+              }}
               onBlur={formik.handleBlur}
               error={formik.touched.role && formik.errors.role}
+              options={roleArray}
+              currentValue={roleArray.find((item) => item.label === formik.values.role)?.label || formik.values.role}
+              placeholder={t('Роль в системе')}
               formik={formik}
-              disabled
-            ></CommonInput>
+            />
           </ModalGrid>
 
           <ModalGrid>
@@ -204,7 +210,7 @@ const CreateEmployeersModal: FC<IProps> = observer((props) => {
                 disabled
                 gap='16px'
               >
-                Пригласить в систему
+                {t('Пригласить в систему')}
                 <IconInstance name={EIcon.arrowrightwithsquare} />
               </CommonButton>
             </div>
@@ -214,7 +220,7 @@ const CreateEmployeersModal: FC<IProps> = observer((props) => {
             $alignCenter='center'
             $justify='end'
           >
-            <CommonButton typeBtn='ghost'>Отменить</CommonButton>
+            <CommonButton typeBtn='ghost'>{t('Отменить')}</CommonButton>
             <CommonButton
               colored={true}
               typeBtn='primary'
@@ -222,7 +228,7 @@ const CreateEmployeersModal: FC<IProps> = observer((props) => {
               disabled={!formik.isValid || formik.values.fio === '' || formik.values.email === ''}
             >
               <ButtonInner>
-                <span>{edit ? 'Сохранить' : 'Добавить'}</span>
+                <span>{edit ? t('Сохранить') : t('Добавить')}</span>
               </ButtonInner>
             </CommonButton>
           </FlexWithAlign>

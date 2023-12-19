@@ -7,7 +7,6 @@ interface Props<T> {
 }
 
 const TableHeaderCell = styled.th`
-  background-color: #f1f1f1;
   padding: 12px;
   font-weight: 500;
   text-align: left;

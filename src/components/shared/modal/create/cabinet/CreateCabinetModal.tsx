@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 
 import { useFormik } from 'formik';
 import { inject, observer } from 'mobx-react';
-import { EIcon, IconNew as IconInstance } from '../../../../../components/icons/medium-new-icons/icon';
 
+import { Form, Title, Wrapper } from './CreateCabinetModal.styled';
+
+import { EIcon, IconNew as IconInstance } from '../../../../../components/icons/medium-new-icons/icon';
+import { ModalGrid } from '../../../../../pages/private/product/modal/start/FirstForm.styled';
+import CabinetsStore from '../../../../../store/cabinetsStore';
+import FilialStore from '../../../../../store/filialStore';
+import { apiPut } from '../../../../../utils/apiInstance';
+import { FlexWithAlign, Text } from '../../../../../utils/styleUtils';
 import CommonButton from '../../../button/CommonButton';
 import CommonInput from '../../../fields/CommonInput';
-
-import CabinetsStore from '../../../../../store/cabinetsStore';
-import { apiPost, apiPut } from '../../../../../utils/apiInstance';
-import { FlexWithAlign, Text } from '../../../../../utils/styleUtils';
-import { Form, Title, Wrapper } from './CreateCabinetModal.styled';
-import { ModalGrid } from '../../../../../pages/private/product/modal-elements/form-start/FirstForm.styled';
-import FilialStore from '../../../../../store/filialStore';
 
 interface IProps {
   closeModal?: () => void;
@@ -24,6 +25,7 @@ interface IProps {
 }
 const CreateCabinetModal: React.FC<IProps> = observer(({ filialStore, edit, modalPayload, closeModal, cabinetsStore }) => {
   const [pending, setPending] = useState(false);
+  const { t } = useTranslation();
   const { filials, activeFilial } = filialStore!;
   const initialValues = {
     filial: activeFilial?.id,
@@ -59,20 +61,6 @@ const CreateCabinetModal: React.FC<IProps> = observer(({ filialStore, edit, moda
       toast.error(res.data.description);
     }
   };
-
-  const editCabinet = async (values: any) => {
-    const res = await apiPost(`/cabinet/${activeFilial?.id}/${activeFilial?.id}`, {
-      ...values,
-      filial: activeFilial?.id
-    });
-
-    if (res?.status === 200) {
-      activeFilial && cabinetsStore!.fetch(activeFilial?.id);
-      toast.success('Кабинет успешно обновлен');
-    } else {
-      toast.error(res.data.description);
-    }
-  };
   const handleSubmit = (e: any) => {
     e.preventDefault();
     createCabinet(formik.values);
@@ -80,12 +68,12 @@ const CreateCabinetModal: React.FC<IProps> = observer(({ filialStore, edit, moda
 
   return (
     <Wrapper>
-      <Title>Новый кабинет</Title>
+      <Title>{t('Новый кабинет')}</Title>
       <Form onSubmit={handleSubmit}>
-        <Text>Информация о кабинете</Text>
+        <Text>{t('Информация о кабинете')}</Text>
         <ModalGrid>
           <CommonInput
-            label={'Название'}
+            label={t('Название')}
             value={formik.values.name}
             onChange={formik.handleChange}
             name='name'
@@ -95,7 +83,7 @@ const CreateCabinetModal: React.FC<IProps> = observer(({ filialStore, edit, moda
           />
           <FlexWithAlign $alignCenter='center'>
             <CommonInput
-              label={'Вместимость'}
+              label={t('Вместимость')}
               value={formik.values.seatsLimited}
               onChange={formik.handleChange}
               name='seatsLimited'
@@ -132,10 +120,10 @@ const CreateCabinetModal: React.FC<IProps> = observer(({ filialStore, edit, moda
             </FlexWithAlign>
           </FlexWithAlign>
         </ModalGrid>
-        <Text>Рабочее время</Text>
+        <Text>{t('Рабочее время')}</Text>
         <ModalGrid>
           <CommonInput
-            label={'Начало'}
+            label={t('Начало')}
             value={formik.values.workHoursStart}
             onChange={formik.handleChange}
             name='workHoursStart'
@@ -145,7 +133,7 @@ const CreateCabinetModal: React.FC<IProps> = observer(({ filialStore, edit, moda
             simple
           />
           <CommonInput
-            label={'Окончание'}
+            label={t('Окончание')}
             value={formik.values.workHoursEnd}
             onChange={formik.handleChange}
             name='workHoursEnd'
@@ -156,7 +144,10 @@ const CreateCabinetModal: React.FC<IProps> = observer(({ filialStore, edit, moda
           />
         </ModalGrid>
 
-        <FlexWithAlign $alignCenter='center' $justify='end'>
+        <FlexWithAlign
+          $alignCenter='center'
+          $justify='end'
+        >
           <CommonButton
             onClick={(e: any) => {
               e.preventDefault();
@@ -164,7 +155,7 @@ const CreateCabinetModal: React.FC<IProps> = observer(({ filialStore, edit, moda
             }}
             typeBtn='ghost'
           >
-            Отменить
+            {t('Отменить')}
           </CommonButton>
           <CommonButton
             colored={true}
@@ -172,7 +163,7 @@ const CreateCabinetModal: React.FC<IProps> = observer(({ filialStore, edit, moda
             type='submit'
             disabled={pending}
           >
-            <span>Добавить</span>
+            <span>{t('Добавить')}</span>
           </CommonButton>
         </FlexWithAlign>
       </Form>

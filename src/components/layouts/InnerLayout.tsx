@@ -1,11 +1,14 @@
+import { PropsWithChildren, useEffect } from 'react';
+
 import { inject, observer } from 'mobx-react';
-import {  PropsWithChildren, useEffect } from 'react';
+
+import CommonHeader from './header/common-header/CommonHeader';
+import { Container, Content, MainContent, Wrapper } from './innerLayout.styled';
+import Sidebar from './sidebar/Sidebar';
+
+import ErrorBoundary from '../../pages/public/error/ErrorBoundary';
 import FilialStore from '../../store/filialStore';
 import ProductsStore from '../../store/productsStore';
-import CommonHeader from './header/common-header/CommonHeader';
-import Sidebar from './sidebar/Sidebar';
-import { Container, Content, MainContent, Wrapper } from './innerLayout.styled';
-import ErrorBoundary from '../../pages/public/error/ErrorBoundary';
 
 interface IProps extends PropsWithChildren {
   children?: React.ReactNode;
@@ -16,7 +19,6 @@ interface IProps extends PropsWithChildren {
   currentTheme: string;
 }
 
-
 const InnerLayout: React.FC<IProps> = observer((props: IProps) => {
   const { children, filialStore, productsStore, toggleTheme, currentTheme } = props;
 
@@ -24,8 +26,6 @@ const InnerLayout: React.FC<IProps> = observer((props: IProps) => {
     filialStore?.fetch();
     productsStore?.fetchProducts();
   }, []);
-
-
 
   return (
     <Container>

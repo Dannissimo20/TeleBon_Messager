@@ -1,6 +1,6 @@
 import { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import dayjs from 'dayjs';
 import { inject, observer } from 'mobx-react';
@@ -10,7 +10,6 @@ import { CalendarHeader, CalendarWrapper } from './Calendar.styled';
 import { EIcon, IconNew as IconInstance } from '../../../../components/icons/medium-new-icons/icon';
 import {
   CalendarContent,
-  WorkbenchContainer,
   WorkbenchSubText,
   WorkbenchSubTitle,
   WorkbenchText
@@ -20,6 +19,7 @@ import ClientsStore from '../../../../store/clientsStore';
 import FilialStore from '../../../../store/filialStore';
 import LessonsStore from '../../../../store/lessonsStore';
 import { FlexContainer, FlexWithAlign } from '../../../../utils/styleUtils';
+import { InformationWrapper } from '../../../../components/views/PageStyled.styled';
 
 interface IProps {
   lessonsStore?: LessonsStore;
@@ -37,7 +37,9 @@ const Calendar: FC<IProps> = observer((props) => {
   const { clients } = clientsStore!;
   const formatedTime = dayjs(new Date()).format('DD');
   const formattedDate = dayjs(new Date()).format('DD.MM.YYYY');
+  const location = useLocation();
 
+  const { pathname } = location;
   const fetchLessonsInfo = async () => {
     await fetchLessons();
     if (activeFilial?.id) {
@@ -49,15 +51,17 @@ const Calendar: FC<IProps> = observer((props) => {
     fetchLessonsInfo();
   }, []);
 
-  console.log(lessons);
 
   return (
-    <WorkbenchContainer>
+    <InformationWrapper>
       <WorkbenchSubTitle>
         {t('Календарь')}
-        <Link to={'/products/cabinets'}>
-          <IconInstance name={EIcon.arrowleft} />
-        </Link>
+        {pathname === '/workbench' && (
+          <Link to={'/products/cabinets'}>
+            <IconInstance name={EIcon.arrowleft} />
+          </Link>
+        )
+        }
       </WorkbenchSubTitle>
       <CalendarWrapper>
         <FlexContainer $gap={'12px'}>
@@ -84,7 +88,7 @@ const Calendar: FC<IProps> = observer((props) => {
                   >
                     {lessons &&
                       lessons
-                        .filter((item) => dayjs(item.start).format('DD') === formatedTime && item.resourceId === cabinet.id)
+                        .filter((item) => dayjs(item.start).format('DD') === formatedTime && item.resourceId === cabinet.id && item.ClientId !== null)
                         .map((item) => (
                           <CalendarContent key={item.id}>
                             <FlexWithAlign
@@ -127,7 +131,7 @@ const Calendar: FC<IProps> = observer((props) => {
               .slice(0, 3)}
         </FlexContainer>
       </CalendarWrapper>
-    </WorkbenchContainer>
+    </InformationWrapper>
   );
 });
 

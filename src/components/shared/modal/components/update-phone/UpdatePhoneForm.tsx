@@ -1,21 +1,27 @@
 import { SyntheticEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useFormik } from 'formik';
 import { inject, observer } from 'mobx-react';
 
+import { Form } from './UpdatePhoneForm.styled';
+
+import ModalStore from '../../../../../store/modalStore';
 import UserStore from '../../../../../store/userStore';
-import { FlexContainer } from '../../../../../utils/styleUtils';
+import { FlexContainer, FlexWithAlign } from '../../../../../utils/styleUtils';
+import { EIcon, IconNew as IconInstance } from '../../../../icons/medium-new-icons/icon';
 import CommonButton from '../../../button/CommonButton';
 import CommonInputPhone from '../../../fields/common-input-phone/CommonInputPhone';
-import { Form } from './UpdatePhoneForm.styled';
 
 interface IProps {
   modalPayload: any;
   userStore?: UserStore;
+  modalStore?: ModalStore;
 }
 
-const UpdatePhoneForm: React.FC<IProps> = observer(({ modalPayload, userStore }) => {
+const UpdatePhoneForm: React.FC<IProps> = observer(({ modalStore, modalPayload, userStore }) => {
   const { profileUser, updateUser } = userStore!;
+  const { t } = useTranslation();
 
   const initialValues = {
     phone: ''
@@ -29,26 +35,41 @@ const UpdatePhoneForm: React.FC<IProps> = observer(({ modalPayload, userStore })
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
     updateUser(profileUser.id, formik.values);
+    modalStore?.closeModal();
   };
 
   return (
     <Form onSubmit={handleSubmit}>
-      <FlexContainer>
+      <FlexContainer $column>
         <CommonInputPhone
-          label={'Телефон'}
+          label={t('Телефон')}
           value={formik.values.phone}
           onChange={formik.handleChange('phone')}
           name={'phone'}
-        />
-        <CommonButton
-          colored={true}
-          typeBtn='success'
+          simple
         >
-          <span>Сохранить телефон</span>
-        </CommonButton>
+          <IconInstance name={EIcon.phone} />
+        </CommonInputPhone>
+        <FlexWithAlign $alignCenter={'center'}>
+          <CommonButton
+            typeBtn='ghost'
+            onClick={(e) => {
+              e.preventDefault();
+              modalStore?.closeModal();
+            }}
+          >
+            <span>{t('Отменить')}</span>
+          </CommonButton>
+          <CommonButton
+            typeBtn='primary'
+            disabled={!formik.isValid}
+          >
+            <span>{t('Сохранить')}</span>
+          </CommonButton>
+        </FlexWithAlign>
       </FlexContainer>
     </Form>
   );
 });
 
-export default inject('userStore')(UpdatePhoneForm);
+export default inject('userStore', 'modalStore')(UpdatePhoneForm);

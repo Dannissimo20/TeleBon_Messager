@@ -32,7 +32,8 @@ export const validationEmployeeSchema = Yup.object({
   fio: Yup.string()
     .matches(/^[А-Яа-яЁё\s]+$/, 'Введите ФИО на русском языке')
     .required('Введите ФИО'),
-  idfilial: Yup.string().required('Выберите филиал')
+  idfilial: Yup.string().required('Выберите филиал'),
+  role: Yup.string().required('Выберите роль')
 });
 
 export const validationPasswordSchema = Yup.object({
@@ -44,7 +45,7 @@ export const validationPasswordSchema = Yup.object({
 
 export const validationServiceWithGroupSchema = Yup.object({
   name: Yup.string().required('Введите название'),
-  duration: Yup.number().required('Введите длительность').min(1, 'Минимальная длительность 1').max(24, 'Максимальная длительность 24'),
+  duration: Yup.number().required('Введите длительность').min(1, 'Минимальная длительность 1').max(1440, 'Максимальная длительность 1440 минут'),
   seatsmin: Yup.number().min(2, 'Min вместимость 1').max(999, 'Max вместимость 999').required('Введите значение'),
   seatsmax: Yup.number()
     .min(2, 'Min вместимость 2')
@@ -60,5 +61,5 @@ export const validationRecordingModal = Yup.object({
   productId: Yup.string().required('Введите название'),
   resourceId: Yup.string().required('Введите название'),
   name: Yup.string().matches(/^[А-Яа-яЁё\s]+$/, 'Введите ФИО на русском языке'),
-  phone: Yup.string().length(12, 'Неверный формат номера').required('Введите телефон'),
+  phone: Yup.string().length(12, 'Неверный формат номера').required('Введите телефон')
 });

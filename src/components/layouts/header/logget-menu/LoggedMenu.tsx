@@ -1,5 +1,6 @@
 import React, { FC, Fragment, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { inject, observer } from 'mobx-react';
 
@@ -18,8 +19,9 @@ interface IProps {
 }
 
 const LoggedMenu: FC<IProps> = observer((props) => {
-  const { userStore, modalStore } = props;
+  const { userStore } = props;
   const { ref, isShow, setIsShow } = useOutside(false);
+  const { t } = useTranslation();
   const fetchUserInfo = async () => {
     await userStore?.fetchUserById(getCookie('id'));
   };
@@ -29,11 +31,10 @@ const LoggedMenu: FC<IProps> = observer((props) => {
   }, []);
   const users = userStore!;
 
-  const name = users ? users?.onlyUser?.users?.fio : 'Пользователь';
+  const name = users ? users?.onlyUser?.users?.fio : t('Пользователь');
   const email = users ? users?.onlyUser?.users?.Email : 'example.example.com';
   const nav = useNavigate();
 
-  const profileUser = users ? users?.onlyUser?.users : {};
   const getInitials = (name: string) => {
     const nameArray = name?.split(' ');
     const initials = nameArray?.map((word: string) => word[0]);
@@ -47,52 +48,42 @@ const LoggedMenu: FC<IProps> = observer((props) => {
     nav('/auth');
   };
 
-  const editProfile = () => {
-    setIsShow(!isShow);
-    modalStore?.openModal({ name: 'PROFILE_MANAGEMENT', payload: profileUser });
-  };
   const menu = [
     {
-      title: 'Управление профилем',
+      title: t('Личный кабинет'),
       icon: <IconInstance name={EIcons.loggeduser} />,
-      to: '/workbench',
-      click: true,
-      action: editProfile
+      to: '/profile',
+      click: true
     },
     {
-      title: 'Персонализация',
+      title: t('Персонализация'),
       icon: <IconInstance name={EIcons.loggedsettings} />,
-      to: '/workbench',
       endTab: true,
       click: false
     },
     {
-      title: 'Мой тариф',
+      title: t('Мой тариф'),
       icon: <IconInstance name={EIcons.loggedtarif} />,
-      to: '/workbench',
       click: false
     },
     {
-      title: 'Настройки портала',
+      title: t('Настройки портала'),
       icon: <IconInstance name={EIcons.loggedportal} />,
-      to: '/workbench',
       endTab: true,
       click: false
     },
     {
-      title: 'Безопасность',
+      title: t('Безопасность'),
       icon: <IconInstance name={EIcons.password} />,
-      to: '/workbench',
       click: false
     },
     {
-      title: 'Центр помощи',
+      title: t('Центр помощи'),
       icon: <IconInstance name={EIcons.question} />,
-      to: '/workbench',
       click: false
     },
     {
-      title: 'Выход',
+      title: t('Выход'),
       icon: <IconInstance name={EIcons.loggedexit} />,
       action: logOut
     }
@@ -132,6 +123,14 @@ const LoggedMenu: FC<IProps> = observer((props) => {
                     <Icon>{item.icon}</Icon>
                     <span>{item.title}</span>
                   </button>
+                ) : item.to ? (
+                  <Link
+                    to={item.to}
+                    onClick={() => setIsShow(false)}
+                  >
+                    <Icon>{item.icon}</Icon>
+                    {item.title}
+                  </Link>
                 ) : (
                   <p>
                     <Icon>{item.icon}</Icon>

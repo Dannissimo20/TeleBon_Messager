@@ -7,13 +7,13 @@ export const CardContent = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  
+
   margin: 0.5rem 0 0;
 
   background: #fff;
   border-radius: 8px;
 
-  border: 2px solid rgba(73, 111, 255, 0.3);
+  border: 2px solid ${(props) => props.theme.color.secondaryMedium};
 
   position: relative;
 
@@ -37,13 +37,13 @@ export const CardContent = styled.div`
         padding: 5px;
         margin-right: 25px;
         margin-top: 4px;
-        &:hover{
+        &:hover {
           border: none;
           color: ${(props) => props.theme.color.mainLight};
         }
       }
     }
-    .content{
+    .content {
       width: 100%;
       height: 100%;
       overflow-y: auto;

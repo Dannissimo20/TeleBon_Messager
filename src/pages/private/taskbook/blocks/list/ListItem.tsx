@@ -3,9 +3,9 @@ import { Droppable } from 'react-beautiful-dnd';
 
 import { ListItemWrapper } from './ListItem.styled';
 
+import { IColumn } from '../../../../../store/kanbanStore';
 import Card from '../card/Card';
 import Title from '../title/Title';
-import { IColumn } from '../../../../../store/kanbanStore';
 
 interface IProps {
   list: any;

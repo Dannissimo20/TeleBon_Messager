@@ -1,20 +1,21 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 
 import { useFormik } from 'formik';
 import { inject, observer } from 'mobx-react';
 
-import CommonButton from '../../../button/CommonButton';
-import CommonInput from '../../../fields/CommonInput';
-import { EIcons, Icon } from '../../../../icons';
-import { ReactComponent as NextIcon } from '../../../../icons/arrownext.svg';
-import { ReactComponent as PenIcon } from '../../../../icons/pen.svg';
-import { ReactComponent as PlusIcon } from '../../../../icons/plus.svg';
+import { Box, Breadcrumbs, ButtonInner, FormItem, InfoContent, InfoItem, Notice, Wrapper } from './CreateFilialModal.styled';
 
 import FilialStore from '../../../../../store/filialStore';
 import { apiPost, apiPut } from '../../../../../utils/apiInstance';
 import { DividerArrow, FormStyle, PageTitle } from '../../../../../utils/styleUtils';
-import { Box, Breadcrumbs, ButtonInner, FormItem, InfoContent, InfoItem, Notice, Wrapper } from './CreateFilialModal.styled';
+import { EIcons, Icon } from '../../../../icons';
+import { ReactComponent as NextIcon } from '../../../../icons/arrownext.svg';
+import { ReactComponent as PenIcon } from '../../../../icons/pen.svg';
+import { ReactComponent as PlusIcon } from '../../../../icons/plus.svg';
+import CommonButton from '../../../button/CommonButton';
+import CommonInput from '../../../fields/CommonInput';
 
 interface IProps {
   filialStore?: FilialStore;
@@ -25,6 +26,7 @@ interface IProps {
 
 const CreateFilialModal: React.FC<IProps> = observer((props) => {
   const { closeModal, edit, modalPayload, filialStore } = props;
+  const { t } = useTranslation();
   const { filials } = filialStore!;
   const [pending, setPending] = useState(false);
 
@@ -99,24 +101,24 @@ const CreateFilialModal: React.FC<IProps> = observer((props) => {
 
   return (
     <Wrapper>
-      <PageTitle>{formik.values.name !== '' ? formik.values.name : 'Создание филиала'}</PageTitle>
+      <PageTitle>{formik.values.name !== '' ? formik.values.name : t('Создание филиала')}</PageTitle>
       <Breadcrumbs>
-        <span>Управление</span>
+        <span>{t('Управление')}</span>
         <DividerArrow>
           <NextIcon />
         </DividerArrow>
-        <span>Филиал</span>
+        <span>{t('Филиал')}</span>
         <DividerArrow>
           <NextIcon />
         </DividerArrow>
-        <span className='active'>{edit ? 'Редактирование филиала' : 'Создание филиала'}</span>
+        <span className='active'>{edit ? t('Редактирование филиала') : t('Создание филиала')}</span>
       </Breadcrumbs>
       <FormStyle onSubmit={handleSubmit}>
         <Box className='form'>
           <FormItem>
             <Icon name={EIcons.filial} />
             <CommonInput
-              label={'Название филиала'}
+              label={t('Название филиала')}
               value={formik.values.name}
               onChange={formik.handleChange}
               name='name'
@@ -135,7 +137,7 @@ const CreateFilialModal: React.FC<IProps> = observer((props) => {
           <FormItem>
             <Icon name={EIcons.address} />
             <CommonInput
-              label={'Адрес'}
+              label={t('Адрес')}
               name='address'
               value={formik.values.address}
               onChange={formik.handleChange}
@@ -154,7 +156,7 @@ const CreateFilialModal: React.FC<IProps> = observer((props) => {
           <FormItem>
             <Icon name={EIcons.phone} />
             <CommonInput
-              label={'Телефон'}
+              label={t('Телефон')}
               name='phone'
               value={formik.values.phone}
               onChange={formik.handleChange}
@@ -173,7 +175,7 @@ const CreateFilialModal: React.FC<IProps> = observer((props) => {
           <FormItem>
             <Icon name={EIcons.user} />
             <CommonInput
-              label={'Руководитель'}
+              label={t('Руководитель')}
               value={formik.values.rucovoditel}
               onChange={formik.handleChange}
               name='rucovoditel'
@@ -191,7 +193,7 @@ const CreateFilialModal: React.FC<IProps> = observer((props) => {
           <FormItem>
             <Icon name={EIcons.user} />
             <CommonInput
-              label={'Юридическое лицо'}
+              label={t('Юридическое лицо')}
               value={formik.values.yurlico}
               onChange={formik.handleChange}
               name='yurlico'
@@ -215,7 +217,9 @@ const CreateFilialModal: React.FC<IProps> = observer((props) => {
                   {key === 'name' && (
                     <InfoItem className='head'>
                       <Icon name={EIcons.filial} />
-                      <span>{formik.values[key] !== '' ? formik.values[key] : <span className='empty'>Название филиала...</span>}</span>
+                      <span>
+                        {formik.values[key] !== '' ? formik.values[key] : <span className='empty'>{t('Название филиала')}...</span>}
+                      </span>
                     </InfoItem>
                   )}
                   {key === 'address' && (
@@ -245,7 +249,7 @@ const CreateFilialModal: React.FC<IProps> = observer((props) => {
                 </>
               ))}
           </InfoContent>
-          <Notice>Проверьте правильность данных</Notice>
+          <Notice>{t('Проверьте правильность данных')}</Notice>
           <CommonButton
             typeBtn='success'
             type='submit'
@@ -254,7 +258,7 @@ const CreateFilialModal: React.FC<IProps> = observer((props) => {
           >
             <ButtonInner>
               <PlusIcon />
-              <span>{edit ? 'Сохранить филиал' : 'Создать филиал'}</span>
+              <span>{edit ? t('Сохранить') : t('Добавить')}</span>
             </ButtonInner>
           </CommonButton>
         </Box>

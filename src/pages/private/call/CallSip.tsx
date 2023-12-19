@@ -1,15 +1,15 @@
 import { ChangeEventHandler, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import JsSIP from 'jssip';
 import { RTCSession } from 'jssip/lib/RTCSession';
 import { RTCSessionEvent } from 'jssip/lib/UA';
 import { pathOr } from 'rambda';
 
-import CommonButton from '../../../components/shared/button/CommonButton';
-import CommonInput from '../../../components/shared/fields/CommonInput';
 import { CallSipWrapper } from './Call.styled';
 
-
+import CommonButton from '../../../components/shared/button/CommonButton';
+import CommonInput from '../../../components/shared/fields/CommonInput';
 
 interface ICallSip {
   socket: string;
@@ -21,7 +21,7 @@ interface ICallSip {
 
 const CallSip: React.FC<ICallSip> = (props) => {
   const { socket: socketname, server, stun, login, password } = props;
-
+  const { t } = useTranslation();
   const [phoneNumber, setPhoneNumber] = useState('999');
   const [incomingCall, setIncoming] = useState(false);
 
@@ -84,7 +84,6 @@ const CallSip: React.FC<ICallSip> = (props) => {
           setCallActive(true);
         });
       }
-      console.log(call.current!.connection);
     });
 
     userAgent.current = ua;
@@ -154,11 +153,15 @@ const CallSip: React.FC<ICallSip> = (props) => {
 
   return (
     <CallSipWrapper>
-      {!isRegister && <CommonButton onClick={register}>Войти как оператор {login}</CommonButton>}
+      {!isRegister && (
+        <CommonButton onClick={register}>
+          {t('Войти как оператор')} {login}
+        </CommonButton>
+      )}
       {isRegister && (
         <>
           <CommonInput
-            label='Номер телефона'
+            label={t('Номер телефона')}
             type='text'
             value={phoneNumber}
             onChange={handlePhoneChange}
@@ -170,7 +173,7 @@ const CallSip: React.FC<ICallSip> = (props) => {
             typeBtn='success'
             disabled={callActive}
           >
-            Позвонить
+            {t('Позвонить')}
           </CommonButton>
           <CommonButton
             onClick={() => receiveCall()}
@@ -178,13 +181,13 @@ const CallSip: React.FC<ICallSip> = (props) => {
             typeBtn='success'
             disabled={callActive || !incomingCall}
           >
-            Ответить
+            {t('Ответить')}
           </CommonButton>
           <CommonButton
             onClick={() => endCall()}
             type='button'
           >
-            Отбой
+            {t('Отбой')}
           </CommonButton>
           <audio
             ref={myAudio}

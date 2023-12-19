@@ -1,10 +1,12 @@
 import { FC, useState } from 'react';
-import TaskBookTopbar from './taskbook-topbar/TaskBookTopbar';
-import { FlexContainer } from '../../../utils/styleUtils';
+
 import NewKanban from './blocks/Kanban';
+import TaskBookTopbar from './taskbook-topbar/TaskBookTopbar';
+
+import { FlexContainer } from '../../../utils/styleUtils';
 
 const TaskBook: FC = () => {
-  const [localColumns, setLocalColumns] = useState([] as any[]); // Начальное состояние - пустой массив
+  const [localColumns, setLocalColumns] = useState([] as any[]);
 
   return (
     <FlexContainer

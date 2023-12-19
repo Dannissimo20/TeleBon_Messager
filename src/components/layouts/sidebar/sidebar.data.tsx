@@ -19,10 +19,10 @@ export const submenu = [
     title: 'Мессенджер',
     icon: <IconInstance name={EIcon.chat} />,
     to: '/messenger/1/1',
-    click: false
+    click: true
   },
   {
-    title: 'Задачник',
+    title: 'Задачи',
     icon: <IconInstance name={EIcon.calendar} />,
     to: '/taskbook',
     endTab: true,
@@ -41,11 +41,12 @@ export const submenu = [
     endTab: true,
     click: true
   },
+
   {
-    title: 'Управление',
-    icon: <IconInstance name={EIcon.management} />,
-    to: '/management/service-categories',
-    click: true
+    title: 'Финансы',
+    icon: <IconInstance name={EIcon.finans} />,
+    to: '/finans',
+    click: false
   },
   {
     title: 'Аналитика',
@@ -54,16 +55,15 @@ export const submenu = [
     click: false
   },
   {
-    title: 'Финансы',
-    icon: <IconInstance name={EIcon.finans} />,
-    to: '/finans',
-    endTab: true,
-    click: false
+    title: 'Компания',
+    icon: <IconInstance name={EIcon.filial} />,
+    to: '/management/service-categories',
+    click: true
   },
   {
     title: 'Настройки',
     icon: <IconInstance name={EIcon.settings} />,
-    to: '/settings/classificators',
+    to: '/settings/payments',
     click: true
   }
 ];

@@ -2,77 +2,31 @@
   "chats": [
     {
       "id": 1,
-      "name": "Рабочий чат",
-      "rooms": [
-        {
-          "id": 1,
-          "text": "Общий чат ООО Ромашка"
-        },
-        {
-          "id": 2,
-          "text": "Администраторы ООО Ромашка"
-        },
-        {
-          "id": 3,
-          "text": "Менеджеры ООО Ромашка"
-        },
-        {
-          "id": 4,
-          "text": "Иван Иваныч (Директор)"
-        },
-        {
-          "id": 5,
-          "text": "СПЕЦНАЗ ООО Ромашка"
-        }
-      ]
+      "name": "Рабочий чат"
     },
     {
       "id": 2,
-      "name": "WhatsUp чат",
-      "rooms": [
-        {
-          "id": 1,
-          "text": "Иванов Иван Иваныч"
-        }
-      ]
+      "name": "WhatsUp чат"
     },
     {
       "id": 3,
-      "name": "Telegram чат",
-      "rooms": [
-
-      ]
+      "name": "Telegram чат"
     },
     {
       "id": 4,
-      "name": "Telegram чат",
-      "rooms": [
-
-      ]
+      "name": "Telegram чат"
     },
     {
       "id": 5,
-      "name": "Telegram чат",
-      "rooms": [
-
-      ]
+      "name": "Telegram чат"
     },
     {
       "id": 6,
-      "name": "Telegram чат",
-      "rooms": [
-
-      ]
+      "name": "Telegram чат"
     },
     {
       "id": 7,
-      "name": "Telegram чат",
-      "rooms": [
-        {
-          "id": 1,
-          "text": "Общая комната"
-        }
-      ]
+      "name": "Telegram чат"
     }
 
   ]

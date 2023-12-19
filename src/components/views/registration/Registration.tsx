@@ -10,7 +10,6 @@ export default function Registration() {
   return (
     <RegAuthWrapper>
       <Outlet />
-      {/* <RegistrationContainer /> */}
       <Login>
         <Logo>
           <LoginLogo />

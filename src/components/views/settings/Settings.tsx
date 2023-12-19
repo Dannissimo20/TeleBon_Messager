@@ -1,13 +1,18 @@
 import { FC } from 'react';
-import SettingsPage from '../../../pages/private/settings/SettingsPage';
+
 import SettingsTopbar from '../../../pages/private/service/topbar/SettingsTopbar';
+import SettingsPage from '../../../pages/private/settings/SettingsPage';
+import { FlexContainer } from '../../../utils/styleUtils';
 
 const Settings: FC = () => {
   return (
-    <div>
+    <FlexContainer
+      $column
+      $gap={'20px'}
+    >
       <SettingsTopbar />
       <SettingsPage />
-    </div>
+    </FlexContainer>
   );
 };
 

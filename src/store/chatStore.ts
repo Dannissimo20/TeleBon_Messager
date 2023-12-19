@@ -1,6 +1,6 @@
-import chatData from "../utils/chat.json";
-import { RootStore } from ".";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable } from 'mobx';
+
+import { RootStore } from '.';
 
 export interface IRoom {
   id: string | number;
@@ -8,8 +8,14 @@ export interface IRoom {
 }
 
 export interface IChat {
-  id: string | number;
-  name: string;
+  chat_id: string;
+  chat_name: string;
+  user_id: string;
+  is_group_chat: boolean;
+  lastest_message: string;
+  group_admin: string;
+  createdat: string;
+  updatedat: string;
   rooms: IRoom[];
 }
 
@@ -19,8 +25,7 @@ class ChatStore {
 
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
-    const typedChatData = chatData as { chats: IChat[] };
-    this.chats = typedChatData.chats;
+    this.chats = [];
     makeAutoObservable(this);
   }
 }

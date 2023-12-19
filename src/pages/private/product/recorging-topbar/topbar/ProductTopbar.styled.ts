@@ -3,9 +3,8 @@ import styled from 'styled-components';
 export const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
-  gap: 24px;
-  margin-top: 5px;
-  margin-bottom: 35px;
+  gap: 20px;
+  margin-bottom: 20px;
   @media (max-width: 1500px) {
     margin-bottom: 32px;
   }

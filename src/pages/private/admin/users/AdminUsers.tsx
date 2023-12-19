@@ -1,17 +1,19 @@
 import { FC, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { inject, observer } from 'mobx-react';
 
-import AdminBarChart from '../barchart/AdminBarChart';
-import AdminTable from '../table/AdminTable';
+import { Circle, Diagramm, RadioInputContainer, Wrapper } from './AdminUsers.styled';
 
 import UserStore, { IUser } from '../../../../store/userStore';
 import { FlexContainer } from '../../../../utils/styleUtils';
 import SvgCircleAnimation from '../../../../utils/SvgCircleAnimation';
-import { Circle, Diagramm, RadioInputContainer, Wrapper } from './AdminUsers.styled';
+import AdminBarChart from '../barchart/AdminBarChart';
+import AdminTable from '../table/AdminTable';
 
 const AdminPage: FC<{ userStore?: UserStore }> = observer((props) => {
   const [isUser, setIsUser] = useState<IUser[]>([]);
+  const { t } = useTranslation();
   const { userStore } = props;
   const { user } = userStore!;
 
@@ -39,6 +41,7 @@ const AdminPage: FC<{ userStore?: UserStore }> = observer((props) => {
 
     const currentYearData = isUser.filter((user) => {
       const userYear = new Date(user.dtreg).getFullYear();
+
       return userYear === year;
     });
 
@@ -59,6 +62,7 @@ const AdminPage: FC<{ userStore?: UserStore }> = observer((props) => {
         labels.push(year.toString());
         const filteredUsers = filteredDataUser.filter((user) => {
           const userYear = new Date(user.dtreg).getFullYear();
+
           return userYear === year;
         });
         values.push(filteredUsers.length);
@@ -69,6 +73,7 @@ const AdminPage: FC<{ userStore?: UserStore }> = observer((props) => {
         const filteredUsers = filteredDataUser.filter((user) => {
           const userYear = new Date(user.dtreg).getFullYear();
           const userMonth = new Date(user.dtreg).getMonth();
+
           return userYear === selectedYear && userMonth === i;
         });
 
@@ -101,6 +106,7 @@ const AdminPage: FC<{ userStore?: UserStore }> = observer((props) => {
     const userYear = new Date(user.dtreg).getFullYear();
 
     const userMonth = new Date(user.dtreg).getMonth();
+
     return userYear === currentYear && userMonth === currentMonth;
   });
 
@@ -108,6 +114,7 @@ const AdminPage: FC<{ userStore?: UserStore }> = observer((props) => {
     const userYear = new Date(user.dtreg).getFullYear();
 
     const userMonth = new Date(user.dtreg).getMonth();
+
     return userYear === previousYear && userMonth === previousMonth;
   });
 
@@ -119,6 +126,7 @@ const AdminPage: FC<{ userStore?: UserStore }> = observer((props) => {
       return currentCount > 0 ? 100 : 0;
     } else {
       const percentage = ((currentCount - previousCount) / previousCount) * 100;
+
       return parseFloat(percentage.toFixed(2));
     }
   };
@@ -140,7 +148,7 @@ const AdminPage: FC<{ userStore?: UserStore }> = observer((props) => {
                 checked={selectedYear === null}
                 onChange={() => handleYearChange(null)}
               />
-              <span>Все время</span>
+              <span>{t('Все время')}</span>
             </label>
             {Array.from(new Set(isUser.map((user) => new Date(user.dtreg).getFullYear()))).map((year) => (
               <label key={year}>
@@ -155,7 +163,7 @@ const AdminPage: FC<{ userStore?: UserStore }> = observer((props) => {
             ))}
           </RadioInputContainer>
           <p>
-            Прирост пользователей <span>{comparisonPercentage.toFixed(2)}%</span> по сравнению с прошлым
+            {t('Прирост пользователей')} <span>{comparisonPercentage.toFixed(2)}%</span> {t('по сравнению с прошлым')}
           </p>
 
           <Diagramm>
@@ -170,13 +178,15 @@ const AdminPage: FC<{ userStore?: UserStore }> = observer((props) => {
           style={{ width: 'fit-content', justifyContent: 'center', transition: '.5s ease' }}
         >
           <Circle>
-            <h3>Пользователи</h3>
+            <h3>{t('Пользователи')}</h3>
             <div>
-              <p className='subtitle'>Всего пользователей</p>
+              <p className='subtitle'>{t('Всего пользователей')}</p>
               <SvgCircleAnimation number={isUser.length} />
             </div>
             <div className={`${selectedYear === null && 'hidden'}`}>
-              <p className='subtitle'>За {selectedYear} год</p>
+              <p className='subtitle'>
+                {t('За')} {selectedYear} {t('год')}
+              </p>
               <SvgCircleAnimation number={filteredDataUser.length} />
             </div>
           </Circle>

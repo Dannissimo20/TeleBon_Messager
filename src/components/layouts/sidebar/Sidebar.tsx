@@ -16,7 +16,7 @@ import {
   MenuSubMenu,
   PortalLink,
   PortalLinkInner,
-  SwitchButton,
+  //SwitchButton,
   Title,
   Wrapper
 } from './Sidebar.styled';
@@ -51,14 +51,14 @@ const Sidebar = (props: IProps) => {
               <IconInstance name={EIcon.logofirst} />
               <IconInstance name={EIcon.logo} />
             </LogoLink>
-            <SwitchButton
-              onClick={() => toggleTheme(currentTheme === 'dark' ? 'default' : 'dark')}
-              className={currentTheme === 'dark' ? 'locked' : ''}
-            >
-              <div className={currentTheme === 'dark' ? 'locked' : ''}>
-                <IconInstance name={EIcon.switch} />
-              </div>
-            </SwitchButton>
+            {/*<SwitchButton*/}
+            {/*  onClick={() => toggleTheme(currentTheme === 'dark' ? 'default' : 'dark')}*/}
+            {/*  className={currentTheme === 'dark' ? 'locked' : ''}*/}
+            {/*>*/}
+            {/*  <div className={currentTheme === 'dark' ? 'locked' : ''}>*/}
+            {/*    <IconInstance name={EIcon.switch} />*/}
+            {/*  </div>*/}
+            {/*</SwitchButton>*/}
           </Head>
           <MenuSubMenu>
             {submenu.map(({ title, click, icon, to, endTab }) => (

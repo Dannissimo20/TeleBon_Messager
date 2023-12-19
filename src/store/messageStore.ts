@@ -1,19 +1,21 @@
 import { RootStore } from '.';
 import { makeAutoObservable } from 'mobx';
-import messegeData from '../utils/messenge.json';
 
 export interface IMessage {
-  chatId: string | number;
-  roomId: string | number;
-  messageId: number | string;
-  read: boolean;
-  text: string;
-  user: {
-    userId: string;
-    name: string;
-    avatar: string;
+  readBy: string[];
+  id: string;
+  sender: string;
+  content: string;
+  chat: {
+    chat_id: string;
+    chat_name: string;
+    isGroupChat: boolean;
+    users: {
+      user_id: string;
+    }[];
   };
   created_at: string;
+  updated_at: string;
 }
 
 class MessegeStore {
@@ -22,8 +24,6 @@ class MessegeStore {
 
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
-    const typedMessageData = messegeData as { messages: IMessage[] };
-    this.messages = typedMessageData.messages;
     makeAutoObservable(this);
   }
 }

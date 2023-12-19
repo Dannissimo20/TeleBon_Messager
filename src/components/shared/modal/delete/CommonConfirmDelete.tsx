@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 
 import { inject, observer } from 'mobx-react';
@@ -46,7 +47,7 @@ const CommonConfirmDelete: React.FC<IProps> = observer((props) => {
   } = props;
 
   const { products } = productsStore!;
-
+  const { t } = useTranslation();
   const getProductIds = (arr: IProduct[]) => {
     const arrId: string[] = [];
     if (arr.length > 0) {
@@ -58,7 +59,6 @@ const CommonConfirmDelete: React.FC<IProps> = observer((props) => {
 
   const getSubproductsAll = (arr: IProduct[]) => {
     const ids = getProductIds(arr);
-    console.log(ids);
     subproductsStore?.fetchSubproductsAll(ids);
   };
   const deleteClient = async (clientid: string) => {
@@ -68,7 +68,7 @@ const CommonConfirmDelete: React.FC<IProps> = observer((props) => {
     } else {
       toast.error(res.data.description);
     }
-    closeModal!();
+    closeModal?.();
   };
 
   const deleteProduct = async (productid: string) => {
@@ -78,7 +78,7 @@ const CommonConfirmDelete: React.FC<IProps> = observer((props) => {
     } else {
       toast.error(res.data.description);
     }
-    closeModal!();
+    closeModal?.();
   };
 
   const deleteColumn = async (columnId: string, setLocalColumns: any, titleColumn: string) => {
@@ -86,11 +86,11 @@ const CommonConfirmDelete: React.FC<IProps> = observer((props) => {
     if (res?.status === 200) {
       await kanbanStore?.fetchColumns();
       await setLocalColumns(kanbanStore?.columns);
-      toast.success('Колонка удалена');
+      toast.success(t('Колонка удалена'));
     } else {
-      toast.error('Колонка не была удалена');
+      toast.error(t('Колонка не была удалена'));
     }
-    closeModal!();
+    closeModal?.();
   };
 
   const deleteKanbanTask = async (taskId: string, setLocalColumns: any, titleColumns: string) => {
@@ -98,11 +98,11 @@ const CommonConfirmDelete: React.FC<IProps> = observer((props) => {
     if (res?.status === 200) {
       await kanbanStore?.fetchColumns();
       await setLocalColumns(kanbanStore?.columns);
-      toast.success('Таск удален');
+      toast.success(t('Таск удален'));
     } else {
-      toast.error('Таск не был удалён');
+      toast.error(t('Таск не был удалён'));
     }
-    closeModal!();
+    closeModal?.();
   };
 
   const deleteSubProduct = async (productid: string, subproductid: string) => {
@@ -110,11 +110,11 @@ const CommonConfirmDelete: React.FC<IProps> = observer((props) => {
 
     if (res?.status === 200) {
       getSubproductsAll(products);
-      toast.success('Услуга успешно удалена');
+      toast.success(t('Услуга успешно удалена'));
     } else {
       toast.error(res.data.description);
     }
-    closeModal!();
+    closeModal?.();
   };
 
   const deleteLesson = async (lessonId: string) => {
@@ -122,11 +122,10 @@ const CommonConfirmDelete: React.FC<IProps> = observer((props) => {
 
     if (res?.status === 200) {
       lessonsStore?.fetchLessons();
-      console.log(lessonsStore?.state);
     } else {
       toast.error(res.data.description);
     }
-    closeModal!();
+    closeModal?.();
   };
 
   const deleteFilial = async (filialid: string) => {
@@ -136,7 +135,7 @@ const CommonConfirmDelete: React.FC<IProps> = observer((props) => {
     } else {
       toast.error(res.data.description);
     }
-    closeModal!();
+    closeModal?.();
   };
 
   const deleteCabinet = async (filialid: string, cabinetId: string) => {
@@ -146,7 +145,7 @@ const CommonConfirmDelete: React.FC<IProps> = observer((props) => {
     } else {
       toast.error(res.data.description);
     }
-    closeModal!();
+    closeModal?.();
   };
 
   const deleteEmployee = async (userid: string) => {
@@ -156,8 +155,13 @@ const CommonConfirmDelete: React.FC<IProps> = observer((props) => {
     } else {
       toast.error(res.data.description);
     }
+    closeModal?.();
+  };
+
+  const setFreeTarif = () => {
     closeModal!();
   };
+
   const deleteItem = (action?: IActionName, modalPayload?: any) => {
     switch (action) {
       case 'PRODUCT':
@@ -205,6 +209,11 @@ const CommonConfirmDelete: React.FC<IProps> = observer((props) => {
           deleteLesson(modalPayload);
         }
         break;
+      case 'TARIF':
+        if (modalPayload) {
+          setFreeTarif();
+        }
+        break;
       default:
         return;
     }
@@ -215,10 +224,12 @@ const CommonConfirmDelete: React.FC<IProps> = observer((props) => {
       $gap='40px'
       $column={true}
     >
-      <Title>Удалить {modalPayload.name || modalPayload.filial || modalPayload.fio || modalPayload.titleColumn || 'запись'}</Title>
+      <Title>
+        {t('Удалить')} {modalPayload.name || modalPayload.filial || modalPayload.fio || modalPayload.titleColumn || t('запись')}
+      </Title>
       <SubTitle className='title'>
-        Вы действительно хотите удалить "
-        {modalPayload.name || modalPayload.filial || modalPayload.fio || modalPayload.titleColumn || 'запись'}"?
+        {t('Вы действительно хотите удалить')} "
+        {modalPayload.name || modalPayload.filial || modalPayload.fio || modalPayload.titleColumn || t('запись')}"?
       </SubTitle>
       <FlexWithAlign
         $alignCenter='center'
@@ -226,15 +237,15 @@ const CommonConfirmDelete: React.FC<IProps> = observer((props) => {
       >
         <CommonButton
           typeBtn='ghost'
-          onClick={() => closeModal!()}
+          onClick={() => closeModal?.()}
         >
-          Отмена
+          {t('Отмена')}
         </CommonButton>
         <CommonButton
           typeBtn='danger'
           onClick={() => deleteItem(actionName, modalPayload)}
         >
-          Удалить
+          {t('Удалить')}
         </CommonButton>
       </FlexWithAlign>
     </FlexContainer>
@@ -250,5 +261,6 @@ export default inject(
   'kanbanStore',
   'cabinetsStore',
   'lessonsStore',
-  'clientsStore'
+  'clientsStore',
+  'tarifStore'
 )(CommonConfirmDelete);

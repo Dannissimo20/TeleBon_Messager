@@ -26,6 +26,10 @@ export const MenuSubMenu = styled.ul`
   display: flex;
   flex-direction: column;
   height: 100%;
+  gap: 12px;
+  @media (max-width: 1500px) {
+    gap: 0px;
+  }
 `;
 
 export const Head = styled.div`

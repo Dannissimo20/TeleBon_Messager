@@ -144,7 +144,7 @@ export const Label = styled.label`
 export const IconContainer = styled.div`
   position: absolute;
   top: calc(50% - 10px);
-  pointer-events: none;
+  //pointer-events: none;
   right: 21px;
   width: 20px;
   & .age {

@@ -1,18 +1,29 @@
-import { PropsWithChildren } from 'react';
+import { FC, PropsWithChildren } from 'react';
 
-import { PageTitle } from '../../../utils/styleUtils';
-import {  TitleWrap } from './CommonPageTitle.styled';
+import { TitleContent, TitleWrap } from './CommonPageTitle.styled';
+
+import { FlexWithAlign, PageSubtitle, PageTitle } from '../../../utils/styleUtils';
 
 interface ICommonPageTitleProps extends PropsWithChildren {
-  title: string;
+  title: string | undefined;
+  subtitle?: string;
 }
 
-export const CommonPageTitle: React.FC<ICommonPageTitleProps> = (props) => {
-  const { title, children } = props;
+export const CommonPageTitle: FC<ICommonPageTitleProps> = (props) => {
+  const { title, children, subtitle } = props;
 
   return (
     <TitleWrap>
-      <PageTitle>{title}</PageTitle>
+      <FlexWithAlign
+        className={'title'}
+        $column
+        $gap={subtitle ? '16px' : '0'}
+        $justify={'center'}
+      >
+        <PageTitle>{title}</PageTitle>
+        {subtitle && <PageSubtitle>{subtitle}</PageSubtitle>}
+      </FlexWithAlign>
+      {children && <TitleContent>{children}</TitleContent>}
     </TitleWrap>
   );
 };

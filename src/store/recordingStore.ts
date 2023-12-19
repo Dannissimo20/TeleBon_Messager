@@ -1,11 +1,6 @@
 import { action, makeAutoObservable, observable } from 'mobx';
 import { RootStore } from '.';
 
-export enum EPay {
-  Yes = 'yes',
-  No = 'no'
-}
-
 class RecordingStore {
   rootStore: RootStore;
 
@@ -15,6 +10,7 @@ class RecordingStore {
   }
 
   @observable isShow = false;
+  @observable isShowBlock = false;
   @observable isId = '';
   @observable isCabinetId = '';
   @observable inputStart = new Date();
@@ -46,10 +42,13 @@ class RecordingStore {
   @observable isPaysFull = 0;
   @observable chat = 0;
   @observable isSeatsSubproduct: any = null;
-  @observable chatsubsingle = 0
+  @observable chatsubsingle = 0;
 
   @action setIsShow(value: any) {
     this.isShow = value;
+  }
+  @action setIsShowBlock(value: any) {
+    this.isShowBlock = value;
   }
   @action setIsId(value: any) {
     this.isId = value;
@@ -144,17 +143,18 @@ class RecordingStore {
   @action setChat(value: any) {
     this.chat = value;
   }
-  @action setChatsubsingle(value: any){
-    this.chatsubsingle = value
+  @action setChatsubsingle(value: any) {
+    this.chatsubsingle = value;
   }
   @action handleCloseButtonClick() {
     this.setIsShow(false);
+    this.setIsShowBlock(false);
     this.setIsId('');
     this.setIsServiceId('');
     this.setIsStage(1);
     this.setIsPayment(0);
     this.setChatSub(0);
-    this.setChatsubsingle(0)
+    this.setChatsubsingle(0);
     this.setChat(0);
     this.setIsPaymentRaw('');
     this.setIsPaymentType('');

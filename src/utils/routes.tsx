@@ -12,6 +12,7 @@ import Management from '../components/views/managment/Management';
 import Messenger from '../components/views/messenger/Messenger';
 import PortalSettings from '../components/views/portalsettings/PortalSettings';
 import Products from '../components/views/product/Products';
+import Profile from '../components/views/profile/Profile';
 import Registration from '../components/views/registration/Registration';
 import Settings from '../components/views/settings/Settings';
 import Support from '../components/views/support/Support';
@@ -30,14 +31,14 @@ import EmployeeRecording from '../pages/private/product/EmployeeRecording';
 import ProductSchedule from '../pages/private/product/ProductSchedule';
 import Recording from '../pages/private/product/Recording';
 import ServiceCategories from '../pages/private/service/categories/ServiceCategories';
-import Classificators from '../pages/private/settings/classificators/Classificators';
 import Payments from '../pages/private/settings/payments/Payments';
 import { NewPassword } from '../pages/public/confirm-password/NewPassword';
 import { ResetPassword } from '../pages/public/confirm-password/ResetPassword';
 import { SuccessPassword } from '../pages/public/confirm-password/SuccessPassword';
+import NotFound from '../pages/public/not-found/NotFound';
 import { RegistrationConfirm } from '../pages/public/register/registration-confirm/RegistrationConfirm';
 import RegistrationContainer from '../pages/public/register/RegistrationContainer';
-import NotFound from '../pages/public/not-found/NotFound';
+import React from "react";
 
 const routes = [
   {
@@ -84,7 +85,7 @@ const routes = [
       },
       {
         path: '/workbench',
-        element: <Workbench />,
+        element: <Workbench />
       },
       {
         path: '/call',
@@ -168,14 +169,6 @@ const routes = [
         element: <Settings />,
         children: [
           {
-            index: true,
-            element: <Navigate to='classificators' />
-          },
-          {
-            path: 'classificators',
-            element: <Classificators />
-          },
-          {
             path: 'payments',
             element: <Payments />
           }
@@ -192,6 +185,10 @@ const routes = [
       {
         path: '/confidentiality',
         element: <Confidentiality />
+      },
+      {
+        path: '/profile',
+        element: <Profile />
       },
       {
         path: '/portalsettings',

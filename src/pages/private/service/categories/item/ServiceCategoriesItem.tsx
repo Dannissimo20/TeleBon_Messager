@@ -1,15 +1,10 @@
-import { inject, observer } from 'mobx-react';
-import ProductsStore, { IProduct } from '../../../../../store/productsStore';
-import ModalStore from '../../../../../store/modalStore';
-import SubproductsStore from '../../../../../store/subProductsStore';
-import { EIcon, IconNew as IconInstance } from '../../../../../components/icons/medium-new-icons/icon';
-
 import { useEffect, useRef, useState } from 'react';
-import Services from '../../Services';
 import { useDrag, useDrop } from 'react-dnd';
-import { transformStringCountServices } from '../../../../../utils/helperFunctions';
+import { useTranslation } from 'react-i18next';
 
 import { useFormik } from 'formik';
+import { inject, observer } from 'mobx-react';
+
 import {
   ButtonDelete,
   ButtonDrugAndDrop,
@@ -22,8 +17,15 @@ import {
   ItemTitle,
   TitleWrap
 } from './SerbiceCategoriesItem.styled';
-import { FlexWithAlign } from '../../../../../utils/styleUtils';
+
+import { EIcon, IconNew as IconInstance } from '../../../../../components/icons/medium-new-icons/icon';
 import ClassificatorsStore from '../../../../../store/classificatorsStore';
+import ModalStore from '../../../../../store/modalStore';
+import ProductsStore, { IProduct } from '../../../../../store/productsStore';
+import SubproductsStore from '../../../../../store/subProductsStore';
+import { transformStringCountServices } from '../../../../../utils/helperFunctions';
+import { FlexWithAlign } from '../../../../../utils/styleUtils';
+import Services from '../../Services';
 
 interface IProps {
   product: IProduct;
@@ -53,6 +55,7 @@ const ServiceCategoriesItem: React.FC<IProps> = observer((props) => {
   } = props;
   const { subproducts, subproductsAll, state } = subproductsStore!;
   const { fetchClassificators, classificators } = classificatorsStore!;
+  const { t } = useTranslation();
 
   const categoryServiceId = product?.id;
   const ref = useRef<HTMLElement>(null);
@@ -178,7 +181,7 @@ const ServiceCategoriesItem: React.FC<IProps> = observer((props) => {
           <TitleWrap>
             <ItemTitle>{product?.name}</ItemTitle>
             <ItemServicesCount>
-              Содержит {services.length} {serviceCountString}
+              {t('Содержит')} {services.length} {serviceCountString}
             </ItemServicesCount>
           </TitleWrap>
           <FlexWithAlign $alignCenter='center'>

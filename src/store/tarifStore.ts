@@ -2,6 +2,7 @@ import { makeAutoObservable } from 'mobx';
 
 import { RootStore } from '.';
 import { ITarif, ITarifModule, tarifs } from '../pages/private/portalsettings/tarifs/PortalSettingsTarifs.data';
+import { apiGet } from '../utils/apiInstance';
 
 class TarifStore {
   rootStore: RootStore;
@@ -13,6 +14,16 @@ class TarifStore {
     this.activeTarif = tarifs.find((tarif) => tarif.default === true) || tarifs[0];
     makeAutoObservable(this);
   }
+  getTarifs = async () => {
+    try {
+      const response = await apiGet('/tarifs');
+      if (response.data) {
+        console.log(response.data);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
   updateActiveTarif = (tarif: ITarif) => {
     if (this.activeTarif.id === '1') {
       this.tarifs = this.tarifs.slice(1);

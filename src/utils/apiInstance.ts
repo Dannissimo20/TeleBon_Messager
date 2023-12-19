@@ -52,4 +52,8 @@ export function apiDelete(url: string) {
   return instance.delete(`${url}`).then((response) => response);
 }
 
+export function apiSearchUsers(url: string) {
+  return instance.get(url).then((response) => response);
+}
+
 export default instance;

@@ -1,4 +1,5 @@
 import React, { ChangeEvent, Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { inject, observer } from 'mobx-react';
 
@@ -27,6 +28,7 @@ const ClientsList: React.FC<IProps> = observer((props) => {
   const { clientsStore, filialStore, modalStore, clickClient } = props;
   const { clients, state } = clientsStore!;
   const { filials } = filialStore!;
+  const { t } = useTranslation();
 
   const [value, setValue] = useState<string>('');
   const [isSearch, setIsSearch] = useState<boolean>(false);
@@ -125,7 +127,7 @@ const ClientsList: React.FC<IProps> = observer((props) => {
               name='search'
               className='input-search'
               type='text'
-              placeholder='Поиск по имени и телефону'
+              placeholder={t('Поиск по имени и телефону')}
               value={value}
               onChange={handleChange}
               onFocus={handleFocus}
@@ -139,13 +141,14 @@ const ClientsList: React.FC<IProps> = observer((props) => {
           <CommonButton
             typeBtn='ghost'
             onClick={createClient}
+            disabled
           >
             <FlexWithAlign
               $gap='16px'
               $alignCenter='center'
             >
               <IconInstance name={EIcon.export} />
-              <span>Экспорт</span>
+              <span>{t('Экспорт')}</span>
             </FlexWithAlign>
           </CommonButton>
           <Partition />
@@ -158,14 +161,14 @@ const ClientsList: React.FC<IProps> = observer((props) => {
               $alignCenter='center'
             >
               <IconInstance name={EIcon.import} />
-              <span>Импорт</span>
+              <span>{t('Импорт')}</span>
             </FlexWithAlign>
           </CommonButton>
         </FlexWithAlign>
       </SearchWrap>
       <TableHeader>
         {headers.map((name) => (
-          <HeadItem key={name}>{name}</HeadItem>
+          <HeadItem key={name}>{t(name)}</HeadItem>
         ))}
       </TableHeader>
       <TableBody>
@@ -206,7 +209,7 @@ const ClientsList: React.FC<IProps> = observer((props) => {
           ))
         ) : (
           <TableRow>
-            <TableCol>Клиентов нет</TableCol>
+            <TableCol>{t('Клиентов нет')}</TableCol>
           </TableRow>
         )}
       </TableBody>

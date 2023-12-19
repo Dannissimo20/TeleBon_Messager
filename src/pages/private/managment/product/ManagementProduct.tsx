@@ -1,16 +1,16 @@
 import { FC, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 
 import { inject, observer } from 'mobx-react';
+
+import { NavMenuWrapper, Title, Topbar, TopBtnWrapper, TopWrapper, Wrapper } from './ManagementProduct.styled';
 
 import { ReactComponent as PlusIcon } from '../../../../components/icons/plus.svg';
 import BranchSelectionButton from '../../../../components/shared/button/branch-selected-button/BranchSelectionButton';
 import CommonNavMenu from '../../../../components/shared/nav/CommonNavMenu';
 import FilialStore from '../../../../store/filialStore';
 import ProductsStore from '../../../../store/productsStore';
-import { NavMenuWrapper, Title, Topbar, TopBtnWrapper, TopWrapper, Wrapper } from './ManagementProduct.styled';
-import { PENDING } from '../../../../utils/state';
-import CommonButton from '../../../../components/shared/button/CommonButton';
 
 const managementMenu = [
   {
@@ -37,6 +37,7 @@ interface IProps {
 }
 
 const ManagementProduct: FC<IProps> = observer((props) => {
+  const { t } = useTranslation();
   const location = useLocation();
   const regexp = /add|edit/;
 
@@ -54,7 +55,7 @@ const ManagementProduct: FC<IProps> = observer((props) => {
       <TopWrapper>
         <Topbar>
           <Title className={'flex'}>
-            <h2 className={'title'}>Управление</h2>
+            <h2 className={'title'}>{t('Компания')}</h2>
           </Title>
           <TopBtnWrapper>
             <BranchSelectionButton />
@@ -63,7 +64,7 @@ const ManagementProduct: FC<IProps> = observer((props) => {
               className={isActiveBtn ? 'createProduct' : 'createProduct disabled'}
             >
               <PlusIcon />
-              <span>Новый продукт</span>
+              <span>{t('Новый продукт')}</span>
             </Link>
           </TopBtnWrapper>
         </Topbar>

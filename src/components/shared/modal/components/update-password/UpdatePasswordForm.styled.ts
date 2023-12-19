@@ -20,5 +20,8 @@ export const Form = styled.form`
         }
       }
     }
+    > div {
+      justify-content: flex-end;
+    }
   }
 `;

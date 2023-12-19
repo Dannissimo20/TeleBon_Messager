@@ -9,7 +9,7 @@ export const Wrapper = styled.div`
 export const TopWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 20px;
   .createProduct {
     padding: 12px 26px;
     display: flex;

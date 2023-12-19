@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 
 export const TitleWrapper = styled.div`
+  border: 2px solid rgba(73, 111, 255, 0.3);
+  border-radius: 8px;
   .confirm {
     width: 268px;
     margin: 0.2rem auto;
@@ -22,14 +24,14 @@ export const TitleWrapper = styled.div`
     }
   }
 
-  
-
   .editable-title-container {
     position: relative;
     display: flex;
+    cursor: pointer;
+    padding-left: 19px;
     height: 56px;
     align-items: center;
-    .disabled{
+    .disabled {
       margin-left: auto;
     }
     .editable-title,
@@ -46,25 +48,25 @@ export const TitleWrapper = styled.div`
     }
     .input-title {
       width: 100%;
+      left: 0;
+      padding-left: 38px;
       position: absolute;
       outline: 2px solid transparent;
       display: flex;
       border-radius: 8px;
       height: 56px;
       border: none;
-      outline: 2px solid ${(props) => props.theme.color.mainLight};
       &.indexNumber {
         position: absolute;
-        padding-left: 0;
         z-index: 3;
+        padding-left: 19px;
         top: 19px;
         outline: none;
       }
       &:focus,
       &:focus-within {
         background: #fff;
-        border: none;
-        outline: 2px solid ${(props) => props.theme.color.mainLight};
+        border: 2px solid ${(props) => props.theme.color.mainLight};
       }
     }
     .list-button {
@@ -85,7 +87,7 @@ export const TitleWrapper = styled.div`
       right: 25px;
       top: 40px;
       width: 320px;
-      box-shadow: 0px 3.2px 9px 0px rgba(0, 0, 0, 0.16), 0px 0.6px 1.8px 0px rgba(0, 0, 0, 0.1), 0px -1.5px 6px 0px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 3.2px 9px 0 rgba(0, 0, 0, 0.16), 0 0.6px 1.8px 0 rgba(0, 0, 0, 0.1), 0px -1.5px 6px 0px rgba(0, 0, 0, 0.06);
       background-color: #fff;
       border: 1px solid #ddd;
       padding: 10px 7px;

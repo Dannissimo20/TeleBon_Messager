@@ -7,13 +7,13 @@ import { inject, observer } from 'mobx-react';
 import { EIcon, IconNew as IconInstance } from '../../../../components/icons/medium-new-icons/icon';
 import {
   CalendarContent,
-  WorkbenchContainer,
   WorkbenchSubText,
   WorkbenchSubTitle,
   WorkbenchText
 } from '../../../../components/views/workbench/Workbench.styled';
 import ClientsStore from '../../../../store/clientsStore';
 import { FlexContainer } from '../../../../utils/styleUtils';
+import { InformationWrapper } from '../../../../components/views/PageStyled.styled';
 
 interface IProps {
   clientsStore?: ClientsStore;
@@ -33,7 +33,7 @@ const Clients: FC<IProps> = observer((props) => {
   }, []);
 
   return (
-    <WorkbenchContainer>
+    <InformationWrapper>
       <WorkbenchSubTitle>
         {t('Новые клиенты')}
         <Link to={'/clients'}>
@@ -68,7 +68,7 @@ const Clients: FC<IProps> = observer((props) => {
             <WorkbenchText>{t('Клиентов нет')}!</WorkbenchText>
           ))}
       </FlexContainer>
-    </WorkbenchContainer>
+    </InformationWrapper>
   );
 });
 

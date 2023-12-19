@@ -1,26 +1,23 @@
 import React, { FC } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { NavMenuWrapper, PageHeader, Title, Wrapper } from './SettingsTopbar.styled';
+import { NavMenuWrapper } from './SettingsTopbar.styled';
+
 import CommonNavMenu from '../../../../components/shared/nav/CommonNavMenu';
+import { CommonPageTitle } from '../../../../components/shared/title/CommonPageTitle';
 
 const SettingsTopbar: FC = () => {
+  const { t } = useTranslation();
   const clientsMenu = [
     {
-      title: 'Создание классификаторов',
-      to: 'classificators'
-    },
-    {
-      title: 'Способы оплаты',
+      title: 'Финансы',
       to: 'payments'
     }
   ];
+
   return (
     <>
-      <Wrapper>
-        <PageHeader>
-          <Title>Настройки</Title>
-        </PageHeader>
-      </Wrapper>
+      <CommonPageTitle title={t('Настройки')} />
       <NavMenuWrapper>
         <CommonNavMenu list={clientsMenu} />
       </NavMenuWrapper>

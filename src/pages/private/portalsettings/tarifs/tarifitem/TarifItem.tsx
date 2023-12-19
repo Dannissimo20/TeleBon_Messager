@@ -1,8 +1,10 @@
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import dayjs from 'dayjs';
 import { inject, observer } from 'mobx-react';
 
-import { Item, TarifDescr, TarifModules, TarifModuleItem } from './TarifItem.styled';
+import { Item, TarifDescr, TarifModules, TarifModuleItem, TarifItemTop } from './TarifItem.styled';
 
 import { EIcon, IconNew as IconInstance } from '../../../../../components/icons/medium-new-icons/icon';
 import CommonButton from '../../../../../components/shared/button/CommonButton';
@@ -18,9 +20,23 @@ interface IProps {
 }
 
 const TarifItem: React.FC<IProps> = observer(({ tarifStore, modalStore, data }) => {
-  const { id, name, userslimit, baseprice, default: activeTarif, modules } = data;
+  const { id, name, userslimit, baseprice, default: activeTarif, activateDate, modules } = data;
   const { t } = useTranslation();
 
+  const [dateExpiration, setDateExpiration] = useState('');
+
+  const getExpirationDate = (date: string) => {
+    let dateExprationTariff;
+    if (date && name === t('Пробный')) {
+      dateExprationTariff = dayjs(date).add(14, 'day').format('DD-MM-YYYY');
+    }
+    if (date && name === t('Базовый')) {
+      dateExprationTariff = dayjs(date).add(1, 'month').format('DD-MM-YYYY');
+    }
+    console.log(dateExprationTariff);
+
+    return dateExprationTariff;
+  };
   const changeTarifModal = () => {
     modalStore?.openModal({ name: 'UPDATE_TARIF', payload: data, classModal: 'change-tarif-modal' });
   };
@@ -36,10 +52,24 @@ const TarifItem: React.FC<IProps> = observer(({ tarifStore, modalStore, data }) 
     }
   };
 
+  useEffect(() => {
+    if (activateDate) {
+      getExpirationDate(activateDate);
+      const dateNew = getExpirationDate(activateDate);
+      if (dateNew) {
+        setDateExpiration(dateNew);
+      }
+    }
+    console.log('f');
+  }, []);
+
   return (
     <Item className={activeTarif ? 'active' : ''}>
       <div>
-        <PageSubtitle className='tarif-title'>{t(`Тариф «${name}»`)}</PageSubtitle>
+        <TarifItemTop className='flex'>
+          <PageSubtitle className='tarif-title'>{t(`Тариф «${name}»`)}</PageSubtitle>
+          {dateExpiration && <div>Действует до: {dateExpiration}</div>}
+        </TarifItemTop>
         <TarifDescr className='flex'>
           <span>{baseprice === '0' ? t('Бесплатно') : t(`Стоимость: ${baseprice} рублей`)}</span>
           <span className='flex'>

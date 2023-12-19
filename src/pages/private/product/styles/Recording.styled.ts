@@ -22,7 +22,7 @@ export const Wrapper = styled.div`
   }
   .fc-timegrid-slot.fc-timegrid-slot-lane,
   .fc-timegrid-slot.fc-timegrid-slot-label.fc-scrollgrid-shrink {
-    height: 98px;
+    height: 58px;
   }
   .fc-direction-ltr .fc-timegrid-col-events {
     margin: 0;
@@ -128,3 +128,9 @@ export const LoadingAbsoluteWrapper = styled.div`
   top: 40px;
   left: 40px;
 `;
+
+export const ResourceHeader = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+`

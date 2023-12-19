@@ -1,11 +1,7 @@
+import { useTranslation } from 'react-i18next';
+
 import { inject, observer } from 'mobx-react';
 
-import { ReactComponent as ClockIcon } from '../../../components/icons/clock.svg';
-import { ReactComponent as PenIcon } from '../../../components/icons/pen.svg';
-import CommonButton from '../../../components/shared/button/CommonButton';
-import ProgrerssBar from '../../../components/shared/progress-bar/ProgrerssBar';
-import { IClient } from '../../../store/clientsStore';
-import ModalStore from '../../../store/modalStore';
 import {
   ButtonContent,
   Colored,
@@ -21,6 +17,13 @@ import {
   Wrapper
 } from './ClientInfo.styled';
 
+import { ReactComponent as ClockIcon } from '../../../components/icons/clock.svg';
+import { ReactComponent as PenIcon } from '../../../components/icons/pen.svg';
+import CommonButton from '../../../components/shared/button/CommonButton';
+import ProgrerssBar from '../../../components/shared/progress-bar/ProgrerssBar';
+import { IClient } from '../../../store/clientsStore';
+import ModalStore from '../../../store/modalStore';
+
 interface IProps {
   data?: IClient;
   modalStore?: ModalStore;
@@ -28,6 +31,7 @@ interface IProps {
 
 const ClientInfo: React.FC<IProps> = observer((props) => {
   const { data } = props;
+  const { t } = useTranslation();
   const mask = /(?:\+?)[78]+[0-9() -]{16,17}/;
   const editClient = () => {
     props.modalStore!.openModal({ name: 'EDIT_CLIENT', payload: data });
@@ -35,7 +39,7 @@ const ClientInfo: React.FC<IProps> = observer((props) => {
 
   return (
     <Container>
-      <HeadItem>Информация о клиенте</HeadItem>
+      <HeadItem>{t('Информация о клиенте')}</HeadItem>
       <Wrapper>
         {data ? (
           <>
@@ -47,30 +51,30 @@ const ClientInfo: React.FC<IProps> = observer((props) => {
             </Head>
             <Content>
               <InfoItem>
-                Источник: <InfoValue>-</InfoValue>
+                {t('Источник')}: <InfoValue>-</InfoValue>
               </InfoItem>
               <InfoItem>
-                Продукт: <InfoValue>-</InfoValue>
+                {t('Продукт')}: <InfoValue>-</InfoValue>
               </InfoItem>
               <InfoItem>
-                Действия: <InfoValue>Поставить в список 15.06.2023</InfoValue>
+                {t('Действия')}: <InfoValue>{t('Поставить в список')} 15.06.2023</InfoValue>
               </InfoItem>
               <ControlBox>
                 <CommonButton fullWidth={true}>
-                  Статус: <Colored>Первичное</Colored>
+                  {t('Статус')}: <Colored>{t('Первичное')}</Colored>
                 </CommonButton>
                 <CommonButton fullWidth={true}>
                   <ButtonContent>
                     <ClockIcon />
-                    <span>История клиента</span>
+                    <span>{t('История клиента')}</span>
                   </ButtonContent>
                 </CommonButton>
                 <ProgrerssBar
-                  title={'Лояльность'}
+                  title={t('Лояльность')}
                   value={100}
                 />
                 <ProgrerssBar
-                  title={'Документы'}
+                  title={t('Документы')}
                   value={80}
                 />
                 <CommonButton
@@ -79,7 +83,7 @@ const ClientInfo: React.FC<IProps> = observer((props) => {
                 >
                   <ButtonContent>
                     <PenIcon />
-                    <span>Редактировать</span>
+                    <span>{t('Редактировать')}</span>
                   </ButtonContent>
                 </CommonButton>
               </ControlBox>

@@ -2,13 +2,15 @@ import styled from 'styled-components';
 
 import { PageTitle } from '../../../../utils/styleUtils';
 
-export const Wrapper = styled.div``;
+export const Wrapper = styled.div`
+  max-width: 1500px;
+`;
 export const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 40px;
   width: 100%;
-  margin-top: 20px;
+  margin-top: 24px;
   .sex-input-wrap {
     gap: 40px;
     label {
@@ -20,11 +22,11 @@ export const Form = styled.form`
       appearance: none;
       -webkit-appearance: none;
       -moz-appearance: none;
-      border: 2px solid #555;
+      border: 1px solid #555;
       border-radius: 50%;
       position: relative;
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       outline: none;
       &:checked {
         background: ${(props) => props.theme.color.mainLight};
@@ -100,9 +102,84 @@ export const Form = styled.form`
 `;
 export const Title = styled(PageTitle)`
   margin: 0;
+  font-size: 24px;
 `;
 
 export const TableWrapper = styled.div`
   overflow-y: auto;
-  max-width: 800px;
+  min-height: 400px;
+`;
+export const ExportTextarea = styled.textarea`
+  height: 150px;
+  border-radius: 8px;
+  padding: 16px;
+  border: 2px solid ${(props) => props.theme.color.mainLight};
+  &:focus-within {
+    border: 2px solid ${(props) => props.theme.color.mainLight};
+  }
+  &:focus {
+    outline: none !important;
+    border: 2px solid ${(props) => props.theme.color.mainLight};
+  }
+`;
+
+export const ExportSelect = styled.div`
+  height: 56px;
+  width: 320px;
+  min-width: 320px;
+  >div{
+    height: 56px;
+    width: 320px;
+
+  }
+  // outline: none !important;
+  // border: none !important;
+  // border-bottom: 2px solid ${(props) => props.theme.color.mainLight} !important;
+  // option {
+  //   cursor: pointer;
+  //   width: 300px;
+  //   min-height: 60px;
+  //   max-height: 300px;
+  //   border-radius: 15px;
+  //   background-color: rgb(250, 250, 250);
+  //   box-shadow: 2px 4px 8px #c5c5c5;
+  //   transition: all 300ms;
+  // }
+`;
+export const ExportText = styled.p`
+  margin-top: 20px;
+  color: rgba(108, 110, 124, 1);
+`;
+export const ExportFileWrapper = styled.div`
+  position: relative;
+  #inputGroupFile {
+    position: absolute;
+    width: 100%;
+    opacity: 0;
+    height: 100%;
+    inset: 0;
+  }
+  label[for='inputGroupFile'] {
+    vertical-align: middle;
+    cursor: pointer;
+    width: 100%;
+    background: rgba(249, 249, 249, 1);
+    border-radius: 8px;
+    height: 150px;
+    border: 2px dashed ${(props) => props.theme.color.secondaryDark};
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+    p,
+    svg {
+      text-align: center;
+      width: 350px;
+      color: rgba(108, 110, 124, 1);
+    }
+  }
+  label[for='inputGroupFile'] span {
+    margin-left: 10px;
+  }
 `;

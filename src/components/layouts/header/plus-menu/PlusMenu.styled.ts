@@ -25,7 +25,7 @@ export const Wrapper = styled.div`
 export const Menu = styled.div`
   position: absolute;
   top: calc(100% + 6px);
-  z-index: 5;
+  z-index: 10;
   padding: 12px 0;
   animation: ${scaleIn} 0.3s ease;
   border-radius: 8px;

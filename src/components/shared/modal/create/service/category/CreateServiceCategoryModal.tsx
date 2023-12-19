@@ -7,7 +7,7 @@ import { inject, observer } from 'mobx-react';
 
 import { Box, ColorClassifInput, FormItem, NameClassifInput, Wrapper } from './CreateServiceCategoryModal.styled';
 
-import { ModalGrid } from '../../../../../../pages/private/product/modal-elements/form-start/FirstForm.styled';
+import { ModalGrid } from '../../../../../../pages/private/product/modal/start/FirstForm.styled';
 import ClassificatorsStore from '../../../../../../store/classificatorsStore';
 import ProductsStore from '../../../../../../store/productsStore';
 import { apiPost, apiPut } from '../../../../../../utils/apiInstance';
@@ -147,7 +147,7 @@ const CreateServiceCategoryModal: React.FC<IProps> = observer((props) => {
 
       for (const [index, classifier] of classifiers.entries()) {
         const classificatorsEvent = {
-          name: classifier,
+          name: `#${classifier}`,
           productid: productId,
           color: classifierColors[index]
         };

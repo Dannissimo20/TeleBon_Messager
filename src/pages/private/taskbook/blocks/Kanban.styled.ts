@@ -5,10 +5,11 @@ export const NewWrapper = styled.div`
     width: 100%;
     margin: 0 auto;
     padding: 0 0.5rem;
-    overflow-x: auto;
     display: flex;
-    min-height: 72vh;
-    max-height: 72vh;
+    min-height: 80vh;
+    height: 100%;
+    overflow-y: hidden;
+    overflow-x: auto;
     &::-webkit-scrollbar {
       width: 6px;
       border-radius: 8px;
@@ -23,8 +24,8 @@ export const NewWrapper = styled.div`
       border-radius: 20px;
     }
     //max-height: calc(100vh - 16.5rem);
-    >div{
-      >div{
+    > div {
+      > div {
         height: 100%;
       }
     }

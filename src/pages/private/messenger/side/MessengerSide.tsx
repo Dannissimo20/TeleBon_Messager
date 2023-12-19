@@ -5,10 +5,11 @@ import { inject } from 'mobx-react';
 import styled, { keyframes } from 'styled-components';
 
 import { EIcons, Icon as IconInstance } from '../../../../components/icons';
-import ChatStore, { IChat } from '../../../../store/chatStore';
-import MessageStore from '../../../../store/messageStore';
-import UserStore from '../../../../store/userStore';
 import { scaleIn } from '../../../../components/shared/modal/create/service/sidebar/CreateServiceSidebar.styled';
+import { IChat } from '../../../../store/chatStore';
+import { apiSearchUsers } from '../../../../utils/apiInstance';
+import Chats from '../../../../utils/chat.json';
+import UserListDialog from '../dialog/UserListDialog';
 
 const dotFirst = keyframes`
   0% {
@@ -249,24 +250,22 @@ const MessageInfo = styled.div`
 `;
 
 interface IProps {
-  userStore?: UserStore;
-  chatStore?: ChatStore;
-  messageStore?: MessageStore;
   unreadMessages: any;
   updateUnreadMessages: any;
   isTyping: boolean;
   setIsTyping: (typing: boolean) => void;
+  ws: WebSocket;
+  userRooms: IChat[];
 }
 
-const MessengerSide: FC<IProps> = ({ chatStore, isTyping, setIsTyping, messageStore }) => {
+const MessengerSide: FC<IProps> = ({ isTyping, setIsTyping, ws, userRooms }) => {
   const { messengerId, roomId } = useParams();
-  const { messages } = messageStore!;
 
   const [unreadMessagesByRoomAndChat, setUnreadMessagesByRoomAndChat] = useState<{ [key: string]: number }>({});
   const [lastMessages, setLastMessages] = useState<{ [key: string]: string }>({});
   const [lastDate, setLastDate] = useState<{ [key: string]: string }>({});
-
-  const selectedChat = chatStore?.chats?.find((chat: IChat) => chat.id === parseInt(messengerId ?? '0'));
+  const [openDialog, setOpenDialog] = useState(false);
+  const [users, setUsers] = useState([]);
 
   const chatIcons = [
     EIcons.clientIcon,
@@ -277,6 +276,14 @@ const MessengerSide: FC<IProps> = ({ chatStore, isTyping, setIsTyping, messageSt
     EIcons.vibersocial,
     EIcons.avitosocial
   ];
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
 
   function formatMessageDate(dateString: any) {
     const date = new Date(dateString);
@@ -301,50 +308,36 @@ const MessengerSide: FC<IProps> = ({ chatStore, isTyping, setIsTyping, messageSt
     };
   }, [isTyping]);
 
+  const handleChatClick = (chatId: string) => {
+    // Отправить id чата на сервер
+    ws.send(JSON.stringify({ type: 'getChatMessages', data: { chatId } }));
+    console.log(chatId);
+  };
+
   useEffect(() => {
-    const newLastMessages: { [key: string]: string } = {};
-    const newLastDate: { [key: string]: string } = {};
+    async function fetchData() {
+      try {
+        const response = await apiSearchUsers('/users');
 
-    chatStore?.chats?.forEach((chat: any) => {
-      chat.rooms?.forEach((room: any) => {
-        const filteredMessages = messages?.filter((message: any) => {
-          return parseInt(room.id) === parseInt(message.roomId) && parseInt(chat.id) === parseInt(message.chatId);
-        });
-
-        if (filteredMessages?.length) {
-          newLastMessages[`${room.id}-${chat.id}`] = filteredMessages[filteredMessages.length - 1].text;
-          newLastDate[`${room.id}-${chat.id}`] = filteredMessages[filteredMessages.length - 1].created_at;
+        if (response.status === 200) {
+          console.log('Данные успешно получены:', response.data.users);
+          setUsers(response.data.users);
         } else {
-          newLastMessages[`${room.id}-${chat.id}`] = 'Сообщений нет';
-          newLastDate[`${room.id}-${chat.id}`] = '';
+          console.error('Ошибка при получении данных. HTTP статус:', response.status);
         }
-      });
-    });
-
-    setLastMessages(newLastMessages);
-    setLastDate(newLastDate);
-  }, [messages, chatStore?.chats]);
-
-  useEffect(() => {
-    const newUnreadMessagesByRoomAndChat: { [key: string]: number } = {};
-
-    messages?.forEach((message: any) => {
-      if (!message.read) {
-        const roomId = message.roomId;
-        const chatId = message.chatId;
-        const key = `${roomId}-${chatId}`;
-
-        newUnreadMessagesByRoomAndChat[key] = (newUnreadMessagesByRoomAndChat[key] || 0) + 1;
+      } catch (error) {
+        console.error('Произошла ошибка при выполнении запроса:', error);
       }
-    });
+    }
 
-    setUnreadMessagesByRoomAndChat(newUnreadMessagesByRoomAndChat);
-  }, [messages]);
+    // Вызываем функцию для выполнения запроса
+    fetchData();
+  }, []);
 
   return (
     <TableBody>
       <HeaderRow>
-        {chatStore?.chats?.map((chat: any) => (
+        {Chats.chats?.map((chat: any) => (
           <Circle key={chat.id}>
             <Link to={`/messenger/${chat.id}/1`}>
               {chat.id <= 7 ? <IconInstance name={chatIcons[chat.id - 1]} /> : <IconInstance name={EIcons.user} />}
@@ -353,18 +346,19 @@ const MessengerSide: FC<IProps> = ({ chatStore, isTyping, setIsTyping, messageSt
         ))}
       </HeaderRow>
       <TableRow>
-        {selectedChat?.rooms?.map((room: any) => {
-          const key = `${room.id}-${selectedChat.id}`;
+        {userRooms?.map((room: any) => {
+          const key = `${room.chat_id}`;
           const lastMessage = lastMessages[key];
           const lastDates = lastDate[key];
 
           return (
             <div
-              className={`${parseInt(roomId ?? '0') === parseInt(room.id) ? 'active' : ''}`}
-              key={room.id}
+              className={`${roomId ?? '0' === room.chat_id ? 'active' : ''}`}
+              key={room.chat_id}
+              onClick={() => handleChatClick(room.chat_id)}
             >
-              <Link to={`/messenger/${messengerId}/${room.id}`}></Link>
-              <h4>{room.text}</h4>
+              <Link to={`/messenger/${messengerId}/${room.chat_id}`}></Link>
+              <h4>{room.chat_name}</h4>
 
               {unreadMessagesByRoomAndChat[key] && (
                 <MessageInfo>
@@ -372,7 +366,7 @@ const MessengerSide: FC<IProps> = ({ chatStore, isTyping, setIsTyping, messageSt
                   <span className='unreadNotification'>{unreadMessagesByRoomAndChat[key]}</span>
                 </MessageInfo>
               )}
-              {parseInt(roomId ?? '0') === parseInt(room.id) && isTyping ? (
+              {parseInt(roomId ?? '0') === parseInt(room.chat_id) && isTyping ? (
                 <TypingIndicator>
                   <div>
                     Печатает
@@ -388,8 +382,23 @@ const MessengerSide: FC<IProps> = ({ chatStore, isTyping, setIsTyping, messageSt
           );
         })}
       </TableRow>
+      <div
+        style={{ position: 'fixed', bottom: '20px', right: '20px', cursor: 'pointer' }}
+        onClick={handleOpenDialog}
+      >
+        <Circle>
+          <IconInstance name={EIcons.user} />
+        </Circle>
+      </div>
+      {openDialog && (
+        <UserListDialog
+          onClose={handleCloseDialog}
+          userData={users}
+          ws={ws}
+        />
+      )}
     </TableBody>
   );
 };
 
-export default inject('userStore', 'chatStore', 'messageStore')(MessengerSide);
+export default inject('chatStore', 'messageStore', 'userStore')(MessengerSide);

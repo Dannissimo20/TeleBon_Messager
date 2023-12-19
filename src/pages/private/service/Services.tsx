@@ -1,13 +1,8 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { inject, observer } from 'mobx-react';
 
-import { EIcon, IconNew as IconInstance } from '../../../components/icons/medium-new-icons/icon';
-
-import CommonButton from '../../../components/shared/button/CommonButton';
-import ProductsStore, { IProduct } from '../../../store/productsStore';
-import SidebarStore from '../../../store/modalStore';
-import SubproductsStore, { ISubproduct } from '../../../store/subProductsStore';
 import {
   BtnAddWrap,
   ButtonDelete,
@@ -22,6 +17,12 @@ import {
   Wrapper
 } from './Service.styled';
 
+import { EIcon, IconNew as IconInstance } from '../../../components/icons/medium-new-icons/icon';
+import CommonButton from '../../../components/shared/button/CommonButton';
+import SidebarStore from '../../../store/modalStore';
+import ProductsStore, { IProduct } from '../../../store/productsStore';
+import SubproductsStore, { ISubproduct } from '../../../store/subProductsStore';
+
 interface IProps {
   product: IProduct;
   modalStore?: SidebarStore;
@@ -31,7 +32,7 @@ interface IProps {
 
 const Services: React.FC<IProps> = observer((props) => {
   const { product, productsStore, subproductsStore, modalStore } = props;
-
+  const { t } = useTranslation();
   const { products } = productsStore!;
 
   const categoryServiceId = product.id;
@@ -98,10 +99,10 @@ const Services: React.FC<IProps> = observer((props) => {
         <List>
           <ListHead>
             <span></span>
-            <span>Название услуги</span>
-            <span className='price'>Стоимость</span>
-            <span className='duration'>Тип услуги</span>
-            <span className='type'>Длительность</span>
+            <span>{t('Название услуги')}</span>
+            <span className='price'>{t('Стоимость')}</span>
+            <span className='duration'>{t('Тип услуги')}</span>
+            <span className='type'>{t('Длительность')}</span>
             <span></span>
           </ListHead>
           {services.map((service) => (
@@ -112,8 +113,8 @@ const Services: React.FC<IProps> = observer((props) => {
               <TitleWrap className='flex'>
                 <span>{service.name}</span>
               </TitleWrap>
-              <span className='price'>{service.tarif} ₽</span>
-              <span className='type'>{service.group === 'yes' ? 'Групповая' : 'Индивидуальная'}</span>
+              <span className='price'>{service.tarif === null || service.tarif === undefined ? 0 : service.tarif} ₽</span>
+              <span className='type'>{service.group === 'yes' ? t('Групповая') : t('Индивидуальная')}</span>
               <span className='duration'>{service.duration} минут</span>
               <ControlsWrap className='flex'>
                 <ButtonEdit
@@ -138,19 +139,19 @@ const Services: React.FC<IProps> = observer((props) => {
               typeBtn='secondary'
             >
               <IconInstance name={EIcon.plussquare} />
-              <span>Добавить услугу</span>
+              <span>{t('Добавить услугу')}</span>
             </CommonButton>
           </BtnAddWrap>
         </List>
       ) : (
         <ListItemBtnEmpty>
-          <span>В этой категории еще нет услуг</span>
+          <span>{t('В этой категории еще нет услуг')}</span>
           <CommonButton
             onClick={() => openServiceSidebar(categoryServiceId)}
             typeBtn='secondary'
           >
             <IconInstance name={EIcon.plussquare} />
-            <span>Добавить услугу</span>
+            <span>{t('Добавить услугу')}</span>
           </CommonButton>
         </ListItemBtnEmpty>
       )}
