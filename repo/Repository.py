@@ -1,3 +1,4 @@
+import json
 import uuid
 from datetime import datetime
 
@@ -7,48 +8,156 @@ from sqlalchemy.orm import Session
 from schemas import Schemas
 
 
-def get_users(db: Session):
-    sql = db.query(Models.User)
-    resulte = db.query(Models.User).all()
-    # test = []
-    # for res in resulte:
-    #     temp = Schemas.User().model_validate(res)
-    #     test.insert(temp)
-    users = []
-    chats = []
-    for res in resulte:
-        for chat in res.chats:
-            chat = Schemas.ChatModel(id = str(chat.id), chatName = chat.chatName, isGroupChat = chat.isGroupChat, createdAt = chat.createdAt, updatedAt = chat.updatedAt)
-            chats.append(chat)
-        chats = []
-        user = Schemas.User(id = str(res.id), email = res.email, fio = res.fio, offline = res.offline, phone = res.phone, chats = chats)
-        users.append(user)
-    return users
+def get_chats(db: Session, user: str):
+    chat_ids = db.query(Models.chatusers).filter(Models.chatusers.user_id == user).all()
+    chatList = []
+    for item in chat_ids:
+        chat = db.query(Models.Chat).filter(Models.Chat.id == item.chat_id).first()
+        last_message = db.query(Models.Message).filter(Models.Message.chat == item.chat_id).first()
+        if last_message == None:
+            last_message_content = ""
+        else:
+            last_message_content = last_message.content
+        users = db.query(Models.chatusers).filter(Models.chatusers.chat_id == item.chat_id).all()
+        usersList = []
+        for item2 in users:
+            user1 = Schemas.UserBase(user_id=item2.user_id)
+            usersList.append(user1.dict())
+        users = usersList
+        chatRes = Schemas.ChatsResponse(
+            chat_id=str(chat.id),
+            chat_name=chat.chat_name,
+            users=users,
+            isGroupChat=chat.is_group_chat,
+            lastest_message=last_message_content,
+            group_admin=str(chat.group_admin),
+            created_at=chat.createdat,
+            updated_at=chat.updatedat)
+        chatRes.created_at = str(chatRes.created_at)
+        chatRes.updated_at = str(chatRes.updated_at)
+        chatRes = chatRes.dict()
+        chatList.append(chatRes)
+    db.close()
+    return json.dumps({'type': 'chatList', 'data': chatList})
 
 
-def add_chat(db: Session, users: list[Schemas.UserBase], chatName: str):
-    if(len(users) > 2):
+def get_chat_by_id(db: Session, chat_id: str):
+    chat = db.query(Models.Chat).filter(Models.Chat.id == chat_id).first()
+    users = db.query(Models.chatusers).filter(Models.chatusers.chat_id == chat_id).all()
+    usersList = []
+    for item2 in users:
+        user1 = Schemas.UserBase(user_id=item2.user_id)
+        usersList.append(user1.dict())
+    users = usersList
+    chatRes = Schemas.ChatsResponse(
+        chat_id=str(chat.id),
+        chat_name=chat.chat_name,
+        users=users,
+        isGroupChat=chat.is_group_chat,
+        lastest_message=str(chat.lastest_message),
+        group_admin=str(chat.group_admin),
+        created_at=chat.createdat,
+        updated_at=chat.updatedat)
+    chatRes.created_at = str(chatRes.created_at)
+    chatRes.updated_at = str(chatRes.updated_at)
+    db.close()
+    return chatRes
+
+
+def get_messages_for_chat(db: Session, chat_id: str):
+    messages = db.query(Models.Message).filter(Models.Message.chat == chat_id).all()
+    chat = get_chat_by_id(db, chat_id)
+    messageList = []
+    for message in messages:
+        messageResponse=Schemas.GetMessageResponse(
+            id=str(message.id),
+            sender=message.sender,
+            content=str(message.content),
+            chat=chat,
+            created_at=message.createdat,
+            updated_at=message.updatedat
+        )
+        messageResponse.created_at = str(messageResponse.created_at)
+        messageResponse.updated_at = str(messageResponse.updated_at)
+        messageList.append(messageResponse.dict())
+        db.close()
+    return json.dumps({'type': 'chatMessages', 'data': messageList})
+
+
+def add_chat(db: Session, users1: list[Schemas.UserBase], chatName: str):
+    if(len(users1) > 2):
         isGroupChat = True
+        groupAdmin = users1[len(users1)-1].user_id
     else:
         isGroupChat = False
+        groupAdmin = None
 
-    users_list = []
-    for user in users:
-        userModel = db.query(Models.User).filter(Models.User.id == user["user"]).first()
-        users_list.append(userModel)
-
-    chat = Models.Chat(id=uuid.uuid4(),
-                       chatName=chatName,
-                       isGroupChat=isGroupChat,
-                       groupAdmin=None,
-                       latestMessage=None,
-                       createdAt=datetime.now(),
-                       updatedAt=datetime.now(),
-                       users=users_list)
+    uniq_uuid = uuid.uuid4()
+    user_list = []
+    for user in users1:
+        chatUser = Models.chatusers(user_id=user.user_id, chat_id=uniq_uuid)
+        user_list.append(chatUser)
+    chat = Models.Chat(id=uniq_uuid,
+                       chat_name=chatName,
+                       is_group_chat=isGroupChat,
+                       group_admin=groupAdmin,
+                       lastest_message=None,
+                       createdat=datetime.now(),
+                       updatedat=datetime.now(),
+                       users=user_list)
     db.add(chat)
     db.commit()
     chat.id = str(chat.id)
-    for user in chat.users:
-        user.id = str(user.id)
+    db.close()
     return chat
 
+
+def add_message(db: Session, sender: str, chat: str, content: str):
+    uniq_id = uuid.uuid4()
+
+    users_of_chat = []
+    tmp = db.query(Models.Chat).filter(Models.Chat.id == chat).first().users
+    for user in tmp:
+        if user.user_id != sender:
+            users_of_chat.append(Models.readbys(
+                id=str(uuid.uuid4()),
+                user_id=user.user_id,
+                message_id=str(uniq_id),
+                isRead=False
+            ))
+
+    message = Models.Message(
+        id=uniq_id,
+        sender=sender,
+        chat=chat,
+        content=content,
+        createdat=datetime.now(),
+        updatedat=datetime.now(),
+        readbys=users_of_chat)
+    db.add(message)
+    my_chat = db.query(Models.Chat).filter(Models.Chat.id == chat).first()
+    my_chat.lastest_message = message.id
+    my_chat.updatedat = datetime.now()
+    db.add(my_chat)
+    db.commit()
+    message.id = str(message.id)
+    db.close()
+    return message
+
+
+def receive_message(db: Session, user_id: str, messages: list[str]):
+    for message in messages:
+        readbys = db.query(Models.readbys).filter(Models.readbys.message_id == message, Models.readbys.user_id == user_id).first()
+        readbys.isRead = True
+        db.add(readbys)
+    db.commit()
+
+
+def get_users_from_chat_users(db: Session, chat_id: str):
+    users = db.query(Models.chatusers).filter(Models.chatusers.chat_id == chat_id).all()
+    list_users = []
+    for user in users:
+        user1 = Schemas.UserBase(user_id=user.user_id)
+        list_users.append(user1)
+    db.close()
+    return users

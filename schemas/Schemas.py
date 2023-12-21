@@ -1,34 +1,36 @@
+import uuid
 from datetime import datetime
 
 from pydantic import BaseModel
 from typing import List
 
 
-class ChatBase(BaseModel):
-    chatName: str
-
-
 class UserBase(BaseModel):
-    id: str
+    user_id: str
 
-class UserMain(UserBase):
-    email: str
-    fio: str
 
-class CreateChatResponse(BaseModel):
-    id: str
-    chatName: str
+class ChatsResponse(BaseModel):
+    chat_id: str
+    chat_name: str
+    users: list[UserBase]
     isGroupChat: bool
-    createdAt: datetime
-    updatedAt: datetime
-    users: List[UserMain]
+    lastest_message: str | None
+    group_admin: str | None
+    created_at: datetime
+    updated_at: datetime
 
 
-class CreateChatModel(ChatBase):
-    users: List[UserBase]
+class GetMessageResponse(BaseModel):
+    id: str
+    sender: str
+    content: str
+    chat: ChatsResponse
+    created_at: datetime
+    updated_at: datetime
 
 
-class User(UserBase):
-    offline: str
-    phone: str
-    chats: List[ChatBase]
+class ReadBysResponse(BaseModel):
+    id: str
+    message_id: str
+    user_id: str
+    isRead: bool = False

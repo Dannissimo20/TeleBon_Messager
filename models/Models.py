@@ -1,49 +1,46 @@
-from sqlalchemy import Column, String, Table, ForeignKey
+import uuid
+
+from sqlalchemy import Column, String, ForeignKey, UUID, Boolean
 from sqlalchemy.orm import relationship
 
 from database.Database import Base
 
 
-chatUsers = Table("chatUsers", Base.metadata,
-    Column("user",String, ForeignKey('users.id')),
-    Column("chat", String, ForeignKey('chat.id')))
+class chatusers(Base):
+    __tablename__ = "chatusers"
+    id_chatusers = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(String)
+    chat_id = Column(UUID(as_uuid=True), ForeignKey('chat.id'))
 
-
-class User(Base):
-    __tablename__ = "users"
-    dtreg = Column(String, default="3")
-    email = Column(String)
-    fio = Column(String)
+class readbys(Base):
+    __tablename__ = "readbys"
     id = Column(String, primary_key=True)
-    idfather = Column(String, default="3")
-    idfillial = Column(String, default="3")
-    offline = Column(String, default="off")
-    phone = Column(String, default="3")
-    position = Column(String, default="3")
-    role = Column(String, default="admin")
-    chats = relationship("Chat", secondary=chatUsers, backref="users")
+    message_id = Column(String, ForeignKey('message.id'))
+    user_id = Column(String)
+    isRead = Column(Boolean)
 
 
 class Chat(Base):
     __tablename__ = "chat"
     id = Column(String, primary_key=True)
-    chatName = Column(String)
-    isGroupChat = Column(String)
-    # latestMessage = relationship("Message")
-    latestMessage = Column(String, ForeignKey("message.id"))
-    groupAdmin = Column(String)
-    createdAt = Column(String)
-    updatedAt = Column(String)
+    chat_name = Column(String)
+    is_group_chat = Column(Boolean)
+    lastest_message = Column(String, ForeignKey('message.id'))
+    group_admin = Column(String)
+    createdat = Column(String)
+    updatedat = Column(String)
+    users = relationship("chatusers")
 
 
 class Message(Base):
     __tablename__ = "message"
     id = Column(String, primary_key=True)
-    readBy = Column(String)
     sender = Column(String)
     content = Column(String)
-    chat = relationship("Chat")
-    createdAt = Column(String)
-    updatedAt = Column(String)
+    chat = Column(String, ForeignKey('chat.id'))
+    createdat = Column(String)
+    updatedat = Column(String)
+    readbys = relationship("readbys")
+
 
 
