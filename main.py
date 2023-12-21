@@ -1,4 +1,3 @@
-# TODO Написать список библиотек и команд для сервера
 import json
 import uuid
 
@@ -37,8 +36,6 @@ async def my_websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_
         await websocket.accept()
         print(f"{datetime.now()} - New Connection for {userId}")
         websocket_connections.append(websocket)
-
-        # ws_id = websocket.query_params.get("userId")
 
         chats = repo.get_chats(db, userId)
 
@@ -114,8 +111,6 @@ async def my_websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_
                 for message in data["data"]["messages"]:
                     messages_id_list.append(message["message_id"])
                 repo.receive_message(db, userId, messages_id_list)
-                print(f"Ну вроде пользователь {userId} прочитал сообщения")
-                # TODO узать у Паши что возврашать
             # endregion
 
     except starlette.websockets.WebSocketDisconnect as e:
