@@ -14,8 +14,8 @@ export interface IChat {
   is_group_chat: boolean;
   lastest_message: string;
   group_admin: string;
-  createdat: string;
-  updatedat: string;
+  created_at: string;
+  updated_at: string;
   rooms: IRoom[];
 }
 

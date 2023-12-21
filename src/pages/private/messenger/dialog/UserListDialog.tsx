@@ -3,7 +3,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { IUser } from '../../../../store/userStore';
-import {getCookie} from "../../../../utils/cookies";
+import { getCookie } from '../../../../utils/cookies';
 
 const DialogOverlay = styled.div`
   position: fixed;
@@ -24,18 +24,19 @@ const DialogContainer = styled.div`
   max-height: 80vh;
   overflow-y: auto;
   display: flex;
-  flex-direction: column; /* Располагаем контент в столбик */
-  align-items: flex-start; /* Выравниваем по левому краю */
-  overflow: hidden; /* Спрятать полосу прокрутки */
-  margin-bottom: 15px; /* Добавляем отступ под диалоговыми окнами */
+  flex-direction: column;
+  align-items: flex-start;
+  overflow: hidden;
+  margin-bottom: 15px;
 `;
 
-const UserCard = styled.div`
+const UserCard = styled.div<{ isSelected: boolean }>`
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 12px;
   margin-bottom: 12px;
   cursor: pointer;
+  background-color: ${(props) => (props.isSelected ? '#aaffaa' : 'inherit')};
 
   &:last-child {
     margin-bottom: 0;
@@ -48,19 +49,19 @@ const ConfirmDialog = styled.div`
   border-radius: 8px;
   max-width: 400px;
   display: flex;
-  flex-direction: column; /* Располагаем контент в столбик */
-  align-items: flex-start; /* Выравниваем по левому краю */
+  flex-direction: column; 
+  align-items: flex-start; 
 `;
 
 const Button = styled.button`
-  margin-top: 10px; /* Добавляем отступ между кнопками и остальным контентом */
-  padding: 8px; /* Уменьшаем высоту кнопок */
+  margin-top: 10px; 
+  padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
   cursor: pointer;
 
   &:first-child {
-    margin-right: 10px; /* Добавляем отступ между кнопками */
+    margin-right: 10px; 
   }
 
   &:hover {
@@ -75,11 +76,12 @@ const Input = styled.input`
   border-radius: 4px;
 `;
 
-const UserListDialog: React.FC<{ onClose: () => void; userData: IUser[]; ws: WebSocket}> = ({ onClose, userData, ws }) => {
+const UserListDialog: React.FC<{ onClose: () => void; userData: IUser[]; ws: WebSocket }> = ({ onClose, userData, ws }) => {
   const dialogRef = useRef<HTMLDivElement>(null);
   const [isConfirmationOpen, setConfirmationOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
+  const [selectedUsers, setSelectedUsers] = useState<IUser[]>([]);
   const [chatName, setChatName] = useState<string>('');
+  const isButtonActive = selectedUsers.length > 0;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -96,29 +98,50 @@ const UserListDialog: React.FC<{ onClose: () => void; userData: IUser[]; ws: Web
   }, [onClose]);
 
   const handleCardClick = (user: IUser) => {
-    setSelectedUser(user);
-    setConfirmationOpen(true);
+    if (user.id !== getCookie('id')) {
+      // Исключаем пользователя, который хочет создать чат, из списка выбора
+      const isSelected = selectedUsers.some((selectedUser) => selectedUser.id === user.id);
+
+      if (isSelected) {
+        setSelectedUsers((prevSelectedUsers) => prevSelectedUsers.filter((selectedUser) => selectedUser.id !== user.id));
+      } else {
+        setSelectedUsers((prevSelectedUsers) => [...prevSelectedUsers, user]);
+      }
+    }
   };
 
   const handleConfirmationClose = () => {
-    setSelectedUser(null);
+    setSelectedUsers([]);
     setConfirmationOpen(false);
   };
 
   const handleCreateChat = () => {
-    if (selectedUser && chatName) {
+    if (isButtonActive && chatName) {
+      const isGroupChat = selectedUsers.length > 1;
+
+      const withUserId = selectedUsers.map((user) => ({ user_id: user.id }));
+
       const data = {
         type: 'createChat',
         data: {
           chatName,
           createdByUserId: getCookie('id'),
-          withUserId: selectedUser.id,
+          withUserId,
         },
       };
 
-      // Здесь отправляем сообщение через WebSocket
       ws.send(JSON.stringify(data));
-      console.log(`Создание чата с ${selectedUser.fio} и названием "${chatName}"`);
+
+      console.log(
+          `Создание ${isGroupChat ? 'группового ' : ''}чата с пользователями: ${selectedUsers
+              .map((user) => user.fio)
+              .join(', ')}`
+      );
+
+      // Закрыть окно после успешного создания чата
+      setConfirmationOpen(false);
+      setSelectedUsers([]);
+      onClose();
     }
   };
 
@@ -127,31 +150,56 @@ const UserListDialog: React.FC<{ onClose: () => void; userData: IUser[]; ws: Web
       <DialogContainer ref={dialogRef}>
         {isConfirmationOpen ? (
           <ConfirmDialog>
-            <h2>Подтверждение создания чата</h2>
-            <p>Вы уверены, что хотите создать чат с {selectedUser?.fio}?</p>
+            <h2>{selectedUsers.length === 1 ? 'Подтверждение создания чата' : 'Подтверждение создания группового чата'}</h2>
+            <p>
+              Выбранные пользователи:
+              <ul>
+                {selectedUsers.map((user) => (
+                  <li key={user.id}>{user.fio}</li>
+                ))}
+              </ul>
+            </p>
             <Input
               type='text'
               placeholder='Введите название'
               value={chatName}
               onChange={(e) => setChatName(e.target.value)}
             />
-            <Button onClick={handleCreateChat}>Создать чат</Button>
-            <Button onClick={handleConfirmationClose}>Отмена</Button>
+            <div>
+              <Button
+                disabled={!isButtonActive}
+                onClick={handleCreateChat}
+              >
+                {selectedUsers.length === 1 ? 'Создать чат' : 'Создать групповой чат'}
+              </Button>
+              <Button onClick={handleConfirmationClose}>Отмена</Button>
+            </div>
           </ConfirmDialog>
         ) : (
           <>
             <h2>Список пользователей</h2>
-            {userData.map((user) => (
-              <UserCard
-                key={user.id}
-                onClick={() => handleCardClick(user)}
+            {userData
+              .filter((user) => user.id !== getCookie('id')) // Исключаем пользователя из списка выбора
+              .map((user) => (
+                <UserCard
+                  key={user.id}
+                  isSelected={selectedUsers.some((selectedUser) => selectedUser.id === user.id)}
+                  onClick={() => handleCardClick(user)}
+                >
+                  <strong>FIO:</strong> {user.fio}
+                  <br />
+                  <strong>Email:</strong> {user.Email}
+                </UserCard>
+              ))}
+            <div>
+              <Button
+                onClick={() => setConfirmationOpen(true)}
+                disabled={!isButtonActive}
               >
-                <strong>FIO:</strong> {user.fio}
-                <br />
-                <strong>Email:</strong> {user.Email}
-              </UserCard>
-            ))}
-            <button onClick={onClose}>Закрыть</button>
+                Создать чат
+              </Button>
+              <button onClick={onClose}>Закрыть</button>
+            </div>
           </>
         )}
       </DialogContainer>

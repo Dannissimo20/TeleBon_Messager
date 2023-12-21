@@ -13,7 +13,6 @@ import UserStore from '../../../../store/userStore';
 import { getCookie } from '../../../../utils/cookies';
 import 'react-dropdown/style.css';
 
-// Стилизованные компоненты для верстки и анимации
 const TableBody = styled.div`
   border-radius: 8px;
   border: 2px solid ${(props) => props.theme.color.secondaryMedium};
@@ -85,7 +84,7 @@ const ChatList = styled.div`
   }
   gap: 20px;
   margin-top: 20px;
-  padding: 0 20px 30px 20px;
+  padding: 0 20px 80px 20px;
   div {
     width: fit-content;
     display: flex;
@@ -276,7 +275,6 @@ const FormWrapper = styled.div`
   }
 `;
 
-// Интерфейс для пропсов
 interface IProps {
   userStore?: UserStore | any;
   chatStore?: ChatStore;
@@ -288,16 +286,11 @@ interface IProps {
   ws: WebSocket;
 }
 
-// Основной функциональный компонент
 const MessengerChat: FC<IProps> = observer((props) => {
-  // Состояния компонента
-  const [sentMessages, setSentMessages] = useState<any[]>([]);
   const { messengerId, roomId } = useParams();
   const [isOpenDropdown, setIsOpenDropdown] = useState(false);
 
-  // Деструктуризация пропсов
   const { userStore, unreadMessages, updateUnreadMessages, chatStore, isTyping, setIsTyping, ws, userChats } = props;
-  const { user } = userStore!;
   const [messages, setMessages] = useState<IMessage[]>([]);
 
   const [isValue, setIsValue] = useState<string>('');
@@ -305,7 +298,6 @@ const MessengerChat: FC<IProps> = observer((props) => {
   const [selectedRoomText, setSelectedRoomText] = useState<string>('');
   const [filteredMessages, setFilteredMessages] = useState<any[]>([]);
 
-  // Функция для получения информации о пользователе
   const fetchUserInfo = async () => {
     const productsList = await userStore?.fetchUserById(getCookie('id'));
     if (productsList) {
@@ -313,12 +305,10 @@ const MessengerChat: FC<IProps> = observer((props) => {
     }
   };
 
-  // useEffect для получения информации о пользователе при монтировании компонента
   useEffect(() => {
     fetchUserInfo();
   }, []);
 
-  // useEffect для обновления выбранной комнаты и сообщений при изменении messengerId и roomId
   useEffect(() => {
     const selectedChat = userChats.find((chat: IChat) => chat.chat_id === messengerId ?? '0');
     if (selectedChat && roomId) {
@@ -337,7 +327,6 @@ const MessengerChat: FC<IProps> = observer((props) => {
     }
   }, [messengerId, roomId]);
 
-  // useCallback для обработки изменений ввода
   const handleChange = useCallback((e: any) => {
     setIsValue(e.target.value);
     if (e.target.value) {
@@ -347,13 +336,12 @@ const MessengerChat: FC<IProps> = observer((props) => {
     }
   }, []);
 
-  ws.onmessage = (event) => {
+  ws.onmessage = async (event) => {
     try {
       const data = JSON.parse(event.data);
       if (data.type == 'chatMessages') {
         if (data.data && Array.isArray(data.data)) {
           const messages = data.data;
-          console.log(messages);
           setMessages(messages);
         } else {
           console.error('Ошибка формата данных. Отсутствует ожидаемый массив chatMessages.');
@@ -364,14 +352,26 @@ const MessengerChat: FC<IProps> = observer((props) => {
     }
   };
 
-  // Опции для выпадающего списка
   const dropdown = [
     { key: 1, valueTitle: 'Шаблон3' },
     { key: 2, valueTitle: 'Шаблон' },
     { key: 3, valueTitle: 'Шаблон 2' }
   ];
 
-  // Иконки чатов
+  function formatMessageDate(dateString: any) {
+    const date = new Date(dateString);
+
+    if (isNaN(date.getTime())) {
+      return '';
+    }
+
+    return date.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  }
+
   const chatIcons = [
     EIcons.clientIcon,
     EIcons.whatsupsocial,
@@ -386,7 +386,6 @@ const MessengerChat: FC<IProps> = observer((props) => {
   let backgroundColor = '#496FFF';
   let borderColor = 'transparent';
 
-  // Настройка цветов для определенных чатов
   if (chatIdNum <= 7) {
     const chatColors = ['#496fff', '#25d366', '#5eb5f7', '#496fff', '#07f', '#7360f2', 'transparent'];
     const chatBorder = ['transparent', 'transparent', 'transparent', 'transparent', 'transparent', 'transparent', '#EAEBEE'];
@@ -395,35 +394,38 @@ const MessengerChat: FC<IProps> = observer((props) => {
     borderColor = chatBorder[chatIdNum - 1];
   }
 
-  const sendMessage = (e: React.FormEvent, chatId: string, roomId: string) => {
+  const sendMessage = async (e: React.FormEvent, chatId: string, roomId: string) => {
     e.preventDefault();
 
-    // Получение значения сообщения из состояния компонента
     const messageContent = isValue.trim();
 
-    // Проверка, что сообщение не пусто
     if (messageContent === '') {
       return;
     }
 
-    // Создание объекта сообщения
+    console.log('WebSocket State Before Sending Message:', ws.readyState);
+
     const messageData = {
       type: 'sendMessage',
       data: {
         chat_id: roomId,
-        sender_id: getCookie('id'), // или используйте user?.user?.[0]?.id
-        content: messageContent,
-      },
+        sender_id: getCookie('id'),
+        content: messageContent
+      }
     };
 
-    // Отправка сообщения через WebSocket
-    ws.send(JSON.stringify(messageData));
+    try {
+      await ws.send(JSON.stringify(messageData));
+      console.log('Message Sent:', JSON.stringify(messageData));
 
-    // Очистка введенного текста после отправки
-    setIsValue('');
+      console.log('WebSocket State After Sending Message:', ws.readyState);
+
+      setIsValue('');
+    } catch (error) {
+      console.error('Error Sending Message:', error);
+    }
   };
 
-  // Возвращение JSX для компонента
   return (
     <TableBody>
       <HeaderRow>
@@ -442,6 +444,7 @@ const MessengerChat: FC<IProps> = observer((props) => {
           messages.map((message, index) => {
             // Add 'index' here
             const isUserSentMessage = getCookie('id') === message?.sender;
+
             return (
               <div
                 className={isUserSentMessage ? 'me' : ''}
@@ -455,7 +458,7 @@ const MessengerChat: FC<IProps> = observer((props) => {
                 {/*</AvatarBox>*/}
                 <div>
                   <p>{message.content}</p>
-                  <span>{message.created_at}</span>
+                  <span>{formatMessageDate(message.created_at)}</span>
                 </div>
               </div>
             );
@@ -515,5 +518,4 @@ const MessengerChat: FC<IProps> = observer((props) => {
   );
 });
 
-// Инжектирование магазинов в компонент и экспорт
 export default inject('userStore', 'chatStore', 'messageStore')(MessengerChat);

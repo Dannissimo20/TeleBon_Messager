@@ -73,7 +73,6 @@ const dotLast = keyframes`
 const TableBody = styled.div`
   border-radius: 8px;
   border: 2px solid ${(props) => props.theme.color.secondaryMedium};
-
   height: 100%;
   position: relative;
 `;
@@ -152,6 +151,19 @@ const Circle = styled.div`
 `;
 
 const TableRow = styled.div`
+  height: 55vh;
+  overflow-y: auto; /* Добавьте вертикальную прокрутку */
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: ${(props) => props.theme.color.secondaryMedium};
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 12px;
+    background-color: ${(props) => props.theme.color.mainLight};
+    border: 2px solid ${(props) => props.theme.color.mainLight};
+  }
   display: flex;
   align-items: flex-start;
   flex-direction: column;
@@ -161,7 +173,6 @@ const TableRow = styled.div`
     &.active {
       &:after {
         content: '';
-
         top: 50%;
         transform: translateY(-50%);
         left: -2px;
@@ -262,8 +273,6 @@ const MessengerSide: FC<IProps> = ({ isTyping, setIsTyping, ws, userRooms }) => 
   const { messengerId, roomId } = useParams();
 
   const [unreadMessagesByRoomAndChat, setUnreadMessagesByRoomAndChat] = useState<{ [key: string]: number }>({});
-  const [lastMessages, setLastMessages] = useState<{ [key: string]: string }>({});
-  const [lastDate, setLastDate] = useState<{ [key: string]: string }>({});
   const [openDialog, setOpenDialog] = useState(false);
   const [users, setUsers] = useState([]);
 
@@ -276,6 +285,8 @@ const MessengerSide: FC<IProps> = ({ isTyping, setIsTyping, ws, userRooms }) => 
     EIcons.vibersocial,
     EIcons.avitosocial
   ];
+
+
 
   const handleOpenDialog = () => {
     setOpenDialog(true);
@@ -308,9 +319,9 @@ const MessengerSide: FC<IProps> = ({ isTyping, setIsTyping, ws, userRooms }) => 
     };
   }, [isTyping]);
 
-  const handleChatClick = (chatId: string) => {
+  const handleChatClick = async (chatId: string) => {
     // Отправить id чата на сервер
-    ws.send(JSON.stringify({ type: 'getChatMessages', data: { chatId } }));
+    await ws.send(JSON.stringify({ type: 'getChatMessages', data: { chatId } }));
     console.log(chatId);
   };
 
@@ -329,7 +340,6 @@ const MessengerSide: FC<IProps> = ({ isTyping, setIsTyping, ws, userRooms }) => 
         console.error('Произошла ошибка при выполнении запроса:', error);
       }
     }
-
     // Вызываем функцию для выполнения запроса
     fetchData();
   }, []);
@@ -348,8 +358,6 @@ const MessengerSide: FC<IProps> = ({ isTyping, setIsTyping, ws, userRooms }) => 
       <TableRow>
         {userRooms?.map((room: any) => {
           const key = `${room.chat_id}`;
-          const lastMessage = lastMessages[key];
-          const lastDates = lastDate[key];
 
           return (
             <div
@@ -360,12 +368,12 @@ const MessengerSide: FC<IProps> = ({ isTyping, setIsTyping, ws, userRooms }) => 
               <Link to={`/messenger/${messengerId}/${room.chat_id}`}></Link>
               <h4>{room.chat_name}</h4>
 
-              {unreadMessagesByRoomAndChat[key] && (
-                <MessageInfo>
-                  <span>{formatMessageDate(lastDates)}</span>
-                  <span className='unreadNotification'>{unreadMessagesByRoomAndChat[key]}</span>
-                </MessageInfo>
-              )}
+              <MessageInfo>
+                {unreadMessagesByRoomAndChat[key] && (
+                    <span className='unreadNotification'>{unreadMessagesByRoomAndChat[key]}</span>
+                )}
+                <span>{formatMessageDate(room.updated_at)}</span>
+              </MessageInfo>
               {parseInt(roomId ?? '0') === parseInt(room.chat_id) && isTyping ? (
                 <TypingIndicator>
                   <div>
@@ -376,7 +384,7 @@ const MessengerSide: FC<IProps> = ({ isTyping, setIsTyping, ws, userRooms }) => 
                   </div>
                 </TypingIndicator>
               ) : (
-                <TypingIndicator>{lastMessage}</TypingIndicator>
+                <TypingIndicator>{room.lastest_message}</TypingIndicator>
               )}
             </div>
           );
