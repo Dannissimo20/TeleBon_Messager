@@ -1,10 +1,9 @@
 import uuid
 
-from sqlalchemy import Column, String, ForeignKey, UUID, Boolean
+from sqlalchemy import Column, String, ForeignKey, UUID, Boolean, MetaData
 from sqlalchemy.orm import relationship
 
-from database.Database import Base
-
+from app.database.Database import Base
 
 class chatusers(Base):
     __tablename__ = "chatusers"
@@ -18,6 +17,7 @@ class readbys(Base):
     message_id = Column(String, ForeignKey('message.id'))
     user_id = Column(String)
     isRead = Column(Boolean)
+    #chat_id = Column(String, ForeignKey('chat.id'))
 
 
 class Chat(Base):
