@@ -1,7 +1,8 @@
 import json
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 
+import pytz
 from sqlalchemy import desc
 
 from app.models import Models
@@ -16,7 +17,7 @@ def get_chats(db: Session, user: str):
     for item in chat_ids:
         chat = db.query(Models.Chat).filter(Models.Chat.id == item.chat_id).first()
         last_message = db.query(Models.Message).filter(Models.Message.chat == item.chat_id).order_by(desc(Models.Message.createdat)).first()
-        #unread = db.query(Models.readbys).filter(Models.readbys.chat_id == item.chat_id and Models.readbys.isRead == False).count()
+        unread = (db.query(Models.readbys).filter(Models.readbys.chat_id == item.chat_id).filter(Models.readbys.user_id == user).count())
         if last_message == None:
             last_message_content = None
         else:
@@ -34,15 +35,15 @@ def get_chats(db: Session, user: str):
             isGroupChat=chat.is_group_chat,
             lastest_message=last_message_content,
             group_admin=str(chat.group_admin),
-            #unread=unread,
-            created_at=chat.createdat,
-            updated_at=chat.updatedat)
-        chatRes.created_at = str(chatRes.created_at)
-        chatRes.updated_at = str(chatRes.updated_at)
+            is_tech_support=chat.is_tech_support,
+            unread=unread,
+            created_at=chat.createdat.isoformat(),
+            updated_at=chat.updatedat.isoformat())
         chatRes = chatRes.dict()
         chatList.append(chatRes)
+    sorted_chats = sorted(chatList, key=lambda chat: chat["updated_at"], reverse=True)
     db.close()
-    return chatList
+    return sorted_chats
 
 
 def get_chat_by_id(db: Session, chat_id: str):
@@ -60,31 +61,45 @@ def get_chat_by_id(db: Session, chat_id: str):
         isGroupChat=chat.is_group_chat,
         lastest_message=str(chat.lastest_message),
         group_admin=str(chat.group_admin),
-        created_at=chat.createdat,
-        updated_at=chat.updatedat)
-    chatRes.created_at = str(chatRes.created_at)
-    chatRes.updated_at = str(chatRes.updated_at)
+        is_tech_support=chat.is_tech_support,
+        created_at=chat.createdat.isoformat(),
+        updated_at=chat.updatedat.isoformat())
     db.close()
     return chatRes
 
 
-def get_messages_for_chat(db: Session, chat_id: str):
+def get_messages_for_chat(db: Session, chat_id: str, user_id: str):
     messages = db.query(Models.Message).filter(Models.Message.chat == chat_id).all()
     chat = get_chat_by_id(db, chat_id)
     messageList = []
     for message in messages:
+        # all = db.query(Models.readbys).filter(Models.readbys.message_id == message.id).filter(Models.readbys.chat_id == chat_id).first()
+        # is_read = False
+        # if all is None:
+        #     is_read = False
+        # else:
+        #     if message.sender != user_id:
+        #         all.isRead = True
+        #     else:
+        #         is_read = all.isRead
+        all = db.query(Models.readbys).filter(Models.readbys.message_id == message.id).filter(Models.readbys.user_id != user_id).filter(Models.readbys.chat_id == chat_id).all()
+        db.query(Models.readbys).filter(Models.readbys.message_id == message.id).filter(Models.readbys.user_id == user_id).filter(Models.readbys.chat_id == chat_id).delete()
+        is_read = False
+        if len(all) >= 0:
+           is_read = False
+        if len(all) == 0:
+           is_read = True
         messageResponse= Schemas.GetMessageResponse(
             id=str(message.id),
             sender=message.sender,
             content=str(message.content),
             chat=chat,
-            #is_read=is_read,
-            created_at=str(message.createdat),
-            updated_at=str(message.updatedat)
+            is_read=is_read,
+            created_at=message.createdat.isoformat(),
+            updated_at=message.updatedat.isoformat()
         )
-        messageResponse.created_at = str(messageResponse.created_at)
-        messageResponse.updated_at = str(messageResponse.updated_at)
         messageList.append(messageResponse.dict())
+        db.commit()
         db.close()
     return messageList
 
@@ -102,30 +117,45 @@ def add_chat(db: Session, users1: list[Schemas.UserBase], chatName: str):
     for user in users1:
         chatUser = Models.chatusers(user_id=user.user_id, chat_id=uniq_uuid)
         user_list.append(chatUser)
+    if chatName.split(" for ")[0] == "Tech Support":
+        isTechSupport = True
+    else:
+        isTechSupport = False
     chat = Models.Chat(id=uniq_uuid,
                        chat_name=chatName,
                        is_group_chat=isGroupChat,
                        group_admin=groupAdmin,
                        lastest_message=None,
-                       createdat=datetime.now(),
-                       updatedat=datetime.now(),
+                       is_tech_support=isTechSupport,
+                       createdat=datetime.now(pytz.timezone('Europe/Moscow')),
+                       updatedat=datetime.now(pytz.timezone('Europe/Moscow')),
                        users=user_list)
     db.add(chat)
     db.commit()
     chat.id = str(chat.id)
     db.close()
-    chatRes = Schemas.ChatsResponse(
-        chat_id=chat.id,
-        chat_name=chat.chat_name,
-        users=users1,
-        isGroupChat=chat.is_group_chat,
-        lastest_message=chat.lastest_message,
-        group_admin=chat.group_admin,
-        #unread=0,
-        created_at=chat.createdat,
-        updated_at=chat.updatedat
-    )
-    return chatRes
+
+
+def delete_chat(db: Session, chat_id: str):
+    message_ids = []
+    messages = db.query(Models.Message).filter(Models.Message.chat == chat_id).all()
+    for message in messages:
+        message_ids.append(message.id)
+    for id in message_ids:
+        db.query(Models.readbys).filter(Models.readbys.message_id == id).delete()
+    db.query(Models.chatusers).filter(Models.chatusers.chat_id == chat_id).delete()
+    db.query(Models.Message).filter(Models.Message.chat == chat_id).delete()
+    db.query(Models.Chat).filter(Models.Chat.id == chat_id).delete()
+    db.commit()
+    db.close()
+
+
+def rename_chat(db: Session, chat_id: str, new_name: str):
+    chat = db.query(Models.Chat).filter(Models.Chat.id == chat_id).first()
+    chat.chat_name = new_name
+    chat.updatedat = datetime.now()
+    db.commit()
+    db.close()
 
 
 def add_message(db: Session, sender: str, chat: str, content: str):
@@ -140,42 +170,23 @@ def add_message(db: Session, sender: str, chat: str, content: str):
                 user_id=user.user_id,
                 message_id=str(uniq_id),
                 isRead=False,
-                #chat_id=my_chat.id
+                chat_id=my_chat.id
             ))
-
+    now = datetime.now() + timedelta(hours=3)
     message = Models.Message(
         id=uniq_id,
         sender=sender,
         chat=chat,
         content=content,
-        createdat=datetime.now(),
-        updatedat=datetime.now(),
+        createdat=now,
+        updatedat=now,
         readbys=users_of_chat)
     db.add(message)
     my_chat.lastest_message = message.id
     my_chat.updatedat = datetime.now()
     db.add(my_chat)
     db.commit()
-    message.id = str(message.id)
-    messageRes = Schemas.GetMessageResponse(
-        id=message.id,
-        sender=message.sender,
-        content=message.content,
-        chat=get_chat_by_id(db, chat),
-        created_at=str(message.createdat),
-        updated_at=str(message.updatedat)
-    )
-    messageRes.created_at = str(messageRes.created_at)
-    messageRes.updated_at = str(messageRes.updated_at)
-    return messageRes
-
-
-def receive_message(db: Session, user_id: str, messages: list[str]):
-    for message in messages:
-        readbys = db.query(Models.readbys).filter(Models.readbys.message_id == message, Models.readbys.user_id == user_id).first()
-        readbys.isRead = True
-        db.add(readbys)
-    db.commit()
+    db.close()
 
 
 def get_users_from_chat_users(db: Session, chat_id: str):
@@ -186,3 +197,11 @@ def get_users_from_chat_users(db: Session, chat_id: str):
         list_users.append(user1)
     db.close()
     return users
+
+
+def is_tech_support_exist(db: Session, user_id: str):
+    is_tech_support_array = db.query(Models.Chat.is_tech_support).join(Models.chatusers).filter(Models.chatusers.user_id == user_id).all()
+    if any(item[0] for item in is_tech_support_array):
+        return True
+    else:
+        return False

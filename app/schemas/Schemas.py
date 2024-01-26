@@ -1,8 +1,9 @@
+import json
 import uuid
 from datetime import datetime
 
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Any
 
 
 class UserBase(BaseModel):
@@ -16,9 +17,10 @@ class ChatsResponse(BaseModel):
     isGroupChat: bool
     lastest_message: str | None
     group_admin: str | None
-    #unread: int = 0
-    created_at: datetime
-    updated_at: datetime
+    is_tech_support: bool
+    unread: int = 0
+    created_at: str
+    updated_at: str
 
 
 class GetMessageResponse(BaseModel):
@@ -26,9 +28,9 @@ class GetMessageResponse(BaseModel):
     sender: str
     content: str
     chat: ChatsResponse
-    #is_read: bool = False
-    created_at: datetime
-    updated_at: datetime
+    is_read: bool
+    created_at: str
+    updated_at: str
 
 
 class ReadBysResponse(BaseModel):

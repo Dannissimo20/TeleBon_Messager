@@ -1,6 +1,6 @@
 create table chat
 (
-    id              uuid default gen_random_uuid() not null
+    id              uuid    default gen_random_uuid() not null
         constraint chat_pk
             primary key,
     chat_name       text,
@@ -8,7 +8,8 @@ create table chat
     lastest_message uuid,
     group_admin     text,
     createdat       timestamp,
-    updatedat       timestamp
+    updatedat       timestamp,
+    is_tech_support boolean default false
 );
 
 alter table chat
@@ -58,4 +59,17 @@ create table readbys
 );
 
 alter table readbys
+    owner to postgres;
+
+create table tg_apis
+(
+    api_key  varchar(255) not null
+        constraint tg_apis_pk
+            primary key,
+    bot_name varchar      not null,
+    boss_id  varchar(255) not null,
+    isrun    boolean      not null
+);
+
+alter table tg_apis
     owner to postgres;

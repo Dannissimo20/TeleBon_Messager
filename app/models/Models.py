@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column, String, ForeignKey, UUID, Boolean, MetaData
+from sqlalchemy import Column, String, ForeignKey, UUID, Boolean, MetaData, DateTime
 from sqlalchemy.orm import relationship
 
 from app.database.Database import Base
@@ -17,7 +17,7 @@ class readbys(Base):
     message_id = Column(String, ForeignKey('message.id'))
     user_id = Column(String)
     isRead = Column(Boolean)
-    #chat_id = Column(String, ForeignKey('chat.id'))
+    chat_id = Column(String, ForeignKey('chat.id'))
 
 
 class Chat(Base):
@@ -27,8 +27,9 @@ class Chat(Base):
     is_group_chat = Column(Boolean)
     lastest_message = Column(String, ForeignKey('message.id'))
     group_admin = Column(String)
-    createdat = Column(String)
-    updatedat = Column(String)
+    is_tech_support = Column(Boolean)
+    createdat = Column(DateTime)
+    updatedat = Column(DateTime)
     users = relationship("chatusers")
 
 
@@ -38,8 +39,8 @@ class Message(Base):
     sender = Column(String)
     content = Column(String)
     chat = Column(String, ForeignKey('chat.id'))
-    createdat = Column(String)
-    updatedat = Column(String)
+    createdat = Column(DateTime)
+    updatedat = Column(DateTime)
     readbys = relationship("readbys")
 
 
